@@ -5,35 +5,35 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
+import java.util.*;
 
 public class Main extends ApplicationAdapter {
 
     private ShapeRenderer sr;
     private Cell[][] cells;
 
-    private Integer screenWidth;
-    private Integer screenHeight;
+    private Vector2 screenDimensions;
 
-    private Integer[] numberOfCells;
-    private float[] cellDimensions;
+    private Vector2 numberOfCells;
+    private Vector2 cellDimensions;
 
     @Override
     public void create() {
-        screenWidth = Gdx.graphics.getWidth();
-        screenHeight = Gdx.graphics.getHeight();
+        screenDimensions = new Vector2(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
         sr = new ShapeRenderer();
 
         // setup mesh
-        numberOfCells = new Integer[] {32, 18}; // keep the 16:9 aspect ratio
-        cellDimensions = new float[] {screenWidth/numberOfCells[0], screenHeight/numberOfCells[1]};
+        numberOfCells = new Vector2(32, 18); // keep the 16:9 aspect ratio
+        cellDimensions = new Vector2(screenDimensions.x/numberOfCells.x, screenDimensions.y/numberOfCells.y);
 
-        cells = new Cell[numberOfCells[0]][numberOfCells[1]];
+        cells = new Cell[(int) numberOfCells.x][(int) numberOfCells.y];
         for (int row=0; row<cells.length; row++) {
             for (int column=0; column<cells[row].length; column++) {
-                Vector2 position = new Vector2(row*cellDimensions[0], column*cellDimensions[1]);
+                Vector2 centre = new Vector2((float) (row*cellDimensions.x+(0.5*cellDimensions.x)), (float) (column*cellDimensions.y+(0.5*cellDimensions.y)));
+                Vector2 dimensions = new Vector2(cellDimensions.x, cellDimensions.y);
                 Vector2 velocity = new Vector2(0, 0);
-                cells[row][column] = new Cell(position, velocity);
+                cells[row][column] = new Cell(centre, dimensions, velocity);
             }
         }
     }
@@ -42,15 +42,24 @@ public class Main extends ApplicationAdapter {
     public void render() {
         ScreenUtils.clear(0f, 0f, 0f, 1f);
 
+        for (Cell[] cellRow : cells) {
+            for (Cell cell : cellRow) {
+                cell.setVelocity(new Vector2(Gdx.input.getX()-cell.getCentre().x, (screenDimensions.y-Gdx.input.getY())-cell.getCentre().y));
+            }
+        }
+
         sr.begin(ShapeRenderer.ShapeType.Filled);
             for (Cell[] cellRow : cells) {
                 for (Cell cell : cellRow) {
-                    cell.draw(sr);
+                    cell.draw(sr, screenDimensions);
                 }
             }
         sr.end();
     }
 
     @Override
-    public void dispose() {}
+    public void dispose() {
+        sr.dispose();
+
+    }
 }
