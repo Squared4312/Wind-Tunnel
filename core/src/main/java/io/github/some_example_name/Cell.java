@@ -15,15 +15,16 @@ public class Cell {
         this.velocity = velocity;
     }
 
-    public void draw(ShapeRenderer sr, Vector2 screenDimensions) {
-        sr.setColor(Color.WHITE);
-        drawArrows(sr, screenDimensions);
+    public void draw(ShapeRenderer sr, Vector2 screenDimensions, boolean renderArrows) {
+        if (renderArrows) {drawArrows(sr, screenDimensions);}
 
         //sr.setColor(Color.RED);
         //sr.circle(centre.x, centre.y, 1);
     }
 
     public void drawArrows(ShapeRenderer sr, Vector2 screenDimensions) {
+        sr.setColor(Color.WHITE);
+
         velocity.x /= screenDimensions.x;
         velocity.y /= screenDimensions.y;
         velocity.x *= dimensions.x;

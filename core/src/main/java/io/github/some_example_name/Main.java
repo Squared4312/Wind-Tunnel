@@ -17,6 +17,8 @@ public class Main extends ApplicationAdapter {
     private Vector2 numberOfCells;
     private Vector2 cellDimensions;
 
+    private boolean renderArrows = true;
+
     @Override
     public void create() {
         screenDimensions = new Vector2(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -51,7 +53,7 @@ public class Main extends ApplicationAdapter {
         sr.begin(ShapeRenderer.ShapeType.Filled);
             for (Cell[] cellRow : cells) {
                 for (Cell cell : cellRow) {
-                    cell.draw(sr, screenDimensions);
+                    cell.draw(sr, screenDimensions, renderArrows);
                 }
             }
         sr.end();
