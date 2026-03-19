@@ -17,9 +17,6 @@ public class Cell {
 
     public void draw(ShapeRenderer sr, Vector2 screenDimensions, boolean renderArrows) {
         if (renderArrows) {drawArrows(sr, screenDimensions);}
-
-        //sr.setColor(Color.RED);
-        //sr.circle(centre.x, centre.y, 1);
     }
 
     public void drawArrows(ShapeRenderer sr, Vector2 screenDimensions) {
@@ -30,8 +27,8 @@ public class Cell {
         velocity.x *= dimensions.x;
         velocity.y *= dimensions.y;
 
-        Vector2 tail = new Vector2((float) (centre.x-(0.5*velocity.x)), (float) (centre.y-(0.5*velocity.y)));
-        Vector2 head = new Vector2((float) (centre.x+(0.5*velocity.x)), (float) (centre.y+(0.5*velocity.y)));
+        Vector2 tail = new Vector2(centre.x-(velocity.x/2), centre.y-(velocity.y/2));
+        Vector2 head = new Vector2(centre.x+(velocity.x/2), centre.y+(velocity.y/2));
         sr.rectLine(tail, head, 2);
 
         // arrow heads
