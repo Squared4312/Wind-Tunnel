@@ -2,14 +2,19 @@ package io.github.some_example_name;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
 import java.util.*;
 
 public class Main extends ApplicationAdapter {
-
     private ShapeRenderer sr;
+    private SpriteBatch batch;
+    private BitmapFont[] fonts = new BitmapFont[5];
+
     private Cell[][] cells;
 
     private Vector2 screenDimensions;
@@ -30,6 +35,12 @@ public class Main extends ApplicationAdapter {
         screenDimensions = new Vector2(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
         sr = new ShapeRenderer();
+        batch = new SpriteBatch();
+        fonts[0] = new BitmapFont(Gdx.files.internal("assets/fonts/inter-32-semi-bold.fnt"), false);
+        fonts[1] = new BitmapFont(Gdx.files.internal("assets/fonts/inter-36-semi-bold.fnt"), false);
+        fonts[2] = new BitmapFont(Gdx.files.internal("assets/fonts/inter-40-semi-bold.fnt"), false);
+        fonts[3] = new BitmapFont(Gdx.files.internal("assets/fonts/inter-44-semi-bold.fnt"), false);
+        fonts[4] = new BitmapFont(Gdx.files.internal("assets/fonts/inter-48-semi-bold.fnt"), false);
 
         // setup mesh
         numberOfCells = new Vector2(32, 18); // keep the 16:9 aspect ratio
@@ -70,7 +81,13 @@ public class Main extends ApplicationAdapter {
                     cell.draw(sr, screenDimensions, renderArrows);
                 }
             }
+            sr.rectLine(screenDimensions.x/2, 0, screenDimensions.x/2, screenDimensions.y, 1);
         sr.end();
+
+        batch.begin();
+            fonts[0].setColor(Color.WHITE);
+            fonts[0].draw(batch, "settings", screenDimensions.x/2, screenDimensions.y/2);
+        batch.end();
     }
 
     @Override
