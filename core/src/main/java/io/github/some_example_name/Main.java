@@ -4,7 +4,9 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -13,7 +15,8 @@ import java.util.*;
 public class Main extends ApplicationAdapter {
     private ShapeRenderer sr;
     private SpriteBatch batch;
-    private BitmapFont[] fonts = new BitmapFont[5];
+    private BitmapFont font;
+    private GlyphLayout layout;
 
     private Cell[][] cells;
 
@@ -23,12 +26,6 @@ public class Main extends ApplicationAdapter {
     private Vector2 cellDimensions;
 
     private boolean renderArrows = true;
-    private float timeStep = 0.001f; // time step
-    private float viscosity = 0.1f; // fluid viscosity
-
-    private double[][] u; // horizontal velocity on vertical faces
-    private double[][] v; // vertical velocity on horizontal faces
-    private double[][] p; // pressure at cell centres
 
     @Override
     public void create() {
@@ -36,19 +33,12 @@ public class Main extends ApplicationAdapter {
 
         sr = new ShapeRenderer();
         batch = new SpriteBatch();
-        fonts[0] = new BitmapFont(Gdx.files.internal("assets/fonts/inter-32-semi-bold.fnt"), false);
-        fonts[1] = new BitmapFont(Gdx.files.internal("assets/fonts/inter-36-semi-bold.fnt"), false);
-        fonts[2] = new BitmapFont(Gdx.files.internal("assets/fonts/inter-40-semi-bold.fnt"), false);
-        fonts[3] = new BitmapFont(Gdx.files.internal("assets/fonts/inter-44-semi-bold.fnt"), false);
-        fonts[4] = new BitmapFont(Gdx.files.internal("assets/fonts/inter-48-semi-bold.fnt"), false);
+        font = new BitmapFont(Gdx.files.internal("assets/fonts/inter-semi-bold.fnt"), false); // the default font size is 256
+        layout = new GlyphLayout();
 
         // setup mesh
         numberOfCells = new Vector2(32, 18); // keep the 16:9 aspect ratio
         cellDimensions = new Vector2(screenDimensions.x/numberOfCells.x, screenDimensions.y/numberOfCells.y);
-
-        u = new double[(int) (numberOfCells.x+1)][(int) numberOfCells.y];
-        v = new double[(int) numberOfCells.x][(int) (numberOfCells.y+1)];
-        p = new double[(int) numberOfCells.x][(int) numberOfCells.y];
 
         cells = new Cell[(int) numberOfCells.x][(int) numberOfCells.y];
         for (int row=0; row<numberOfCells.x; row++) {
@@ -68,10 +58,10 @@ public class Main extends ApplicationAdapter {
         // calculate the average velocity of the fluid from the cell's faces
         for (int row=0; row<numberOfCells.x; row++) {
             for (int column=0; column<numberOfCells.y; column++) {
-                Vector2 averageVelocity = new Vector2((float) ((u[row][column]+u[row+1][column])/2), (float) (v[row][column]+v[row][column+1])/2);
-                cells[row][column].setVelocity(averageVelocity);
+                //Vector2 averageVelocity = new Vector2((float) ((u[row][column]+u[row+1][column])/2), (float) (v[row][column]+v[row][column+1])/2);
+                //cells[row][column].setVelocity(averageVelocity);
 
-                //cells[row][column].setVelocity(new Vector2(Gdx.input.getX()-cells[row][column].getCentre().x, (screenDimensions.y-Gdx.input.getY())-cells[row][column].getCentre().y));
+                cells[row][column].setVelocity(new Vector2(Gdx.input.getX()-cells[row][column].getCentre().x, (screenDimensions.y-Gdx.input.getY())-cells[row][column].getCentre().y));
             }
         }
 
@@ -81,17 +71,24 @@ public class Main extends ApplicationAdapter {
                     cell.draw(sr, screenDimensions, renderArrows);
                 }
             }
-            sr.rectLine(screenDimensions.x/2, 0, screenDimensions.x/2, screenDimensions.y, 1);
         sr.end();
 
         batch.begin();
-            fonts[0].setColor(Color.WHITE);
-            fonts[0].draw(batch, "settings", screenDimensions.x/2, screenDimensions.y/2);
+            renderText(font, "settings", Color.WHITE, screenDimensions.x/2, screenDimensions.y/2, 0.5f);
         batch.end();
+    }
+
+    public void renderText(BitmapFont font, String text, Color color, float x, float y, float scale) {
+        font.setColor(color);
+        font.getData().setScale(scale);
+        layout.setText(font, text);
+        font.draw(batch, text, x-layout.width/2, y+layout.height/2);
     }
 
     @Override
     public void dispose() {
         sr.dispose();
+        batch.dispose();
+        font.dispose();
     }
 }
