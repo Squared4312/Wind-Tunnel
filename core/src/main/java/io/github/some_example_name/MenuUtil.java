@@ -44,13 +44,29 @@ public class MenuUtil {
         return new Rectangle(x, y, width, height);
     }
 
-    public boolean isButtonClicked(Rectangle button) {
-        return Gdx.input.isButtonJustPressed(Input.Buttons.LEFT) && button.contains(Gdx.input.getX(), screenDimensions.y-Gdx.input.getY());
+    public Rectangle renderRoundedTriangle(ShapeRenderer sr, Color color, float x, float y, float radius, float rotation) {
+        Vector2[] points = new Vector2[3];
+        for (Integer count=0; count<points.length; count++) {
+            Integer increment = count*120;
+            points[count] = new Vector2((float) (x+(radius*Math.cos(Math.toRadians(-rotation+90+increment)))), (float) (y+(radius*Math.sin(Math.toRadians(-rotation+90+increment)))));
+        }
+
+        sr.setColor(color);
+
+        sr.circle(points[0].x, points[0].y, radius/2);
+        sr.circle(points[1].x, points[1].y, radius/2);
+        sr.circle(points[2].x, points[2].y, radius/2);
+
+        sr.rectLine(points[0].x, points[0].y, points[1].x, points[1].y, radius);
+        sr.rectLine(points[1].x, points[1].y, points[2].x, points[2].y, radius);
+        sr.rectLine(points[2].x, points[2].y, points[0].x, points[0].y, radius);
+
+        return new Rectangle(x-radius, y-radius, radius*2, radius*2);
     }
 
-    public Texture loadIcon(String name) {
-        return new Texture(Gdx.files.internal("assets/icons/" + name + ".png"));
-    }
+    public boolean isButtonClicked(Rectangle button) {return Gdx.input.isButtonJustPressed(Input.Buttons.LEFT) && button.contains(Gdx.input.getX(), screenDimensions.y-Gdx.input.getY());}
+
+    public Texture loadIcon(String name) {return new Texture(Gdx.files.internal("assets/icons/" + name + ".png"));}
 
     public void renderIcon(SpriteBatch batch, Texture icon, float x, float y) {
         x -= 0.5f*icon.getWidth();

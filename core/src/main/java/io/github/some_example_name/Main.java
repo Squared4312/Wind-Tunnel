@@ -13,16 +13,7 @@ public class Main extends ApplicationAdapter {
     private ShapeRenderer sr;
     private SpriteBatch batch;
 
-    private Cell[][] cells;
-
     private Vector2 screenDimensions;
-
-    private Vector2 numberOfCells;
-    private Vector2 cellDimensions;
-
-    private double weightO = 4.0/9.0; // Origin
-    private double weightAxis = 1.0/9.0; // N E S W
-    private double weightDiagonals = 1.0/36.0; // NE NW SE SW
 
     private String menu = "main";
     private String nextMenu;
@@ -47,18 +38,7 @@ public class Main extends ApplicationAdapter {
         levelsMenu = new LevelsMenu();
         freeplayMenu = new FreeplayMenu();
 
-        // setup mesh
-        numberOfCells = new Vector2(32, 18); // keep the 16:9 aspect ratio
-        cellDimensions = new Vector2(screenDimensions.x/numberOfCells.x, screenDimensions.y/numberOfCells.y);
 
-        cells = new Cell[(int) numberOfCells.x][(int) numberOfCells.y];
-        for (int column=0; column<numberOfCells.x; column++) {
-            for (int row=0; row<numberOfCells.y; row++) {
-                Vector2 centre = new Vector2(column*cellDimensions.x+(cellDimensions.x/2), row*cellDimensions.y+(cellDimensions.y/2));
-                Vector2 dimensions = new Vector2(cellDimensions.x, cellDimensions.y);
-                cells[column][row] = new Cell(centre, dimensions, settingsMenu.getFlowSpeed(), weightO, weightAxis, weightDiagonals);
-            }
-        }
     }
 
     @Override

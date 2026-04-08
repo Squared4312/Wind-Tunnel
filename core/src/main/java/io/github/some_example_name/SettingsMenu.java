@@ -7,18 +7,27 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 
+import java.text.DecimalFormat;
+
 public class SettingsMenu implements Menu {
-    private double flowSpeed = 0.1;
-    private double viscosity = 0.05;
-    private String plot = "x velocity";
-    private String mode = "drag fluid";
+    private double flowSpeed = 0.100;
+    private double viscosity = 0.020;
+    private String plot;
+    private String mode;
     private boolean showFlowLines = false;
+
+    private DecimalFormat decimalFormat;
+    private String[] plotValues = {"density", "x velocity", "y velocity", "speed", "curl"};
+    private String[] modeValues = {"draw barriers", "erase barriers", "drag fluid"};
 
     private MenuUtil util;
 
     private Rectangle quitButton;
     private Rectangle backButton;
     private Rectangle settingsButton;
+
+    private Rectangle[] flowSpeedButtons = new Rectangle[2];
+    private Rectangle[] viscosityButtons = new Rectangle[2];
 
     private Texture quitIcon;
     private Texture backIcon;
@@ -27,9 +36,14 @@ public class SettingsMenu implements Menu {
     public SettingsMenu() {
         this.util = new MenuUtil();
 
+        this.decimalFormat = new DecimalFormat("0.000");
+
         this.quitIcon = util.loadIcon("quit");
         this.backIcon = util.loadIcon("back");
         this.settingsIcon = util.loadIcon("settings");
+
+        this.plot = this.plotValues[0];
+        this.mode = this.modeValues[0];
     }
 
     @Override
@@ -48,6 +62,12 @@ public class SettingsMenu implements Menu {
             util.renderRoundedRectangle(sr, util.getSettingsButtonColor(), 1320, 642.5f, 600, 75, 16); // r2
             util.renderRoundedRectangle(sr, util.getSettingsButtonColor(), 1320, 542.5f, 600, 75, 16); // r3
             util.renderRoundedRectangle(sr, util.getSettingsButtonColor(), 1320, 442.5f, 600, 75, 16); // r4
+
+            flowSpeedButtons[0] = util.renderRoundedTriangle(sr, Color.WHITE, 865, 742.5f, 12, 90);
+            flowSpeedButtons[1] = util.renderRoundedTriangle(sr, Color.WHITE, 665, 742.5f, 12, 270);
+
+            viscosityButtons[0] = util.renderRoundedTriangle(sr, Color.WHITE, 865, 642.5f, 12, 90);
+            viscosityButtons[1] = util.renderRoundedTriangle(sr, Color.WHITE, 665, 642.5f, 12, 270);
         sr.end();
 
         batch.begin();
@@ -63,6 +83,9 @@ public class SettingsMenu implements Menu {
             util.renderText(batch, "reset fluid", Color.WHITE, 1040, 542.5f, 36, "left"); // r3
             util.renderText(batch, "show flowlines", Color.WHITE, 1040, 442.5f, 36, "left"); // r4
 
+            util.renderText(batch, decimalFormat.format(flowSpeed), Color.WHITE, 765, 742.5f, 36, "centre"); // l1 value
+            util.renderText(batch, decimalFormat.format(viscosity), Color.WHITE, 765, 642.5f, 36, "centre"); // l2 value
+
             util.renderIcon(batch, quitIcon, 1862.5f, 1022.5f);
             util.renderIcon(batch, backIcon, 57.5f, 1022.5f);
             util.renderIcon(batch, settingsIcon, 1862.5f, 57.5f);
@@ -71,6 +94,12 @@ public class SettingsMenu implements Menu {
 
     @Override
     public String checkIfButtonsClicked() {
+        if (util.isButtonClicked(flowSpeedButtons[0]) && flowSpeed < 0.120) {flowSpeed += 0.005; flowSpeed = Math.round(flowSpeed*1000)/1000d;}
+        if (util.isButtonClicked(flowSpeedButtons[1]) && flowSpeed > 0.005) {flowSpeed -= 0.005; flowSpeed = Math.round(flowSpeed*1000)/1000d;}
+
+        if (util.isButtonClicked(viscosityButtons[0]) && viscosity < 0.200) {viscosity += 0.005; viscosity = Math.round(viscosity*1000)/1000d;}
+        if (util.isButtonClicked(viscosityButtons[1]) && viscosity > 0.005) {viscosity -= 0.005; viscosity = Math.round(viscosity*1000)/1000d;}
+
         if (util.isButtonClicked(quitButton)) {Gdx.app.exit();}
         if (util.isButtonClicked(backButton)) {return "back";}
         if (util.isButtonClicked(settingsButton)) {return "settings";}

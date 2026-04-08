@@ -36,15 +36,16 @@ public class AboutMenu implements Menu {
 
         batch.begin();
             util.renderText(batch, "about", Color.WHITE, util.getScreenDimensions().x/2, 953, 96, "centre");
-            util.renderText(batch, "This is a 2D incompressible Wind Tunnel made by Nathan Becker for the A-Level Computer Science NEA.", Color.WHITE, util.getScreenDimensions().x/2, 850, 32, "centre");
+            util.renderText(batch, "This is a 2D incompressible Wind Tunnel made by Nathan Becker for my ", Color.WHITE, util.getScreenDimensions().x/2, 850, 32, "centre");
+            util.renderText(batch, "A-Level Computer Science NEA.", Color.WHITE, util.getScreenDimensions().x/2, 800, 32, "centre");
             util.renderText(batch, "The Wind Tunnel uses computational fluid dynamics, the Lattice-", Color.WHITE, util.getScreenDimensions().x/2, 700, 32, "centre");
             util.renderText(batch, "Boltzmann equations to simulate a fluid flowing past an object based on", Color.WHITE, util.getScreenDimensions().x/2, 650, 32, "centre");
             util.renderText(batch, "variable flow speed and viscosity.", Color.WHITE, util.getScreenDimensions().x/2, 600, 32, "centre");
             util.renderText(batch, "xxx lines of code", Color.WHITE, util.getScreenDimensions().x/2, 500, 32, "centre");
             util.renderText(batch, "~ xxx hrs of coding", Color.WHITE, util.getScreenDimensions().x/2, 450, 32, "centre");
             util.renderText(batch, "xxx words of documentation", Color.WHITE, util.getScreenDimensions().x/2, 400, 32, "centre");
-            util.renderText(batch, "xx / xx for documentation", Color.WHITE, util.getScreenDimensions().x/2, 350, 32, "centre");
-            util.renderText(batch, "xx / xx for coding", Color.WHITE, util.getScreenDimensions().x/2, 300, 32, "centre");
+            util.renderText(batch, "xx / xx for documentation", Color.WHITE, util.getScreenDimensions().x/2, 300, 32, "centre");
+            util.renderText(batch, "xx / xx for coding", Color.WHITE, util.getScreenDimensions().x/2, 250, 32, "centre");
             util.renderIcon(batch, quitIcon, 1862.5f, 1022.5f);
             util.renderIcon(batch, backIcon, 57.5f, 1022.5f);
             util.renderIcon(batch, aboutIcon, 57.5f, 57.5f);
