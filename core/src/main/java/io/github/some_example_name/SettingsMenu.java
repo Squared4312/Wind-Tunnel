@@ -28,6 +28,15 @@ public class SettingsMenu implements Menu {
 
     private Rectangle[] flowSpeedButtons = new Rectangle[2];
     private Rectangle[] viscosityButtons = new Rectangle[2];
+    private Rectangle[] plotButtons = new Rectangle[2];
+    private float plotTextX = 0;
+    private Rectangle[] modeButtons = new Rectangle[2];
+    private float modeTextX = 0;
+
+    private Rectangle barrierShapesButton;
+    private boolean renderDropdown = false;
+    private String[] barrierShapeValues = {"short line", "long line", "diagonal", "shallow diagonal", "small circle", "large circle", "line with spoiler", "circle with spoiler", "right angle", "wedge", "airfoil"};
+    private Rectangle[] barrierShapesDropdownButtons = new Rectangle[barrierShapeValues.length];
 
     private Texture quitIcon;
     private Texture backIcon;
@@ -42,7 +51,7 @@ public class SettingsMenu implements Menu {
         this.backIcon = util.loadIcon("back");
         this.settingsIcon = util.loadIcon("settings");
 
-        this.plot = this.plotValues[0];
+        this.plot = this.plotValues[1];
         this.mode = this.modeValues[0];
     }
 
@@ -68,6 +77,21 @@ public class SettingsMenu implements Menu {
 
             viscosityButtons[0] = util.renderRoundedTriangle(sr, Color.WHITE, 865, 642.5f, 12, 90);
             viscosityButtons[1] = util.renderRoundedTriangle(sr, Color.WHITE, 665, 642.5f, 12, 270);
+
+            plotButtons[0] = util.renderRoundedTriangle(sr, Color.WHITE, 865, 542.5f, 12, 90);
+            plotButtons[1] = util.renderRoundedTriangle(sr, Color.WHITE, plotTextX-40, 542.5f, 12, 270);
+
+            modeButtons[0] = util.renderRoundedTriangle(sr, Color.WHITE, 865, 442.5f, 12, 90);
+            modeButtons[1] = util.renderRoundedTriangle(sr, Color.WHITE, modeTextX-40, 442.5f, 12, 270);
+
+            barrierShapesButton = util.renderRoundedTriangle(sr, Color.WHITE, 1585, 742.5f, 12, 180);
+            if (renderDropdown) {
+                util.renderRoundedRectangle(sr, util.getSettingsButtonColor(), 1320, 705-(0.5f*50*barrierShapeValues.length), 600, 50*barrierShapeValues.length, 16);
+                /*for (Integer count=0; count<barrierShapeValues.length; count++) {
+                    if (barrierShapesDropdownButtons[count] == null) {break;}
+                    util.renderRoundedRectangle(sr, Color.RED, barrierShapesDropdownButtons[count].x+(barrierShapesDropdownButtons[count].width/2), barrierShapesDropdownButtons[count].y+(barrierShapesDropdownButtons[count].height/2), barrierShapesDropdownButtons[count].width, barrierShapesDropdownButtons[count].height, 16);
+                }*/
+            }
         sr.end();
 
         batch.begin();
@@ -79,12 +103,23 @@ public class SettingsMenu implements Menu {
             util.renderText(batch, "mode", Color.WHITE, 320, 442.5f, 36, "left"); // l4
 
             util.renderText(batch, "barrier shapes", Color.WHITE, 1040, 742.5f, 36, "left"); // r1
-            util.renderText(batch, "clear barriers", Color.WHITE, 1040, 642.5f, 36, "left"); // r2
-            util.renderText(batch, "reset fluid", Color.WHITE, 1040, 542.5f, 36, "left"); // r3
-            util.renderText(batch, "show flowlines", Color.WHITE, 1040, 442.5f, 36, "left"); // r4
+            if (!renderDropdown) {
+                util.renderText(batch, "clear barriers", Color.WHITE, 1040, 642.5f, 36, "left"); // r2
+                util.renderText(batch, "reset fluid", Color.WHITE, 1040, 542.5f, 36, "left"); // r3
+                util.renderText(batch, "show flowlines", Color.WHITE, 1040, 442.5f, 36, "left"); // r4
+            }
 
             util.renderText(batch, decimalFormat.format(flowSpeed), Color.WHITE, 765, 742.5f, 36, "centre"); // l1 value
             util.renderText(batch, decimalFormat.format(viscosity), Color.WHITE, 765, 642.5f, 36, "centre"); // l2 value
+            plotTextX = util.renderText(batch, plot, Color.WHITE, 825, 542.5f, 36, "right"); // l3 value
+            modeTextX = util.renderText(batch, mode, Color.WHITE, 825, 442.5f, 36, "right"); // l4 value
+
+            if (renderDropdown) {
+                for (Integer count=0; count<barrierShapeValues.length; count++) {
+                    util.renderText(batch, barrierShapeValues[count], Color.WHITE, 1040, 680-(50*count), 36, "left");
+                    barrierShapesDropdownButtons[count] = new Rectangle(1020, 680-(50*count)-25, 600, 50);
+                }
+            }
 
             util.renderIcon(batch, quitIcon, 1862.5f, 1022.5f);
             util.renderIcon(batch, backIcon, 57.5f, 1022.5f);
@@ -100,10 +135,57 @@ public class SettingsMenu implements Menu {
         if (util.isButtonClicked(viscosityButtons[0]) && viscosity < 0.200) {viscosity += 0.005; viscosity = Math.round(viscosity*1000)/1000d;}
         if (util.isButtonClicked(viscosityButtons[1]) && viscosity > 0.005) {viscosity -= 0.005; viscosity = Math.round(viscosity*1000)/1000d;}
 
+        if (util.isButtonClicked(plotButtons[0])) {plot = plotOrModeButtonClicked(1, plot, plotValues);}
+        if (util.isButtonClicked(plotButtons[1])) {plot = plotOrModeButtonClicked(-1, plot, plotValues);}
+
+        if (util.isButtonClicked(modeButtons[0])) {mode = plotOrModeButtonClicked(1, mode, modeValues);}
+        if (util.isButtonClicked(modeButtons[1])) {mode = plotOrModeButtonClicked(-1, mode, modeValues);}
+
+        if (renderDropdown) {
+            for (Integer count=0; count<barrierShapeValues.length; count++) {
+                if (util.isButtonClicked(barrierShapesDropdownButtons[count])) {
+                    System.out.println(barrierShapeValues[count]);
+                    // addShapeToCells(barrierShapeValues[count]);
+                }
+            }
+        }
+
+        if (util.isButtonClicked(barrierShapesButton)) {renderDropdown = !renderDropdown;}
+
         if (util.isButtonClicked(quitButton)) {Gdx.app.exit();}
         if (util.isButtonClicked(backButton)) {return "back";}
         if (util.isButtonClicked(settingsButton)) {return "settings";}
         return "settings";
+    }
+
+    public String plotOrModeButtonClicked(Integer change, String currentValue, String[] possibleValues) {
+        Integer index = 0;
+        for (Integer count=0; count<possibleValues.length; count++) {
+            if (possibleValues[count] == currentValue) {
+                index = count;
+                break;
+            }
+        }
+        if (change == 1) {
+            if (index == possibleValues.length-1) {
+                return possibleValues[0];
+            }
+            return possibleValues[index+1];
+        } else if (change == -1) {
+            if (index == 0) {
+                return possibleValues[possibleValues.length-1];
+            }
+            return possibleValues[index-1];
+        }
+        return currentValue;
+    }
+
+    public void resetSettings() {
+        this.flowSpeed = 0.100;
+        this.viscosity = 0.020;
+        this.plot = this.plotValues[1];
+        this.mode = this.modeValues[0];
+        this.showFlowLines = false;
     }
 
     public double getFlowSpeed() {return this.flowSpeed;}

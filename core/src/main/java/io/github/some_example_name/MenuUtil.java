@@ -64,7 +64,7 @@ public class MenuUtil {
         return new Rectangle(x-radius, y-radius, radius*2, radius*2);
     }
 
-    public boolean isButtonClicked(Rectangle button) {return Gdx.input.isButtonJustPressed(Input.Buttons.LEFT) && button.contains(Gdx.input.getX(), screenDimensions.y-Gdx.input.getY());}
+    public boolean isButtonClicked(Rectangle button) {return (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT) && button.contains(Gdx.input.getX(), screenDimensions.y-Gdx.input.getY()));}
 
     public Texture loadIcon(String name) {return new Texture(Gdx.files.internal("assets/icons/" + name + ".png"));}
 
@@ -74,13 +74,21 @@ public class MenuUtil {
         batch.draw(icon, x, y);
     }
 
-    public void renderText(SpriteBatch batch, String text, Color color, float x, float y, float size, String alignment) {
+    public float renderText(SpriteBatch batch, String text, Color color, float x, float y, float size, String alignment) {
         font.setColor(color);
         font.getData().setScale(size/256);
         layout.setText(font, text);
-        if (alignment == "centre") {font.draw(batch, text, x-layout.width/2, y+layout.height/2);}
-        if (alignment == "left") {font.draw(batch, text, x, y+layout.height/2);}
-        if (alignment == "right") {font.draw(batch, text, x+layout.width, y+layout.height/2);}
+        if (alignment == "centre") {
+            font.draw(batch, text, x-layout.width/2, y+layout.height/2);
+            return x;
+        } else if (alignment == "left") {
+            font.draw(batch, text, x, y+layout.height/2);
+            return x+layout.width;
+        } else if (alignment == "right") {
+            font.draw(batch, text, x-layout.width, y+layout.height/2);
+            return x-layout.width;
+        }
+        return x;
     }
 
     public Vector2 getScreenDimensions() {return screenDimensions;}
