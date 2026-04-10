@@ -37,8 +37,6 @@ public class Main extends ApplicationAdapter {
         settingsMenu = new SettingsMenu();
         levelsMenu = new LevelsMenu();
         freeplayMenu = new FreeplayMenu();
-
-
     }
 
     @Override

@@ -12,14 +12,22 @@ public class FreeplayMenu implements Menu {
     private Rectangle backButton;
     private Rectangle settingsButton;
 
+    private Rectangle runButton;
+    private Rectangle pauseButton;
+    private Rectangle stepButton;
+
     private Texture backIcon;
     private Texture settingsIcon;
+    private Texture pauseIcon;
+    private Texture stepIcon;
 
     public FreeplayMenu() {
         this.util = new MenuUtil();
 
         this.backIcon = util.loadIcon("back");
         this.settingsIcon = util.loadIcon("settings");
+        this.pauseIcon = util.loadIcon("pause");
+        this.stepIcon = util.loadIcon("stepArrow");
     }
 
     @Override
@@ -27,10 +35,26 @@ public class FreeplayMenu implements Menu {
         sr.begin(ShapeRenderer.ShapeType.Filled);
             backButton = util.renderButton(sr, Color.BLACK, null, 57.5f, 1022.5f, 75, 75, 0);
             settingsButton = util.renderButton(sr, Color.BLACK, null, 1862.5f, 57.5f, 75, 75, 0);
+
+            if (!util.getSimulationRunning()) {
+                runButton = util.renderRoundedRectangle(sr, util.getRunButtonColor(), 835, 62.5f, 200, 75, 16);
+                util.renderRoundedTriangle(sr, Color.WHITE, 790, 62.5f, 12, 90);
+            } else {
+                pauseButton = util.renderRoundedRectangle(sr, util.getPauseButtonColor(), 835, 62.5f, 200, 75, 16);
+            }
+            stepButton = util.renderRoundedRectangle(sr, util.getStepButtonColor(), 1085, 62.5f, 200, 75, 16);
         sr.end();
 
         batch.begin();
-            util.renderText(batch, "freeplay (WIP)", Color.WHITE, util.getScreenDimensions().x/2, 953, 96, "centre");
+            if (!util.getSimulationRunning()) {
+                util.renderText(batch, "run", Color.WHITE, 857.5f, 62.5f, 36, "centre");
+            } else {
+                util.renderText(batch, "pause", Color.WHITE, 852.5f, 62.5f, 36, "centre");
+                util.renderIcon(batch, pauseIcon, 770, 62.5f);
+            }
+            util.renderText(batch, "step", Color.WHITE, 1110, 62.5f, 36, "centre");
+            util.renderIcon(batch, stepIcon, 1035, 62.5f);
+
             util.renderIcon(batch, backIcon, 57.5f, 1022.5f);
             util.renderIcon(batch, settingsIcon, 1862.5f, 57.5f);
         batch.end();
@@ -38,6 +62,10 @@ public class FreeplayMenu implements Menu {
 
     @Override
     public String checkIfButtonsClicked() {
+        if (!util.getSimulationRunning() && util.isButtonClicked(runButton)) {util.setSimulationRunning(true);}
+        else if (util.getSimulationRunning() && util.isButtonClicked(pauseButton)) {util.setSimulationRunning(false);}
+        if (!util.getSimulationRunning() && util.isButtonClicked(stepButton)) {System.out.println("step simulation");}
+
         if (util.isButtonClicked(backButton)) {return "back";}
         if (util.isButtonClicked(settingsButton)) {return "settings";}
         return "freeplay";

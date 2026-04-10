@@ -29,7 +29,7 @@ public class AboutMenu implements Menu {
     @Override
     public void render(ShapeRenderer sr, SpriteBatch batch) {
         sr.begin(ShapeRenderer.ShapeType.Filled);
-            quitButton = util.renderButton(sr, util.getQuitColor(), null, 1862.5f, 1022.5f, 75, 75, 16);
+            quitButton = util.renderButton(sr, util.getQuitButtonColor(), null, 1862.5f, 1022.5f, 75, 75, 16);
             backButton = util.renderButton(sr, Color.BLACK, null, 57.5f, 1022.5f, 75, 75, 0);
             aboutButton = util.renderButton(sr, Color.BLACK, null, 57.5f, 57.5f, 75, 75, 0);
         sr.end();

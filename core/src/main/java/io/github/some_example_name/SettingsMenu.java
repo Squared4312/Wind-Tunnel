@@ -38,9 +38,15 @@ public class SettingsMenu implements Menu {
     private String[] barrierShapeValues = {"short line", "long line", "diagonal", "shallow diagonal", "small circle", "large circle", "line with spoiler", "circle with spoiler", "right angle", "wedge", "airfoil"};
     private Rectangle[] barrierShapesDropdownButtons = new Rectangle[barrierShapeValues.length];
 
+    private Rectangle clearBarrierButton;
+    private Rectangle resetFluidButton;
+    private Rectangle showFlowlinesButton;
+
     private Texture quitIcon;
     private Texture backIcon;
     private Texture settingsIcon;
+    private Texture flowLinesCheckBoxTrue;
+    private Texture flowLinesCheckBoxFalse;
 
     public SettingsMenu() {
         this.util = new MenuUtil();
@@ -50,6 +56,8 @@ public class SettingsMenu implements Menu {
         this.quitIcon = util.loadIcon("quit");
         this.backIcon = util.loadIcon("back");
         this.settingsIcon = util.loadIcon("settings");
+        this.flowLinesCheckBoxTrue = util.loadIcon("checkBoxTrue");
+        this.flowLinesCheckBoxFalse = util.loadIcon("checkBoxFalse");
 
         this.plot = this.plotValues[1];
         this.mode = this.modeValues[0];
@@ -58,19 +66,19 @@ public class SettingsMenu implements Menu {
     @Override
     public void render(ShapeRenderer sr, SpriteBatch batch) {
         sr.begin(ShapeRenderer.ShapeType.Filled);
-            quitButton = util.renderButton(sr, util.getQuitColor(), null, 1862.5f, 1022.5f, 75, 75, 16);
+            quitButton = util.renderButton(sr, util.getQuitButtonColor(), null, 1862.5f, 1022.5f, 75, 75, 16);
             backButton = util.renderButton(sr, Color.BLACK, null, 57.5f, 1022.5f, 75, 75, 0);
             settingsButton = util.renderButton(sr, Color.BLACK, null, 1862.5f, 57.5f, 75, 75, 0);
 
-            util.renderRoundedRectangle(sr, util.getSettingsButtonColor(), 600, 742.5f, 600, 75, 16); // l1
-            util.renderRoundedRectangle(sr, util.getSettingsButtonColor(), 600, 642.5f, 600, 75, 16); // l2
-            util.renderRoundedRectangle(sr, util.getSettingsButtonColor(), 600, 542.5f, 600, 75, 16); // l3
-            util.renderRoundedRectangle(sr, util.getSettingsButtonColor(), 600, 442.5f, 600, 75, 16); // l4
+            util.renderRoundedRectangle(sr, util.getButtonColor(), 600, 742.5f, 600, 75, 16); // l1
+            util.renderRoundedRectangle(sr, util.getButtonColor(), 600, 642.5f, 600, 75, 16); // l2
+            util.renderRoundedRectangle(sr, util.getButtonColor(), 600, 542.5f, 600, 75, 16); // l3
+            util.renderRoundedRectangle(sr, util.getButtonColor(), 600, 442.5f, 600, 75, 16); // l4
 
-            util.renderRoundedRectangle(sr, util.getSettingsButtonColor(), 1320, 742.5f, 600, 75, 16); // r1
-            util.renderRoundedRectangle(sr, util.getSettingsButtonColor(), 1320, 642.5f, 600, 75, 16); // r2
-            util.renderRoundedRectangle(sr, util.getSettingsButtonColor(), 1320, 542.5f, 600, 75, 16); // r3
-            util.renderRoundedRectangle(sr, util.getSettingsButtonColor(), 1320, 442.5f, 600, 75, 16); // r4
+            barrierShapesButton = util.renderRoundedRectangle(sr, util.getButtonColor(), 1320, 742.5f, 600, 75, 16); // r1
+            clearBarrierButton = util.renderRoundedRectangle(sr, util.getButtonColor(), 1320, 642.5f, 600, 75, 16); // r2
+            resetFluidButton = util.renderRoundedRectangle(sr, util.getButtonColor(), 1320, 542.5f, 600, 75, 16); // r3
+            showFlowlinesButton = util.renderRoundedRectangle(sr, util.getButtonColor(), 1320, 442.5f, 600, 75, 16); // r4
 
             flowSpeedButtons[0] = util.renderRoundedTriangle(sr, Color.WHITE, 865, 742.5f, 12, 90);
             flowSpeedButtons[1] = util.renderRoundedTriangle(sr, Color.WHITE, 665, 742.5f, 12, 270);
@@ -84,13 +92,15 @@ public class SettingsMenu implements Menu {
             modeButtons[0] = util.renderRoundedTriangle(sr, Color.WHITE, 865, 442.5f, 12, 90);
             modeButtons[1] = util.renderRoundedTriangle(sr, Color.WHITE, modeTextX-40, 442.5f, 12, 270);
 
-            barrierShapesButton = util.renderRoundedTriangle(sr, Color.WHITE, 1585, 742.5f, 12, 180);
             if (renderDropdown) {
-                util.renderRoundedRectangle(sr, util.getSettingsButtonColor(), 1320, 705-(0.5f*50*barrierShapeValues.length), 600, 50*barrierShapeValues.length, 16);
+                util.renderRoundedTriangle(sr, Color.WHITE, 1585, 742.5f, 12, 0);
+                util.renderRoundedRectangle(sr, util.getButtonColor(), 1320, 705-(0.5f*50*barrierShapeValues.length), 600, 50*barrierShapeValues.length, 16);
                 /*for (Integer count=0; count<barrierShapeValues.length; count++) {
                     if (barrierShapesDropdownButtons[count] == null) {break;}
                     util.renderRoundedRectangle(sr, Color.RED, barrierShapesDropdownButtons[count].x+(barrierShapesDropdownButtons[count].width/2), barrierShapesDropdownButtons[count].y+(barrierShapesDropdownButtons[count].height/2), barrierShapesDropdownButtons[count].width, barrierShapesDropdownButtons[count].height, 16);
                 }*/
+            } else {
+                util.renderRoundedTriangle(sr, Color.WHITE, 1585, 742.5f, 12, 180);
             }
         sr.end();
 
@@ -124,6 +134,14 @@ public class SettingsMenu implements Menu {
             util.renderIcon(batch, quitIcon, 1862.5f, 1022.5f);
             util.renderIcon(batch, backIcon, 57.5f, 1022.5f);
             util.renderIcon(batch, settingsIcon, 1862.5f, 57.5f);
+
+            if (!renderDropdown) {
+                if (showFlowLines) {
+                    util.renderIcon(batch, flowLinesCheckBoxTrue, 1585, 442.5f);
+                } else {
+                    util.renderIcon(batch, flowLinesCheckBoxFalse, 1585, 442.5f);
+                }
+            }
         batch.end();
     }
 
@@ -149,8 +167,13 @@ public class SettingsMenu implements Menu {
                 }
             }
         }
-
         if (util.isButtonClicked(barrierShapesButton)) {renderDropdown = !renderDropdown;}
+
+        if (!renderDropdown && util.isButtonClicked(clearBarrierButton)) {System.out.println("clear barriers");}
+
+        if (!renderDropdown && util.isButtonClicked(resetFluidButton)) {System.out.println("reset fluid");}
+
+        if (!renderDropdown && util.isButtonClicked(showFlowlinesButton)) {showFlowLines = !showFlowLines;}
 
         if (util.isButtonClicked(quitButton)) {Gdx.app.exit();}
         if (util.isButtonClicked(backButton)) {return "back";}
@@ -200,6 +223,6 @@ public class SettingsMenu implements Menu {
     public String getMode() {return this.mode;}
     public void setMode(String mode) {this.mode = mode;}
 
-    public boolean isShowFlowLines() {return this.showFlowLines;}
+    public boolean getShowFlowLines() {return this.showFlowLines;}
     public void setShowFlowLines(boolean showFlowLines) {this.showFlowLines = showFlowLines;}
 }

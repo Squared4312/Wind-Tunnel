@@ -16,6 +16,8 @@ public class MenuUtil {
     private BitmapFont font;
     private GlyphLayout layout;
 
+    private boolean simulationRunning = false;
+
     public MenuUtil() {
         this.screenDimensions = new Vector2(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         this.font = new BitmapFont(Gdx.files.internal("assets/fonts/inter-semi-bold.fnt"));
@@ -91,9 +93,15 @@ public class MenuUtil {
         return x;
     }
 
+    public boolean getSimulationRunning() {return this.simulationRunning;}
+    public void setSimulationRunning(boolean simulationRunning) {this.simulationRunning = simulationRunning;}
+
     public Vector2 getScreenDimensions() {return screenDimensions;}
 
-    public Color getQuitColor() {return new Color(199/255f, 0f, 0f, 1f);}
+    public Color getQuitButtonColor() {return new Color(199/255f, 0f, 0f, 1f);}
+    public Color getRunButtonColor() {return new Color(0f, 128/255f, 0f, 1f);}
+    public Color getPauseButtonColor() {return new Color(199/255f, 0f, 0f, 1f);}
+    public Color getStepButtonColor() {return new Color(56/255f, 149/255f, 211/255f, 1f);}
 
-    public Color getSettingsButtonColor() {return new Color(128/255f, 128/255f, 128/255f, 1f);}
+    public Color getButtonColor() {return new Color(128/255f, 128/255f, 128/255f, 1f);}
 }
