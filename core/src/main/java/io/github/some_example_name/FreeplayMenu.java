@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Rectangle;
 
 public class FreeplayMenu implements Menu {
     private MenuUtil util;
+    private CFDSolver cfdSolver;
 
     private Rectangle backButton;
     private Rectangle settingsButton;
@@ -23,6 +24,7 @@ public class FreeplayMenu implements Menu {
 
     public FreeplayMenu() {
         this.util = new MenuUtil();
+        this.cfdSolver = new CFDSolver();
 
         this.backIcon = util.loadIcon("back");
         this.settingsIcon = util.loadIcon("settings");

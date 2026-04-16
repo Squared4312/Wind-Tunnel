@@ -56,6 +56,10 @@ public class Main extends ApplicationAdapter {
         }
 
         if (!nextMenu.equals(menu)) {
+            if (menu.equals("main") && (nextMenu.equals("levels") || nextMenu.equals("freeplay"))) {
+                settingsMenu.resetSettings();
+            }
+
             if ("back".equals(nextMenu)) {
                 if (!menuHistory.isEmpty()) {
                     menu = menuHistory.pop();

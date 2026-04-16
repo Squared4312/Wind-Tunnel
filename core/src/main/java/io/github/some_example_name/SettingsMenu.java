@@ -159,21 +159,22 @@ public class SettingsMenu implements Menu {
         if (util.isButtonClicked(modeButtons[0])) {mode = plotOrModeButtonClicked(1, mode, modeValues);}
         if (util.isButtonClicked(modeButtons[1])) {mode = plotOrModeButtonClicked(-1, mode, modeValues);}
 
-        if (renderDropdown) {
-            for (Integer count=0; count<barrierShapeValues.length; count++) {
-                if (util.isButtonClicked(barrierShapesDropdownButtons[count])) {
-                    System.out.println(barrierShapeValues[count]);
-                    // addShapeToCells(barrierShapeValues[count]);
-                }
-            }
-        }
-        if (util.isButtonClicked(barrierShapesButton)) {renderDropdown = !renderDropdown;}
-
         if (!renderDropdown && util.isButtonClicked(clearBarrierButton)) {System.out.println("clear barriers");}
 
         if (!renderDropdown && util.isButtonClicked(resetFluidButton)) {System.out.println("reset fluid");}
 
         if (!renderDropdown && util.isButtonClicked(showFlowlinesButton)) {showFlowLines = !showFlowLines;}
+
+        if (renderDropdown) {
+            for (Integer count=0; count<barrierShapeValues.length; count++) {
+                if (util.isButtonClicked(barrierShapesDropdownButtons[count])) {
+                    System.out.println(barrierShapeValues[count]);
+                    renderDropdown = false;
+                    // addShapeToCells(barrierShapeValues[count]);
+                }
+            }
+        }
+        if (util.isButtonClicked(barrierShapesButton)) {renderDropdown = !renderDropdown;}
 
         if (util.isButtonClicked(quitButton)) {Gdx.app.exit();}
         if (util.isButtonClicked(backButton)) {return "back";}

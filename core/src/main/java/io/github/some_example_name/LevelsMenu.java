@@ -11,6 +11,7 @@ public class LevelsMenu implements Menu {
     private Integer totalLevels = 5;
 
     private MenuUtil util;
+    private CFDSolver cfdSolver;
 
     private Rectangle backButton;
     private Rectangle settingsButton;
@@ -27,6 +28,7 @@ public class LevelsMenu implements Menu {
 
     public LevelsMenu() {
         this.util = new MenuUtil();
+        this.cfdSolver = new CFDSolver();
 
         this.backIcon = util.loadIcon("back");
         this.settingsIcon = util.loadIcon("settings");

@@ -3,27 +3,34 @@ package io.github.some_example_name;
 import com.badlogic.gdx.math.Vector2;
 
 public class CFDSolver {
+    private MenuUtil util;
+    private SettingsMenu settings;
+
     private double weightO = 4.0/9.0; // Origin
     private double weightAxis = 1.0/9.0; // N E S W
     private double weightDiagonals = 1.0/36.0; // NE NW SE SW
 
-
-    /* setup mesh
+    // setup mesh
+    private Cell[][] cells;
     private Vector2 numberOfCells = new Vector2(32, 18); // keep the 16:9 aspect ratio
-    private Vector2 cellDimensions = new Vector2(screenDimensions.x/numberOfCells.x, screenDimensions.y/numberOfCells.y);
+    private Vector2 cellDimensions = new Vector2(util.getScreenDimensions().x/numberOfCells.x, util.getScreenDimensions().y/numberOfCells.y);
 
-    private Cell[][] cells = new Cell[(int) numberOfCells.x][(int) numberOfCells.y];
+    public CFDSolver() {
+        this.util = new MenuUtil();
+        this.settings = new SettingsMenu();
+
+        this.cells = new Cell[(int) numberOfCells.x][(int) numberOfCells.y];
         for (int column=0; column<numberOfCells.x; column++) {
-        for (int row=0; row<numberOfCells.y; row++) {
-            Vector2 centre = new Vector2(column*cellDimensions.x+(cellDimensions.x/2), row*cellDimensions.y+(cellDimensions.y/2));
-            Vector2 dimensions = new Vector2(cellDimensions.x, cellDimensions.y);
-            cells[column][row] = new Cell(centre, dimensions, settingsMenu.getFlowSpeed(), weightO, weightAxis, weightDiagonals);
+            for (int row=0; row<numberOfCells.y; row++) {
+                Vector2 centre = new Vector2(column*cellDimensions.x+(cellDimensions.x/2), row*cellDimensions.y+(cellDimensions.y/2));
+                Vector2 dimensions = new Vector2(cellDimensions.x, cellDimensions.y);
+                this.cells[column][row] = new Cell(centre, dimensions, settings.getFlowSpeed(), weightO, weightAxis, weightDiagonals);
+            }
         }
-    } */
+    }
 
-    /*
     public void collision() {
-        double omega = 1/(3*viscosity+0.5);
+        double omega = 1/((3*settings.getViscosity())+0.5);
         for (int column=0; column<numberOfCells.x; column++) {
             for (int row=0; row<numberOfCells.y; row++) {
                 Cell cell = cells[column][row];
@@ -52,6 +59,9 @@ public class CFDSolver {
     }
 
     public void movement() {
+
+        // create a new list and calculate the new values to the new list, then write it to the cells
+
         // if (row-1 >= 0 && column+1 < numberOfCells.x-1) {cells[column+1][row-1].setDensityNE(cells[column][row].getDensityNE());}
         // if (row-1 >= 0 && column-1 >= 0) {cells[column-1][row-1].setDensityNW(cells[column][row].getDensityNW());}
         // if (row+1 < numberOfCells.y-1 && column+1 < numberOfCells.x-1) {cells[column+1][row+1].setDensitySE(cells[column][row].getDensitySE());}
@@ -103,12 +113,11 @@ public class CFDSolver {
                 }
 
                 // set the left-most cells to be the flow speed to constantly add new fluid
-                cells[0][row].setDensityE(weightAxis*(1+(3*flowSpeed)+(3*flowSpeed*flowSpeed)));
-                cells[0][row].setDensityNE(weightDiagonals*(1+(3*flowSpeed)+(3*flowSpeed*flowSpeed)));
-                cells[0][row].setDensitySE(weightDiagonals*(1+(3*flowSpeed)+(3*flowSpeed*flowSpeed)));
+                cells[0][row].setDensityE(weightAxis*(1+(3*settings.getFlowSpeed())+(3*settings.getFlowSpeed()*settings.getFlowSpeed())));
+                cells[0][row].setDensityNE(weightDiagonals*(1+(3*settings.getFlowSpeed())+(3*settings.getFlowSpeed()*settings.getFlowSpeed())));
+                cells[0][row].setDensitySE(weightDiagonals*(1+(3*settings.getFlowSpeed())+(3*settings.getFlowSpeed()*settings.getFlowSpeed())));
             }
         }
     }
-    */
 }
 
