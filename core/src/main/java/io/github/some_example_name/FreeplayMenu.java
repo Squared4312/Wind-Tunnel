@@ -8,7 +8,8 @@ import com.badlogic.gdx.math.Rectangle;
 
 public class FreeplayMenu implements Menu {
     private MenuUtil util;
-    private CFDSolver cfdSolver;
+    private LatticeBoltzmannCFDSolver cfdSolver;
+    private Settings settings;
 
     private Rectangle backButton;
     private Rectangle settingsButton;
@@ -24,7 +25,8 @@ public class FreeplayMenu implements Menu {
 
     public FreeplayMenu() {
         this.util = new MenuUtil();
-        this.cfdSolver = new CFDSolver();
+        this.cfdSolver = new LatticeBoltzmannCFDSolver();
+        this.settings = new Settings();
 
         this.backIcon = util.loadIcon("back");
         this.settingsIcon = util.loadIcon("settings");
@@ -34,11 +36,20 @@ public class FreeplayMenu implements Menu {
 
     @Override
     public void render(ShapeRenderer sr, SpriteBatch batch) {
+
+        if (settings.getSimulationRunning()) {
+            cfdSolver.boundaries();
+            cfdSolver.movement();
+            cfdSolver.collision();
+        }
+
         sr.begin(ShapeRenderer.ShapeType.Filled);
+            cfdSolver.render(sr);
+
             backButton = util.renderButton(sr, Color.BLACK, null, 57.5f, 1022.5f, 75, 75, 0);
             settingsButton = util.renderButton(sr, Color.BLACK, null, 1862.5f, 57.5f, 75, 75, 0);
 
-            if (!util.getSimulationRunning()) {
+            if (!settings.getSimulationRunning()) {
                 runButton = util.renderRoundedRectangle(sr, util.getRunButtonColor(), 835, 62.5f, 200, 75, 16);
                 util.renderRoundedTriangle(sr, Color.WHITE, 790, 62.5f, 12, 90);
             } else {
@@ -48,7 +59,7 @@ public class FreeplayMenu implements Menu {
         sr.end();
 
         batch.begin();
-            if (!util.getSimulationRunning()) {
+            if (!settings.getSimulationRunning()) {
                 util.renderText(batch, "run", Color.WHITE, 857.5f, 62.5f, 36, "centre");
             } else {
                 util.renderText(batch, "pause", Color.WHITE, 852.5f, 62.5f, 36, "centre");
@@ -64,9 +75,9 @@ public class FreeplayMenu implements Menu {
 
     @Override
     public String checkIfButtonsClicked() {
-        if (!util.getSimulationRunning() && util.isButtonClicked(runButton)) {util.setSimulationRunning(true);}
-        else if (util.getSimulationRunning() && util.isButtonClicked(pauseButton)) {util.setSimulationRunning(false);}
-        if (!util.getSimulationRunning() && util.isButtonClicked(stepButton)) {System.out.println("step simulation");}
+        if (!settings.getSimulationRunning() && util.isButtonClicked(runButton)) {settings.setSimulationRunning(true);}
+        else if (settings.getSimulationRunning() && util.isButtonClicked(pauseButton)) {settings.setSimulationRunning(false);}
+        if (!settings.getSimulationRunning() && util.isButtonClicked(stepButton)) {System.out.println("step simulation");}
 
         if (util.isButtonClicked(backButton)) {return "back";}
         if (util.isButtonClicked(settingsButton)) {return "settings";}

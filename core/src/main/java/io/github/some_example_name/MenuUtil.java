@@ -16,8 +16,6 @@ public class MenuUtil {
     private BitmapFont font;
     private GlyphLayout layout;
 
-    private boolean simulationRunning = false;
-
     public MenuUtil() {
         this.screenDimensions = new Vector2(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         this.font = new BitmapFont(Gdx.files.internal("assets/fonts/inter-semi-bold.fnt"));
@@ -92,9 +90,6 @@ public class MenuUtil {
         }
         return x;
     }
-
-    public boolean getSimulationRunning() {return this.simulationRunning;}
-    public void setSimulationRunning(boolean simulationRunning) {this.simulationRunning = simulationRunning;}
 
     public Vector2 getScreenDimensions() {return screenDimensions;}
 

@@ -1,10 +1,11 @@
 package io.github.some_example_name;
 
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 
-public class CFDSolver {
+public class LatticeBoltzmannCFDSolver {
     private MenuUtil util;
-    private SettingsMenu settings;
+    private Settings settings;
 
     private double weightO = 4.0/9.0; // Origin
     private double weightAxis = 1.0/9.0; // N E S W
@@ -13,26 +14,35 @@ public class CFDSolver {
     // setup mesh
     private Cell[][] cells;
     private Vector2 numberOfCells = new Vector2(32, 18); // keep the 16:9 aspect ratio
-    private Vector2 cellDimensions = new Vector2(util.getScreenDimensions().x/numberOfCells.x, util.getScreenDimensions().y/numberOfCells.y);
+    private Vector2 cellDimensions;
 
-    public CFDSolver() {
+    public LatticeBoltzmannCFDSolver() {
         this.util = new MenuUtil();
-        this.settings = new SettingsMenu();
+        this.settings = new Settings();
 
+        this.cellDimensions = new Vector2(util.getScreenDimensions().x/numberOfCells.x, util.getScreenDimensions().y/numberOfCells.y);
         this.cells = new Cell[(int) numberOfCells.x][(int) numberOfCells.y];
         for (int column=0; column<numberOfCells.x; column++) {
             for (int row=0; row<numberOfCells.y; row++) {
                 Vector2 centre = new Vector2(column*cellDimensions.x+(cellDimensions.x/2), row*cellDimensions.y+(cellDimensions.y/2));
                 Vector2 dimensions = new Vector2(cellDimensions.x, cellDimensions.y);
-                this.cells[column][row] = new Cell(centre, dimensions, settings.getFlowSpeed(), weightO, weightAxis, weightDiagonals);
+                this.cells[column][row] = new Cell(centre, dimensions, settings.getFlowSpeed());
+            }
+        }
+    }
+
+    public void render(ShapeRenderer sr) {
+        for (Integer column=0; column<cells.length; column++) {
+            for (Integer row=0; row<cells[column].length; row++) {
+                cells[column][row].draw(sr, util.getScreenDimensions(), settings.getShowFlowLines());
             }
         }
     }
 
     public void collision() {
         double omega = 1/((3*settings.getViscosity())+0.5);
-        for (int column=0; column<numberOfCells.x; column++) {
-            for (int row=0; row<numberOfCells.y; row++) {
+        for (Integer column=0; column<numberOfCells.x; column++) {
+            for (Integer row=0; row<numberOfCells.y; row++) {
                 Cell cell = cells[column][row];
                 if (!cell.getIsBarrier()) {
                     // calculate density
@@ -59,36 +69,41 @@ public class CFDSolver {
     }
 
     public void movement() {
+        // create a new list and calculate the new values to the new list, then write it back to the cells
 
-        // create a new list and calculate the new values to the new list, then write it to the cells
+        double[][][] newCellValues = new double[(int) numberOfCells.x][(int) numberOfCells.y][9];
+        // 0: rest, 1:N, 2:E, 3:S, 4:W, 5:NE, 6:NW, 7:SE, 8: SW
 
-        // if (row-1 >= 0 && column+1 < numberOfCells.x-1) {cells[column+1][row-1].setDensityNE(cells[column][row].getDensityNE());}
-        // if (row-1 >= 0 && column-1 >= 0) {cells[column-1][row-1].setDensityNW(cells[column][row].getDensityNW());}
-        // if (row+1 < numberOfCells.y-1 && column+1 < numberOfCells.x-1) {cells[column+1][row+1].setDensitySE(cells[column][row].getDensitySE());}
-        // if (row+1 < numberOfCells.y-1 && column-1 >= 0) {cells[column-1][row+1].setDensitySW(cells[column][row].getDensitySW());}
+        for (Integer column=0; column<newCellValues.length; column++) {
+            for (Integer row=0; row<newCellValues[column].length; row++) {
+                if (row+1 < numberOfCells.y) {newCellValues[column][row][1] = cells[column][row+1].getDensityN();}
+                if (column-1 >= 0) {newCellValues[column][row][2] = cells[column-1][row].getDensityE();}
+                if (row-1 >= 0) {newCellValues[column][row][3] = cells[column][row-1].getDensityS();}
+                if (column+1 < numberOfCells.x) {newCellValues[column][row][4] = cells[column+1][row].getDensityW();}
 
-        // movement
-        for (int column=0; column<numberOfCells.x; column++) { // left to right
-            for (int row=0; row<numberOfCells.y; row++) { // top to bottom (take the down densityN)
-                if (row+1 < numberOfCells.y-1) {cells[column][row].setDensityN(cells[column][row+1].getDensityN());}
-            }
-            for (int row = (int) (numberOfCells.y-1); row>=0; row--) { // bottom to top (take the up densityS)
-                if (row-1 >= 0) {cells[column][row].setDensityS(cells[column][row-1].getDensityS());}
+                if (row+1 < numberOfCells.y && column-1 >= 0) {newCellValues[column][row][5] = cells[column-1][row+1].getDensityNE();}
+                if (row+1 < numberOfCells.y && column+1 < numberOfCells.x) {newCellValues[column][row][6] = cells[column+1][row+1].getDensityNW();}
+                if (row-1 >= 0 && column-1 >= 0) {newCellValues[column][row][7] = cells[column-1][row-1].getDensitySE();}
+                if (row-1 >= 0 && column+1 < numberOfCells.x) {newCellValues[column][row][8] = cells[column+1][row-1].getDensitySW();}
             }
         }
-        for (int row=0; row<numberOfCells.y; row++) { // top to bottom
-            for (int column = (int) (numberOfCells.x-1); column>=0; column--) { // right to left (take the left densityE)
-                if (column-1 >= 0) {cells[column][row].setDensityE(cells[column-1][row].getDensityE());}
-            }
-            for (int column=0; column<numberOfCells.x; column++) { // left to right (take the right densityW)
-                if (column+1 < numberOfCells.x-1) {cells[column][row].setDensityW(cells[column+1][row].getDensityW());}
+        for (Integer column=0; column<newCellValues.length; column++) {
+            for (Integer row = 0; row<newCellValues[column].length; row++) {
+                cells[column][row].setDensityN(newCellValues[column][row][1]);
+                cells[column][row].setDensityE(newCellValues[column][row][2]);
+                cells[column][row].setDensityS(newCellValues[column][row][3]);
+                cells[column][row].setDensityW(newCellValues[column][row][4]);
+                cells[column][row].setDensityNE(newCellValues[column][row][5]);
+                cells[column][row].setDensityNW(newCellValues[column][row][6]);
+                cells[column][row].setDensitySE(newCellValues[column][row][7]);
+                cells[column][row].setDensitySW(newCellValues[column][row][8]);
             }
         }
     }
 
     public void boundaries() {
-        for (int column=0; column<numberOfCells.x; column++) {
-            for (int row=0; row<numberOfCells.y; row++) {
+        for (Integer column=0; column<numberOfCells.x; column++) {
+            for (Integer row=0; row<numberOfCells.y; row++) {
                 if (cells[column][row].getIsBarrier()) {
                     // reverse all directions
                     if (row+1 < numberOfCells.y-1) {cells[column][row+1].setDensityS(cells[column][row].getDensityN());}

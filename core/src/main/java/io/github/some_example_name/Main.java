@@ -18,6 +18,7 @@ public class Main extends ApplicationAdapter {
     private String menu = "main";
     private String nextMenu;
     private Stack menuHistory = new Stack(10);
+    private Settings settings;
 
     private MainMenu mainMenu;
     private AboutMenu aboutMenu;
@@ -32,6 +33,7 @@ public class Main extends ApplicationAdapter {
         sr = new ShapeRenderer();
         batch = new SpriteBatch();
 
+        settings = new Settings();
         mainMenu = new MainMenu();
         aboutMenu = new AboutMenu();
         settingsMenu = new SettingsMenu();
@@ -57,7 +59,8 @@ public class Main extends ApplicationAdapter {
 
         if (!nextMenu.equals(menu)) {
             if (menu.equals("main") && (nextMenu.equals("levels") || nextMenu.equals("freeplay"))) {
-                settingsMenu.resetSettings();
+                settings.resetSettings();
+                settings.setSimulationRunning(false);
             }
 
             if ("back".equals(nextMenu)) {
@@ -81,7 +84,6 @@ public class Main extends ApplicationAdapter {
         } else if (menu.equals("freeplay")) {
             freeplayMenu.render(sr, batch);
         }
-
     }
 
     @Override

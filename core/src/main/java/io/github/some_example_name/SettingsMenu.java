@@ -10,17 +10,9 @@ import com.badlogic.gdx.math.Rectangle;
 import java.text.DecimalFormat;
 
 public class SettingsMenu implements Menu {
-    private double flowSpeed = 0.100;
-    private double viscosity = 0.020;
-    private String plot;
-    private String mode;
-    private boolean showFlowLines = false;
-
-    private DecimalFormat decimalFormat;
-    private String[] plotValues = {"density", "x velocity", "y velocity", "speed", "curl"};
-    private String[] modeValues = {"draw barriers", "erase barriers", "drag fluid"};
-
+    private Settings settings;
     private MenuUtil util;
+    private DecimalFormat decimalFormat;
 
     private Rectangle quitButton;
     private Rectangle backButton;
@@ -50,6 +42,7 @@ public class SettingsMenu implements Menu {
 
     public SettingsMenu() {
         this.util = new MenuUtil();
+        this.settings = new Settings();
 
         this.decimalFormat = new DecimalFormat("0.000");
 
@@ -58,9 +51,6 @@ public class SettingsMenu implements Menu {
         this.settingsIcon = util.loadIcon("settings");
         this.flowLinesCheckBoxTrue = util.loadIcon("checkBoxTrue");
         this.flowLinesCheckBoxFalse = util.loadIcon("checkBoxFalse");
-
-        this.plot = this.plotValues[1];
-        this.mode = this.modeValues[0];
     }
 
     @Override
@@ -95,10 +85,6 @@ public class SettingsMenu implements Menu {
             if (renderDropdown) {
                 util.renderRoundedTriangle(sr, Color.WHITE, 1585, 742.5f, 12, 0);
                 util.renderRoundedRectangle(sr, util.getButtonColor(), 1320, 705-(0.5f*50*barrierShapeValues.length), 600, 50*barrierShapeValues.length, 16);
-                /*for (Integer count=0; count<barrierShapeValues.length; count++) {
-                    if (barrierShapesDropdownButtons[count] == null) {break;}
-                    util.renderRoundedRectangle(sr, Color.RED, barrierShapesDropdownButtons[count].x+(barrierShapesDropdownButtons[count].width/2), barrierShapesDropdownButtons[count].y+(barrierShapesDropdownButtons[count].height/2), barrierShapesDropdownButtons[count].width, barrierShapesDropdownButtons[count].height, 16);
-                }*/
             } else {
                 util.renderRoundedTriangle(sr, Color.WHITE, 1585, 742.5f, 12, 180);
             }
@@ -119,10 +105,10 @@ public class SettingsMenu implements Menu {
                 util.renderText(batch, "show flowlines", Color.WHITE, 1040, 442.5f, 36, "left"); // r4
             }
 
-            util.renderText(batch, decimalFormat.format(flowSpeed), Color.WHITE, 765, 742.5f, 36, "centre"); // l1 value
-            util.renderText(batch, decimalFormat.format(viscosity), Color.WHITE, 765, 642.5f, 36, "centre"); // l2 value
-            plotTextX = util.renderText(batch, plot, Color.WHITE, 825, 542.5f, 36, "right"); // l3 value
-            modeTextX = util.renderText(batch, mode, Color.WHITE, 825, 442.5f, 36, "right"); // l4 value
+            util.renderText(batch, decimalFormat.format(settings.getFlowSpeed()), Color.WHITE, 765, 742.5f, 36, "centre"); // l1 value
+            util.renderText(batch, decimalFormat.format(settings.getViscosity()), Color.WHITE, 765, 642.5f, 36, "centre"); // l2 value
+            plotTextX = util.renderText(batch, settings.getPlot(), Color.WHITE, 825, 542.5f, 36, "right"); // l3 value
+            modeTextX = util.renderText(batch, settings.getMode(), Color.WHITE, 825, 442.5f, 36, "right"); // l4 value
 
             if (renderDropdown) {
                 for (Integer count=0; count<barrierShapeValues.length; count++) {
@@ -136,7 +122,7 @@ public class SettingsMenu implements Menu {
             util.renderIcon(batch, settingsIcon, 1862.5f, 57.5f);
 
             if (!renderDropdown) {
-                if (showFlowLines) {
+                if (settings.getShowFlowLines()) {
                     util.renderIcon(batch, flowLinesCheckBoxTrue, 1585, 442.5f);
                 } else {
                     util.renderIcon(batch, flowLinesCheckBoxFalse, 1585, 442.5f);
@@ -147,23 +133,23 @@ public class SettingsMenu implements Menu {
 
     @Override
     public String checkIfButtonsClicked() {
-        if (util.isButtonClicked(flowSpeedButtons[0]) && flowSpeed < 0.120) {flowSpeed += 0.005; flowSpeed = Math.round(flowSpeed*1000)/1000d;}
-        if (util.isButtonClicked(flowSpeedButtons[1]) && flowSpeed > 0.005) {flowSpeed -= 0.005; flowSpeed = Math.round(flowSpeed*1000)/1000d;}
+        if (util.isButtonClicked(flowSpeedButtons[0]) && settings.getFlowSpeed() < 0.120) {settings.setFlowSpeed(settings.getFlowSpeed()+0.005); settings.setFlowSpeed(Math.round(settings.getFlowSpeed()*1000)/1000d);}
+        if (util.isButtonClicked(flowSpeedButtons[1]) && settings.getFlowSpeed() > 0.005) {settings.setFlowSpeed(settings.getFlowSpeed()-0.005); settings.setFlowSpeed(Math.round(settings.getFlowSpeed()*1000)/1000d);}
 
-        if (util.isButtonClicked(viscosityButtons[0]) && viscosity < 0.200) {viscosity += 0.005; viscosity = Math.round(viscosity*1000)/1000d;}
-        if (util.isButtonClicked(viscosityButtons[1]) && viscosity > 0.005) {viscosity -= 0.005; viscosity = Math.round(viscosity*1000)/1000d;}
+        if (util.isButtonClicked(viscosityButtons[0]) && settings.getViscosity() < 0.200) {settings.setViscosity(settings.getViscosity()+0.005); settings.setViscosity(Math.round(settings.getViscosity()*1000)/1000d);}
+        if (util.isButtonClicked(viscosityButtons[1]) && settings.getViscosity() > 0.005) {settings.setViscosity(settings.getViscosity()-0.005); settings.setViscosity(Math.round(settings.getViscosity()*1000)/1000d);}
 
-        if (util.isButtonClicked(plotButtons[0])) {plot = plotOrModeButtonClicked(1, plot, plotValues);}
-        if (util.isButtonClicked(plotButtons[1])) {plot = plotOrModeButtonClicked(-1, plot, plotValues);}
+        if (util.isButtonClicked(plotButtons[0])) {settings.setPlot(settings.plotOrModeButtonClicked(1, settings.getPlot(), settings.getPlotValues()));}
+        if (util.isButtonClicked(plotButtons[1])) {settings.setPlot(settings.plotOrModeButtonClicked(-1, settings.getPlot(), settings.getPlotValues()));}
 
-        if (util.isButtonClicked(modeButtons[0])) {mode = plotOrModeButtonClicked(1, mode, modeValues);}
-        if (util.isButtonClicked(modeButtons[1])) {mode = plotOrModeButtonClicked(-1, mode, modeValues);}
+        if (util.isButtonClicked(modeButtons[0])) {settings.setMode(settings.plotOrModeButtonClicked(1, settings.getMode(), settings.getModeValues()));}
+        if (util.isButtonClicked(modeButtons[1])) {settings.setMode(settings.plotOrModeButtonClicked(-1, settings.getMode(), settings.getModeValues()));}
 
         if (!renderDropdown && util.isButtonClicked(clearBarrierButton)) {System.out.println("clear barriers");}
 
         if (!renderDropdown && util.isButtonClicked(resetFluidButton)) {System.out.println("reset fluid");}
 
-        if (!renderDropdown && util.isButtonClicked(showFlowlinesButton)) {showFlowLines = !showFlowLines;}
+        if (!renderDropdown && util.isButtonClicked(showFlowlinesButton)) {settings.setShowFlowLines(!settings.getShowFlowLines());}
 
         if (renderDropdown) {
             for (Integer count=0; count<barrierShapeValues.length; count++) {
@@ -181,49 +167,4 @@ public class SettingsMenu implements Menu {
         if (util.isButtonClicked(settingsButton)) {return "settings";}
         return "settings";
     }
-
-    public String plotOrModeButtonClicked(Integer change, String currentValue, String[] possibleValues) {
-        Integer index = 0;
-        for (Integer count=0; count<possibleValues.length; count++) {
-            if (possibleValues[count] == currentValue) {
-                index = count;
-                break;
-            }
-        }
-        if (change == 1) {
-            if (index == possibleValues.length-1) {
-                return possibleValues[0];
-            }
-            return possibleValues[index+1];
-        } else if (change == -1) {
-            if (index == 0) {
-                return possibleValues[possibleValues.length-1];
-            }
-            return possibleValues[index-1];
-        }
-        return currentValue;
-    }
-
-    public void resetSettings() {
-        this.flowSpeed = 0.100;
-        this.viscosity = 0.020;
-        this.plot = this.plotValues[1];
-        this.mode = this.modeValues[0];
-        this.showFlowLines = false;
-    }
-
-    public double getFlowSpeed() {return this.flowSpeed;}
-    public void setFlowSpeed(double flowSpeed) {this.flowSpeed = flowSpeed;}
-
-    public double getViscosity() {return this.viscosity;}
-    public void setViscosity(double viscosity) {this.viscosity = viscosity;}
-
-    public String getPlot() {return this.plot;}
-    public void setPlot(String plot) {this.plot = plot;}
-
-    public String getMode() {return this.mode;}
-    public void setMode(String mode) {this.mode = mode;}
-
-    public boolean getShowFlowLines() {return this.showFlowLines;}
-    public void setShowFlowLines(boolean showFlowLines) {this.showFlowLines = showFlowLines;}
 }
