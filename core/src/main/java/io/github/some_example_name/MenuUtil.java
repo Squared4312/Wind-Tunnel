@@ -28,6 +28,12 @@ public class MenuUtil {
         return hitbox;
     }
 
+    public Rectangle getHitbox(float x, float y, float width, float height) {
+        x -= 0.5f*width;
+        y -= 0.5f*height;
+        return new Rectangle(x, y, width, height);
+    }
+
     public Rectangle renderRoundedRectangle(ShapeRenderer sr, Color color, float x, float y, float width, float height, float radius) {
         x -= 0.5f*width;
         y -= 0.5f*height;

@@ -1,6 +1,5 @@
 package io.github.some_example_name;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -14,7 +13,6 @@ public class SettingsMenu implements Menu {
     private MenuUtil util;
     private DecimalFormat decimalFormat;
 
-    private Rectangle quitButton;
     private Rectangle backButton;
     private Rectangle settingsButton;
 
@@ -34,7 +32,6 @@ public class SettingsMenu implements Menu {
     private Rectangle resetFluidButton;
     private Rectangle showFlowlinesButton;
 
-    private Texture quitIcon;
     private Texture backIcon;
     private Texture settingsIcon;
     private Texture flowLinesCheckBoxTrue;
@@ -46,7 +43,6 @@ public class SettingsMenu implements Menu {
 
         this.decimalFormat = new DecimalFormat("0.000");
 
-        this.quitIcon = util.loadIcon("quit");
         this.backIcon = util.loadIcon("back");
         this.settingsIcon = util.loadIcon("settings");
         this.flowLinesCheckBoxTrue = util.loadIcon("checkBoxTrue");
@@ -56,9 +52,8 @@ public class SettingsMenu implements Menu {
     @Override
     public void render(ShapeRenderer sr, SpriteBatch batch) {
         sr.begin(ShapeRenderer.ShapeType.Filled);
-            quitButton = util.renderButton(sr, util.getQuitButtonColor(), null, 1862.5f, 1022.5f, 75, 75, 16);
-            backButton = util.renderButton(sr, Color.BLACK, null, 57.5f, 1022.5f, 75, 75, 0);
-            settingsButton = util.renderButton(sr, Color.BLACK, null, 1862.5f, 57.5f, 75, 75, 0);
+            backButton = util.getHitbox(57.5f, 1022.5f, 75, 75);
+            settingsButton = util.getHitbox(1862.5f, 57.5f, 75, 75);
 
             util.renderRoundedRectangle(sr, util.getButtonColor(), 600, 742.5f, 600, 75, 16); // l1
             util.renderRoundedRectangle(sr, util.getButtonColor(), 600, 642.5f, 600, 75, 16); // l2
@@ -117,7 +112,6 @@ public class SettingsMenu implements Menu {
                 }
             }
 
-            util.renderIcon(batch, quitIcon, 1862.5f, 1022.5f);
             util.renderIcon(batch, backIcon, 57.5f, 1022.5f);
             util.renderIcon(batch, settingsIcon, 1862.5f, 57.5f);
 
@@ -162,7 +156,6 @@ public class SettingsMenu implements Menu {
         }
         if (util.isButtonClicked(barrierShapesButton)) {renderDropdown = !renderDropdown;}
 
-        if (util.isButtonClicked(quitButton)) {Gdx.app.exit();}
         if (util.isButtonClicked(backButton)) {return "back";}
         if (util.isButtonClicked(settingsButton)) {return "settings";}
         return "settings";

@@ -38,16 +38,16 @@ public class FreeplayMenu implements Menu {
     public void render(ShapeRenderer sr, SpriteBatch batch) {
 
         if (settings.getSimulationRunning()) {
-            cfdSolver.boundaries();
-            cfdSolver.movement();
             cfdSolver.collision();
+            cfdSolver.movement();
+            cfdSolver.boundaries();
         }
 
         sr.begin(ShapeRenderer.ShapeType.Filled);
             cfdSolver.render(sr);
 
-            backButton = util.renderButton(sr, Color.BLACK, null, 57.5f, 1022.5f, 75, 75, 0);
-            settingsButton = util.renderButton(sr, Color.BLACK, null, 1862.5f, 57.5f, 75, 75, 0);
+            backButton = util.getHitbox(57.5f, 1022.5f, 75, 75);
+            settingsButton = util.getHitbox(1862.5f, 57.5f, 75, 75);
 
             if (!settings.getSimulationRunning()) {
                 runButton = util.renderRoundedRectangle(sr, util.getRunButtonColor(), 835, 62.5f, 200, 75, 16);

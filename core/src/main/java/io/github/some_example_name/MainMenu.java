@@ -32,10 +32,10 @@ public class MainMenu implements Menu {
     public void render(ShapeRenderer sr, SpriteBatch batch) {
         sr.begin(ShapeRenderer.ShapeType.Filled);
             quitButton = util.renderButton(sr, util.getQuitButtonColor(), null, 1862.5f, 1022.5f, 75, 75, 16);
-            settingsButton = util.renderButton(sr, Color.BLACK, null, 1862.5f, 57.5f, 75, 75, 0);
+            settingsButton = util.getHitbox(1862.5f, 57.5f, 75, 75);
             levelsButton = util.renderButton(sr, Color.WHITE, Color.BLACK, util.getScreenDimensions().x/2, 580, 700, 150, 16);
             freeplayButton = util.renderButton(sr, Color.WHITE, Color.BLACK, util.getScreenDimensions().x/2, 380, 700, 150, 16);
-            aboutButton = util.renderButton(sr, Color.BLACK, null, 57.5f, 57.5f, 75, 75, 0);
+            aboutButton = util.getHitbox(57.5f, 57.5f, 75, 75);
         sr.end();
 
         batch.begin();
