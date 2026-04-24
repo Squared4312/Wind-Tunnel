@@ -1,8 +1,8 @@
 package io.github.some_example_name;
 
 public class Settings {
-    private double flowSpeed = 0.100;
-    private double viscosity = 0.020;
+    private float flowSpeed = 0.100f;
+    private float viscosity = 0.020f;
     private String plot;
     private String mode;
     private boolean showFlowLines = false;
@@ -18,8 +18,8 @@ public class Settings {
     }
 
     public void resetSettings() {
-        this.flowSpeed = 0.100;
-        this.viscosity = 0.020;
+        this.flowSpeed = 0.100f;
+        this.viscosity = 0.020f;
         this.plot = this.plotValues[1];
         this.mode = this.modeValues[0];
         this.showFlowLines = false;
@@ -50,11 +50,11 @@ public class Settings {
     public boolean getSimulationRunning() {return this.simulationRunning;}
     public void setSimulationRunning(boolean simulationRunning) {this.simulationRunning = simulationRunning;}
 
-    public double getFlowSpeed() {return this.flowSpeed;}
-    public void setFlowSpeed(double flowSpeed) {this.flowSpeed = flowSpeed;}
+    public float getFlowSpeed() {return this.flowSpeed;}
+    public void setFlowSpeed(float flowSpeed) {this.flowSpeed = flowSpeed;}
 
-    public double getViscosity() {return this.viscosity;}
-    public void setViscosity(double viscosity) {this.viscosity = viscosity;}
+    public float getViscosity() {return this.viscosity;}
+    public void setViscosity(float viscosity) {this.viscosity = viscosity;}
 
     public String getPlot() {return this.plot;}
     public void setPlot(String plot) {this.plot = plot;}

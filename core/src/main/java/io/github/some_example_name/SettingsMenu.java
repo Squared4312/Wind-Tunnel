@@ -127,11 +127,11 @@ public class SettingsMenu implements Menu {
 
     @Override
     public String checkIfButtonsClicked() {
-        if (util.isButtonClicked(flowSpeedButtons[0]) && settings.getFlowSpeed() < 0.120) {settings.setFlowSpeed(settings.getFlowSpeed()+0.005); settings.setFlowSpeed(Math.round(settings.getFlowSpeed()*1000)/1000d);}
-        if (util.isButtonClicked(flowSpeedButtons[1]) && settings.getFlowSpeed() > 0.005) {settings.setFlowSpeed(settings.getFlowSpeed()-0.005); settings.setFlowSpeed(Math.round(settings.getFlowSpeed()*1000)/1000d);}
+        if (util.isButtonClicked(flowSpeedButtons[0]) && settings.getFlowSpeed() < 0.120) {settings.setFlowSpeed(settings.getFlowSpeed()+0.005f); settings.setFlowSpeed(Math.round(settings.getFlowSpeed()*1000)/1000f);}
+        if (util.isButtonClicked(flowSpeedButtons[1]) && settings.getFlowSpeed() > 0.005) {settings.setFlowSpeed(settings.getFlowSpeed()-0.005f); settings.setFlowSpeed(Math.round(settings.getFlowSpeed()*1000)/1000f);}
 
-        if (util.isButtonClicked(viscosityButtons[0]) && settings.getViscosity() < 0.200) {settings.setViscosity(settings.getViscosity()+0.005); settings.setViscosity(Math.round(settings.getViscosity()*1000)/1000d);}
-        if (util.isButtonClicked(viscosityButtons[1]) && settings.getViscosity() > 0.005) {settings.setViscosity(settings.getViscosity()-0.005); settings.setViscosity(Math.round(settings.getViscosity()*1000)/1000d);}
+        if (util.isButtonClicked(viscosityButtons[0]) && settings.getViscosity() < 0.200) {settings.setViscosity(settings.getViscosity()+0.005f); settings.setViscosity(Math.round(settings.getViscosity()*1000)/1000f);}
+        if (util.isButtonClicked(viscosityButtons[1]) && settings.getViscosity() > 0.005) {settings.setViscosity(settings.getViscosity()-0.005f); settings.setViscosity(Math.round(settings.getViscosity()*1000)/1000f);}
 
         if (util.isButtonClicked(plotButtons[0])) {settings.setPlot(settings.plotOrModeButtonClicked(1, settings.getPlot(), settings.getPlotValues()));}
         if (util.isButtonClicked(plotButtons[1])) {settings.setPlot(settings.plotOrModeButtonClicked(-1, settings.getPlot(), settings.getPlotValues()));}

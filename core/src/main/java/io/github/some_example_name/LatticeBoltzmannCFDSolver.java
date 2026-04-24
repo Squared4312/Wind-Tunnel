@@ -7,9 +7,9 @@ public class LatticeBoltzmannCFDSolver {
     private MenuUtil util;
     private Settings settings;
 
-    private double weightO = 4.0/9.0; // Origin
-    private double weightAxis = 1.0/9.0; // N E S W
-    private double weightDiagonals = 1.0/36.0; // NE NW SE SW
+    private float weightO = 4/9f; // Origin
+    private float weightAxis = 1/9f; // N E S W
+    private float weightDiagonals = 1/36f; // NE NW SE SW
 
     // setup mesh
     private Cell[][] cells;
@@ -40,29 +40,29 @@ public class LatticeBoltzmannCFDSolver {
     }
 
     public void collision() {
-        double omega = 1/((3*settings.getViscosity())+0.5);
+        float omega = 1/((3*settings.getViscosity())+0.5f);
         for (Integer column=0; column<numberOfCells.x; column++) {
             for (Integer row=0; row<numberOfCells.y; row++) {
                 Cell cell = cells[column][row];
                 if (!cell.getIsBarrier()) {
                     // calculate density
-                    double densityTotal = cell.getDensityO()+cell.getDensityN()+cell.getDensityE()+cell.getDensityS()+cell.getDensityW()+cell.getDensityNE()+cell.getDensityNW()+cell.getDensitySE()+cell.getDensitySW();
+                    float densityTotal = cell.getDensityO()+cell.getDensityN()+cell.getDensityE()+cell.getDensityS()+cell.getDensityW()+cell.getDensityNE()+cell.getDensityNW()+cell.getDensitySE()+cell.getDensitySW();
                     // calculate velocity
-                    double vx = (cell.getDensityE()+cell.getDensityNE()+cell.getDensitySE()-cell.getDensityW()-cell.getDensityNW()-cell.getDensitySW())/densityTotal;
-                    double vy = (cell.getDensityN()+cell.getDensityNE()+cell.getDensityNW()-cell.getDensityS()-cell.getDensitySE()-cell.getDensitySW())/densityTotal;
-                    double v2 = vx*vx + vy*vy;
+                    float vx = (cell.getDensityE()+cell.getDensityNE()+cell.getDensitySE()-cell.getDensityW()-cell.getDensityNW()-cell.getDensitySW())/densityTotal;
+                    float vy = (cell.getDensityN()+cell.getDensityNE()+cell.getDensityNW()-cell.getDensityS()-cell.getDensitySE()-cell.getDensitySW())/densityTotal;
+                    float v2 = vx*vx + vy*vy;
                     // update each direction towards equilibrium
-                    cell.setDensityO(cell.getDensityO()+omega*((weightO*densityTotal)*(1-(1.5*v2))-cell.getDensityO()));
+                    cell.setDensityO(cell.getDensityO()+omega*((weightO*densityTotal)*(1-(1.5f*v2))-cell.getDensityO()));
 
-                    cell.setDensityN(cell.getDensityN()+omega*((weightAxis*densityTotal)*(1+(3*vy)+(4.5*vy*vy)-(1.5*v2))-cell.getDensityN()));
-                    cell.setDensityE(cell.getDensityE()+omega*((weightAxis*densityTotal)*(1+(3*vx)+(4.5*vx*vx)-(1.5*v2))-cell.getDensityE()));
-                    cell.setDensityS(cell.getDensityS()+omega*((weightAxis*densityTotal)*(1+(3*-vy)+(4.5*vy*vy)-(1.5*v2))-cell.getDensityS()));
-                    cell.setDensityW(cell.getDensityW()+omega*((weightAxis*densityTotal)*(1+(3*-vx)+(4.5*vx*vx)-(1.5*v2))-cell.getDensityW()));
+                    cell.setDensityN(cell.getDensityN()+omega*((weightAxis*densityTotal)*(1+(3*vy)+(4.5f*vy*vy)-(1.5f*v2))-cell.getDensityN()));
+                    cell.setDensityE(cell.getDensityE()+omega*((weightAxis*densityTotal)*(1+(3*vx)+(4.5f*vx*vx)-(1.5f*v2))-cell.getDensityE()));
+                    cell.setDensityS(cell.getDensityS()+omega*((weightAxis*densityTotal)*(1+(3*-vy)+(4.5f*vy*vy)-(1.5f*v2))-cell.getDensityS()));
+                    cell.setDensityW(cell.getDensityW()+omega*((weightAxis*densityTotal)*(1+(3*-vx)+(4.5f*vx*vx)-(1.5f*v2))-cell.getDensityW()));
 
-                    cell.setDensityNE(cell.getDensityNE()+omega*((weightDiagonals*densityTotal)*(1+(3*vx)+(3*vy)+(4.5*(v2+(2*vx*vy)))-(1.5*v2))-cell.getDensityNE()));
-                    cell.setDensityNW(cell.getDensityNW()+omega*((weightDiagonals*densityTotal)*(1+(3*-vx)+(3*vy)+(4.5*(v2+(2*-vx*vy)))-(1.5*v2))-cell.getDensityNW()));
-                    cell.setDensitySE(cell.getDensitySE()+omega*((weightDiagonals*densityTotal)*(1+(3*vx)+(3*-vy)+(4.5*(v2+(2*vx*-vy)))-(1.5*v2))-cell.getDensitySE()));
-                    cell.setDensitySW(cell.getDensitySW()+omega*((weightDiagonals*densityTotal)*(1+(3*-vx)+(3*-vy)+(4.5*(v2+(2*-vx*-vy)))-(1.5*v2))-cell.getDensitySW()));
+                    cell.setDensityNE(cell.getDensityNE()+omega*((weightDiagonals*densityTotal)*(1+(3*vx)+(3*vy)+(4.5f*(v2+(2*vx*vy)))-(1.5f*v2))-cell.getDensityNE()));
+                    cell.setDensityNW(cell.getDensityNW()+omega*((weightDiagonals*densityTotal)*(1+(3*-vx)+(3*vy)+(4.5f*(v2+(2*-vx*vy)))-(1.5f*v2))-cell.getDensityNW()));
+                    cell.setDensitySE(cell.getDensitySE()+omega*((weightDiagonals*densityTotal)*(1+(3*vx)+(3*-vy)+(4.5f*(v2+(2*vx*-vy)))-(1.5f*v2))-cell.getDensitySE()));
+                    cell.setDensitySW(cell.getDensitySW()+omega*((weightDiagonals*densityTotal)*(1+(3*-vx)+(3*-vy)+(4.5f*(v2+(2*-vx*-vy)))-(1.5f*v2))-cell.getDensitySW()));
                 }
             }
         }
@@ -71,7 +71,7 @@ public class LatticeBoltzmannCFDSolver {
     public void movement() {
         // create a new list and calculate the new values to the new list, then write it back to the cells
 
-        double[][][] newCellValues = new double[(int) numberOfCells.x][(int) numberOfCells.y][9];
+        float[][][] newCellValues = new float[(int) numberOfCells.x][(int) numberOfCells.y][9];
         // 0: rest, 1:N, 2:E, 3:S, 4:W, 5:NE, 6:NW, 7:SE, 8: SW
 
         for (Integer column=0; column<newCellValues.length; column++) {

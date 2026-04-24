@@ -2,7 +2,6 @@ package io.github.some_example_name;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
 public class Cell {
@@ -10,12 +9,12 @@ public class Cell {
     private Vector2 dimensions;
 
     // cell densities named by v directions (North = Up)
-    private double densityO, densityN, densityE, densityS, densityW, densityNE, densityNW, densitySE, densitySW = 0;
+    private float densityO, densityN, densityE, densityS, densityW, densityNE, densityNW, densitySE, densitySW = 0;
 
     // these are calculated from the densities above
-    private double density = 1.0;
+    private float density = 1f;
     private Vector2 v; // v
-    private double speedSquared = 0;
+    private float speedSquared = 0;
 
     private boolean isBarrier = false;
 
@@ -29,8 +28,8 @@ public class Cell {
         if (isBarrier) {
             sr.setColor(Color.WHITE);
         } else {
-            float averageDensity = (float) ((densityO+densityN+densityE+densityS+densityW+densityNE+densityNW+densitySE+densitySW)/9);
-            System.out.println(averageDensity);
+            float averageDensity = (densityO+densityN+densityE+densityS+densityW+densityNE+densityNW+densitySE+densitySW)/9;
+            //System.out.println(averageDensity);
             sr.setColor(averageDensity/255, 0f, 1-(averageDensity/255), 1f);
         }
         sr.rect(centre.x-dimensions.x/2, centre.y-dimensions.y/2, centre.x+dimensions.x/2, centre.y+dimensions.y/2);
@@ -49,21 +48,21 @@ public class Cell {
         Vector2 head = new Vector2(centre.x+(v.x/2), centre.y+(v.y/2));
         sr.rectLine(tail, head, 2);
 
-        if (false) {// arrow heads
-            Integer length = (int) v.len()/3;
+        /*// arrow heads
+        Integer length = (int) v.len()/3;
 
-            double arcAngle = Math.toDegrees(Math.atan2(tail.y-head.y, tail.x-head.x));
+        double arcAngle = Math.toDegrees(Math.atan2(tail.y-head.y, tail.x-head.x));
 
-            double xChange = Math.cos(Math.toRadians(arcAngle));
-            double yChange = Math.sin(Math.toRadians(arcAngle));
+        double xChange = Math.cos(Math.toRadians(arcAngle));
+        double yChange = Math.sin(Math.toRadians(arcAngle));
 
-            double[] angles = {arcAngle+45, arcAngle-45};
-            for (double angle : angles) {
-                double xOffset = length*Math.cos(Math.toRadians(angle));
-                double yOffset = length*Math.sin(Math.toRadians(angle));
-                sr.rectLine((float) (head.x+xChange), (float) (head.y+yChange), (float) (head.x+xOffset+xChange), (float) (head.y+yOffset+yChange), 2);
-            }
-        }
+        double[] angles = {arcAngle+45, arcAngle-45};
+        for (double angle : angles) {
+            double xOffset = length*Math.cos(Math.toRadians(angle));
+            double yOffset = length*Math.sin(Math.toRadians(angle));
+            sr.rectLine((float) (head.x+xChange), (float) (head.y+yChange), (float) (head.x+xOffset+xChange), (float) (head.y+yOffset+yChange), 2);
+        }*/
+
     }
 
     public Vector2 getCentre() {return centre;}
@@ -72,39 +71,39 @@ public class Cell {
     public Vector2 getVelocity() {return v;}
     public void setVelocity(Vector2 v) {this.v = v;}
 
-    public double getDensity() {return density;}
-    public void setDensity(double density) {this.density = density;}
+    public float getDensity() {return density;}
+    public void setDensity(float density) {this.density = density;}
 
-    public double getSpeedSquared() {return speedSquared;}
-    public void setSpeedSquared(double speedSquared) {this.speedSquared = speedSquared;}
+    public float getSpeedSquared() {return speedSquared;}
+    public void setSpeedSquared(float speedSquared) {this.speedSquared = speedSquared;}
 
     public boolean getIsBarrier() {return isBarrier;}
     public void setIsBarrier(boolean barrier) {this.isBarrier = barrier;}
 
-    public double getDensityO() {return densityO;}
-    public void setDensityO(double densityO) {this.densityO = densityO;}
+    public float getDensityO() {return densityO;}
+    public void setDensityO(float densityO) {this.densityO = densityO;}
 
-    public double getDensityN() {return densityN;}
-    public void setDensityN(double densityN) {this.densityN = densityN;}
+    public float getDensityN() {return densityN;}
+    public void setDensityN(float densityN) {this.densityN = densityN;}
 
-    public double getDensityE() {return densityE;}
-    public void setDensityE(double densityE) {this.densityE = densityE;}
+    public float getDensityE() {return densityE;}
+    public void setDensityE(float densityE) {this.densityE = densityE;}
 
-    public double getDensityS() {return densityS;}
-    public void setDensityS(double densityS) {this.densityS = densityS;}
+    public float getDensityS() {return densityS;}
+    public void setDensityS(float densityS) {this.densityS = densityS;}
 
-    public double getDensityW() {return densityW;}
-    public void setDensityW(double densityW) {this.densityW = densityW;}
+    public float getDensityW() {return densityW;}
+    public void setDensityW(float densityW) {this.densityW = densityW;}
 
-    public double getDensityNE() {return densityNE;}
-    public void setDensityNE(double densityNE) {this.densityNE = densityNE;}
+    public float getDensityNE() {return densityNE;}
+    public void setDensityNE(float densityNE) {this.densityNE = densityNE;}
 
-    public double getDensityNW() {return densityNW;}
-    public void setDensityNW(double densityNW) {this.densityNW = densityNW;}
+    public float getDensityNW() {return densityNW;}
+    public void setDensityNW(float densityNW) {this.densityNW = densityNW;}
 
-    public double getDensitySE() {return densitySE;}
-    public void setDensitySE(double densitySE) {this.densitySE = densitySE;}
+    public float getDensitySE() {return densitySE;}
+    public void setDensitySE(float densitySE) {this.densitySE = densitySE;}
 
-    public double getDensitySW() {return densitySW;}
-    public void setDensitySW(double densitySW) {this.densitySW = densitySW;}
+    public float getDensitySW() {return densitySW;}
+    public void setDensitySW(float densitySW) {this.densitySW = densitySW;}
 }
