@@ -7,18 +7,19 @@ public class LatticeBoltzmannCFDSolver {
     private MenuUtil util;
     private Settings settings;
 
-    private float weightO = 4/9f; // Origin
+    private float weightO = 4/9f; // origin
     private float weightAxis = 1/9f; // N E S W
     private float weightDiagonals = 1/36f; // NE NW SE SW
 
     // setup mesh
     private Cell[][] cells;
-    private Vector2 numberOfCells = new Vector2(32, 18); // keep the 16:9 aspect ratio
+    private Vector2 numberOfCells;
     private Vector2 cellDimensions;
 
     public LatticeBoltzmannCFDSolver() {
         this.util = new MenuUtil();
-        this.settings = new Settings();
+        this.settings = Settings.getInstance();
+        this.numberOfCells = new Vector2(settings.getResolution().x, settings.getResolution().y);
 
         this.cellDimensions = new Vector2(util.getScreenDimensions().x/numberOfCells.x, util.getScreenDimensions().y/numberOfCells.y);
         this.cells = new Cell[(int) numberOfCells.x][(int) numberOfCells.y];
@@ -27,6 +28,7 @@ public class LatticeBoltzmannCFDSolver {
                 Vector2 centre = new Vector2(column*cellDimensions.x+(cellDimensions.x/2), row*cellDimensions.y+(cellDimensions.y/2));
                 Vector2 dimensions = new Vector2(cellDimensions.x, cellDimensions.y);
                 this.cells[column][row] = new Cell(centre, dimensions, settings.getFlowSpeed());
+                this.cells[column][row].initialise(settings.getFlowSpeed());
             }
         }
     }

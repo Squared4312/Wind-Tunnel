@@ -33,7 +33,7 @@ public class Main extends ApplicationAdapter {
         sr = new ShapeRenderer();
         batch = new SpriteBatch();
 
-        settings = new Settings();
+        settings = Settings.getInstance();
         mainMenu = new MainMenu();
         aboutMenu = new AboutMenu();
         settingsMenu = new SettingsMenu();

@@ -26,7 +26,7 @@ public class FreeplayMenu implements Menu {
     public FreeplayMenu() {
         this.util = new MenuUtil();
         this.cfdSolver = new LatticeBoltzmannCFDSolver();
-        this.settings = new Settings();
+        this.settings = Settings.getInstance();
 
         this.backIcon = util.loadIcon("back");
         this.settingsIcon = util.loadIcon("settings");

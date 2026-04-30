@@ -9,7 +9,7 @@ public class Cell {
     private Vector2 dimensions;
 
     // cell densities named by v directions (North = Up)
-    private float densityO, densityN, densityE, densityS, densityW, densityNE, densityNW, densitySE, densitySW = 0;
+    private float densityO, densityN, densityE, densityS, densityW, densityNE, densityNW, densitySE, densitySW = 1;
 
     // these are calculated from the densities above
     private float density = 1f;
@@ -39,30 +39,28 @@ public class Cell {
     public void drawFlowLines(ShapeRenderer sr, Vector2 screenDimensions) {
         sr.setColor(Color.GRAY);
 
-        v.x /= screenDimensions.x;
-        v.y /= screenDimensions.y;
-        v.x *= dimensions.x;
-        v.y *= dimensions.y;
+        float scaledVx = (v.x/screenDimensions.x)*dimensions.x;
+        float scaledVy = (v.y/screenDimensions.y)*dimensions.y;
 
-        Vector2 tail = new Vector2(centre.x-(v.x/2), centre.y-(v.y/2));
-        Vector2 head = new Vector2(centre.x+(v.x/2), centre.y+(v.y/2));
+        Vector2 tail = new Vector2(centre.x-(scaledVx/2), centre.y-(scaledVy/2));
+        Vector2 head = new Vector2(centre.x+(scaledVx/2), centre.y+(scaledVy/2));
         sr.rectLine(tail, head, 2);
+    }
 
-        /*// arrow heads
-        Integer length = (int) v.len()/3;
+    public void initialise(float flowSpeed) {
+        float w0 = 4/9f;
+        float wAxis = 1/9f;
+        float wDiag = 1/36f;
 
-        double arcAngle = Math.toDegrees(Math.atan2(tail.y-head.y, tail.x-head.x));
-
-        double xChange = Math.cos(Math.toRadians(arcAngle));
-        double yChange = Math.sin(Math.toRadians(arcAngle));
-
-        double[] angles = {arcAngle+45, arcAngle-45};
-        for (double angle : angles) {
-            double xOffset = length*Math.cos(Math.toRadians(angle));
-            double yOffset = length*Math.sin(Math.toRadians(angle));
-            sr.rectLine((float) (head.x+xChange), (float) (head.y+yChange), (float) (head.x+xOffset+xChange), (float) (head.y+yOffset+yChange), 2);
-        }*/
-
+        densityO = w0*(1-1.5f*flowSpeed*flowSpeed);
+        densityN = wAxis*(1-1.5f*flowSpeed*flowSpeed);
+        densityS = wAxis*(1-1.5f*flowSpeed*flowSpeed);
+        densityE = wAxis*(1+3*flowSpeed+4.5f*flowSpeed*flowSpeed-1.5f*flowSpeed*flowSpeed);
+        densityW = wAxis*(1-3*flowSpeed+4.5f*flowSpeed*flowSpeed-1.5f*flowSpeed*flowSpeed);
+        densityNE = wDiag*(1+3*flowSpeed+4.5f*flowSpeed*flowSpeed-1.5f*flowSpeed*flowSpeed);
+        densitySE = wDiag*(1+3*flowSpeed+4.5f*flowSpeed*flowSpeed-1.5f*flowSpeed*flowSpeed);
+        densityNW = wDiag*(1-3*flowSpeed+4.5f*flowSpeed*flowSpeed-1.5f*flowSpeed*flowSpeed);
+        densitySW = wDiag*(1-3*flowSpeed+4.5f*flowSpeed*flowSpeed-1.5f*flowSpeed*flowSpeed);
     }
 
     public Vector2 getCentre() {return centre;}
