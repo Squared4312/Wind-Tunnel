@@ -83,4 +83,6 @@ public class FreeplayMenu implements Menu {
         if (util.isButtonClicked(settingsButton)) {return "settings";}
         return "freeplay";
     }
+
+    public void reinitialise() {cfdSolver.initialiseCells();}
 }

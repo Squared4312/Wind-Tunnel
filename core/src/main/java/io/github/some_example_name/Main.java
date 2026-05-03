@@ -59,13 +59,17 @@ public class Main extends ApplicationAdapter {
 
         if (!nextMenu.equals(menu)) {
             if (menu.equals("main") && (nextMenu.equals("levels") || nextMenu.equals("freeplay"))) {
-                settings.resetSettings();
+                settings.reset();
                 settings.setSimulationRunning(false);
             }
-
             if ("back".equals(nextMenu)) {
                 if (!menuHistory.isEmpty()) {
-                    menu = menuHistory.pop();
+                    String previousMenu = menuHistory.pop();
+                    if (menu.equals("settings") && (previousMenu.equals("freeplay") || previousMenu.equals("levels"))) {
+                        freeplayMenu.reinitialise();
+                        levelsMenu.reinitialise();
+                    }
+                    menu = previousMenu;
                 }
             } else {
                 menuHistory.push(menu);

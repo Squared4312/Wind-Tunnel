@@ -9,7 +9,7 @@ public class Cell {
     private Vector2 dimensions;
 
     // cell densities named by v directions (North = Up)
-    private float densityO, densityN, densityE, densityS, densityW, densityNE, densityNW, densitySE, densitySW = 1;
+    private float densityO, densityN, densityE, densityS, densityW, densityNE, densityNW, densitySE, densitySW;
 
     // these are calculated from the densities above
     private float density = 1f;
@@ -29,10 +29,11 @@ public class Cell {
             sr.setColor(Color.WHITE);
         } else {
             float averageDensity = (densityO+densityN+densityE+densityS+densityW+densityNE+densityNW+densitySE+densitySW)/9;
-            //System.out.println(averageDensity);
-            sr.setColor(averageDensity/255, 0f, 1-(averageDensity/255), 1f);
+            float t = (averageDensity-0.9f)/0.2f;
+            t = Math.max(0f, Math.min(1f, t));
+            sr.setColor(t, 0f, 1f-t, 1f);
         }
-        sr.rect(centre.x-dimensions.x/2, centre.y-dimensions.y/2, centre.x+dimensions.x/2, centre.y+dimensions.y/2);
+        sr.rect(centre.x-dimensions.x/2, centre.y-dimensions.y/2, dimensions.x, dimensions.y);
         if (renderFlowLines) {drawFlowLines(sr, screenDimensions);}
     }
 

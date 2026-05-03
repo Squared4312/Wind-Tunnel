@@ -29,10 +29,10 @@ public class Settings {
     }
 
     private Settings() {
-        resetSettings();
+        reset();
     }
 
-    public void resetSettings() {
+    public void reset() {
         this.resolution = new Vector2(this.resolutionValues[3][0], this.resolutionValues[3][1]);
         this.solver = this.solverValues[0];
         this.flowSpeed = 0.100f;
