@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector3;
 
 import java.text.DecimalFormat;
 
@@ -40,6 +41,8 @@ public class SettingsMenu implements Menu {
     private Texture settingsIcon;
     private Texture flowLinesCheckBoxTrue;
     private Texture flowLinesCheckBoxFalse;
+
+    private String resolutionZValue;
 
     public SettingsMenu() {
         this.util = new MenuUtil();
@@ -114,7 +117,14 @@ public class SettingsMenu implements Menu {
                 util.renderText(batch, "show flowlines", Color.WHITE, 1040, 342.5f, 36, "left"); // r5
             }
 
-            resolutionTextX = util.renderText(batch, (int) settings.getResolution().x + "x" + (int) settings.getResolution().y, Color.WHITE, 825, 742.5f, 36, "right"); // l1 value
+            if (settings.getSolver() == "2D LBM") {
+                resolutionZValue = "";
+                settings.setResolution(new Vector3(settings.getResolution().x, settings.getResolution().y, 0));
+            } else {
+                resolutionZValue = "x" + (int) settings.getResolution().z;
+            }
+
+            resolutionTextX = util.renderText(batch, (int) settings.getResolution().x + "x" + (int) settings.getResolution().y + resolutionZValue, Color.WHITE, 825, 742.5f, 36, "right"); // l1 value
             util.renderText(batch, decimalFormat.format(settings.getFlowSpeed()), Color.WHITE, 765, 642.5f, 36, "centre"); // l2 value
             util.renderText(batch, decimalFormat.format(settings.getViscosity()), Color.WHITE, 765, 542.5f, 36, "centre"); // l3 value
             plotTextX = util.renderText(batch, settings.getPlot(), Color.WHITE, 825, 442.5f, 36, "right"); // l4 value

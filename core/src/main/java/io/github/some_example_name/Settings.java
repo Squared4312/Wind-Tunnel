@@ -1,10 +1,10 @@
 package io.github.some_example_name;
 
-import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 
 public class Settings {
 
-    private Vector2 resolution;
+    private Vector3 resolution;
     private String solver;
     private float flowSpeed;
     private float viscosity;
@@ -33,7 +33,7 @@ public class Settings {
     }
 
     public void reset() {
-        this.resolution = new Vector2(this.resolutionValues[3][0], this.resolutionValues[3][1]);
+        this.resolution = new Vector3(this.resolutionValues[3][0], this.resolutionValues[3][1], this.resolutionValues[3][1]);
         this.solver = this.solverValues[0];
         this.flowSpeed = 0.100f;
         this.viscosity = 0.020f;
@@ -74,15 +74,15 @@ public class Settings {
         }
         if (change == 1) {
             if (index == resolutionValues.length-1) {
-                this.resolution = new Vector2(resolutionValues[0][0], resolutionValues[0][1]);
+                this.resolution = new Vector3(resolutionValues[0][0], resolutionValues[0][1], resolutionValues[0][1]);
             } else {
-                this.resolution = new Vector2(resolutionValues[index+1][0], resolutionValues[index+1][1]);
+                this.resolution = new Vector3(resolutionValues[index+1][0], resolutionValues[index+1][1], resolutionValues[index+1][1]);
             }
         } else if (change == -1) {
             if (index == 0) {
-                this.resolution = new Vector2(resolutionValues[resolutionValues.length-1][0], resolutionValues[resolutionValues.length-1][1]);
+                this.resolution = new Vector3(resolutionValues[resolutionValues.length-1][0], resolutionValues[resolutionValues.length-1][1], resolutionValues[resolutionValues.length-1][1]);
             } else {
-                this.resolution = new Vector2(resolutionValues[index-1][0], resolutionValues[index-1][1]);
+                this.resolution = new Vector3(resolutionValues[index-1][0], resolutionValues[index-1][1], resolutionValues[index-1][1]);
             }
         }
     }
@@ -93,8 +93,8 @@ public class Settings {
     public String getSolver() {return this.solver;}
     public void setSolver(String solver) {this.solver = solver;}
 
-    public Vector2 getResolution() {return this.resolution;}
-    public void setResolution(Vector2 resolution) {this.resolution = resolution;}
+    public Vector3 getResolution() {return this.resolution;}
+    public void setResolution(Vector3 resolution) {this.resolution = resolution;}
 
     public float getFlowSpeed() {return this.flowSpeed;}
     public void setFlowSpeed(float flowSpeed) {this.flowSpeed = flowSpeed;}

@@ -3,7 +3,9 @@ package io.github.some_example_name;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class LatticeBoltzmannCFDSolver {
     private MenuUtil util;
@@ -27,22 +29,28 @@ public class LatticeBoltzmannCFDSolver {
     public void initialiseCells() {
         this.numberOfCells = new Vector3(settings.getResolution().x, settings.getResolution().y, settings.getResolution().z);
         this.cellDimensions = new Vector3(util.getScreenDimensions().x/numberOfCells.x, util.getScreenDimensions().y/numberOfCells.y, util.getScreenDimensions().y/numberOfCells.z);
-        this.densities = new HashMap<String, Double>[(int) numberOfCells.x][(int) numberOfCells.y][(int) numberOfCells.z];
+        this.densities = new HashMap[(int) settings.getResolution().x][(int) settings.getResolution().y][(int) settings.getResolution().z];
 
         boolean skip;
-        for (int x : directions) {
-            for (int y : directions) {
-                for (int z : directions) {
-                    skip = false;
-                    for (Integer[] invalid : invalidDirections) {
-                        if (x == invalid[0] && y == invalid[1] && z == invalid[2]) {
-                            skip = true;
-                            break;
+        for (int x=0; x<settings.getResolution().x; x++) {
+            for (int y=0; y<settings.getResolution().y; y++) {
+                for (int z=0; z<settings.getResolution().z; z++) {
+                    for (int relativeX : directions) {
+                        for (int relativeY : directions) {
+                            for (int relativeZ : directions) {
+                                skip = false;
+                                for (Integer[] invalid : invalidDirections) {
+                                    if (relativeX == invalid[0] && relativeY == invalid[1] && relativeZ == invalid[2]) {
+                                        skip = true;
+                                        break;
+                                    }
+                                }
+                                if (skip) {break;}
+                                densities[x][y][z] = new HashMap<>();
+                                densities[x][y][z].put(relativeX + "" + relativeY + "" + relativeZ, 0.0);
+                            }
                         }
                     }
-                    if (skip) {break;}
-
-                    densities.put(String.valueOf(x) + String.valueOf(y) + String.valueOf(z), 0.0);
                 }
             }
         }
