@@ -1,59 +1,83 @@
 package io.github.some_example_name;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 
 public class LatticeBoltzmannCFDSolver {
     private MenuUtil util;
     private Settings settings;
+    private ThreeDimensionalRenderer renderer;
 
-    // setup mesh
-    private Vector3 numberOfCells;
-    private Vector3 cellDimensions;
+    private float cellDimensions;
 
     // array of densities named by their relative offset to the cell (in 3D)
-    private HashMap<String, Double>[][][] densities;
-    private Integer[] directions = {-1, 0, 1};
-    private Integer[][] invalidDirections = {{-1, 1, -1}, {-1, -1, -1}, {1, 1, -1}, {1, -1, -1}, {-1, 1, 1}, {-1, -1, 1}, {1, 1, 1}, {1, -1, 1}};
+    private float[][][][] densities;
+    private Integer[][] relativeDirections = {
+        {0, 0, 0}, {1, 0, 0}, {1, 1, 0}, {1, -1, 0}, {-1, 0, 0}, {-1, 1, 0}, {-1, -1, 0}, {0, 1, 0}, {0, -1, 0},
+        {0, 0, -1}, {1, 0, -1}, {-1, 0, -1}, {0, 1, -1}, {0, -1, -1}, {0, 0, 1}, {1, 0, 1}, {-1, 0, 1}, {0, 1, 1}, {0, -1, 1}
+    };
+    private ArrayList<String> barriers = new ArrayList<>(); // the xyz coords are stored as a String, separated by spaces, for example, 32 2 54
+    private Integer neighbours;
 
     public LatticeBoltzmannCFDSolver() {
         this.util = new MenuUtil();
         this.settings = Settings.getInstance();
+        this.renderer = new ThreeDimensionalRenderer();
         initialiseCells();
     }
 
     public void initialiseCells() {
-        this.numberOfCells = new Vector3(settings.getResolution().x, settings.getResolution().y, settings.getResolution().z);
-        this.cellDimensions = new Vector3(util.getScreenDimensions().x/numberOfCells.x, util.getScreenDimensions().y/numberOfCells.y, util.getScreenDimensions().y/numberOfCells.z);
-        this.densities = new HashMap[(int) settings.getResolution().x][(int) settings.getResolution().y][(int) settings.getResolution().z];
+        if (settings.getSolver() == "2D LBM") {
+            neighbours = 9;
+        } else {
+            neighbours = 19;
+        }
+        this.densities = new float[(int) settings.getResolution().x][(int) settings.getResolution().y][(int) settings.getResolution().z][neighbours];
 
-        boolean skip;
         for (int x=0; x<settings.getResolution().x; x++) {
             for (int y=0; y<settings.getResolution().y; y++) {
                 for (int z=0; z<settings.getResolution().z; z++) {
-                    for (int relativeX : directions) {
-                        for (int relativeY : directions) {
-                            for (int relativeZ : directions) {
-                                skip = false;
-                                for (Integer[] invalid : invalidDirections) {
-                                    if (relativeX == invalid[0] && relativeY == invalid[1] && relativeZ == invalid[2]) {
-                                        skip = true;
-                                        break;
-                                    }
-                                }
-                                if (skip) {break;}
-                                densities[x][y][z] = new HashMap<>();
-                                densities[x][y][z].put(relativeX + "" + relativeY + "" + relativeZ, 0.0);
-                            }
-                        }
+                    densities[x][y][z] = new float[neighbours];
+                    for (int count=0; count<neighbours; count++) {
+                        densities[x][y][z][count] = settings.getFlowSpeed()/9;
                     }
                 }
             }
         }
+        String[] pos;
+        for (String xyz : barriers) {
+            pos = xyz.split(" ");
+            Arrays.fill(densities[Integer.parseInt(pos[0])][Integer.parseInt(pos[1])][Integer.parseInt(pos[2])], 0);
+        }
+    }
+
+    public void render(ShapeRenderer sr) {
+        Vector3 rotatedPoint;
+        Vector2 screenPos;
+        for (int x=0; x<settings.getResolution().x; x++) {
+            for (int y=0; y<settings.getResolution().y; y++) {
+                for (int z=0; z<settings.getResolution().z; z++) {
+                    // calculate colour here
+                    sr.setColor(Color.WHITE);
+                    if (settings.getSolver() == "2D LBM") {
+                        sr.rect(x, y, cellDimensions, cellDimensions);
+                    } else {
+                        rotatedPoint = renderer.rotate(x, y, z);
+                        screenPos = renderer.pointProjection(rotatedPoint.x, rotatedPoint.y, rotatedPoint.z);
+                        sr.circle(screenPos.x, screenPos.y, 1);
+                    }
+                }
+            }
+        }
+    }
+
+    public void addBarrier(Integer x, Integer y, Integer z) {
+        barriers.add(x + " " + y + " " + z);
     }
 }
 

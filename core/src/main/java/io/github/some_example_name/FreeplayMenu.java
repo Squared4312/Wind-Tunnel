@@ -44,7 +44,7 @@ public class FreeplayMenu implements Menu {
         }
 
         sr.begin(ShapeRenderer.ShapeType.Filled);
-            //cfdSolver.render(sr);
+            cfdSolver.render(sr);
 
             backButton = util.getHitbox(57.5f, 1022.5f, 75, 75);
             settingsButton = util.getHitbox(1862.5f, 57.5f, 75, 75);

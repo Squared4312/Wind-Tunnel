@@ -19,6 +19,9 @@ public class Settings {
 
     private boolean simulationRunning = false;
 
+    private Vector3 rotationAngles;
+    private Integer cameraDistance;
+
     private static Settings instance;
 
     public static Settings getInstance() {
@@ -33,16 +36,25 @@ public class Settings {
     }
 
     public void reset() {
-        this.resolution = new Vector3(this.resolutionValues[3][0], this.resolutionValues[3][1], this.resolutionValues[3][1]);
+        this.resolution = new Vector3(this.resolutionValues[3][0], this.resolutionValues[3][1], 1);
         this.solver = this.solverValues[0];
         this.flowSpeed = 0.100f;
         this.viscosity = 0.020f;
         this.plot = this.plotValues[1];
         this.mode = this.modeValues[0];
         this.showFlowLines = false;
+
+        this.rotationAngles = new Vector3(0, 0, 0);
+        this.cameraDistance = 8;
     }
 
     public String cycleOptions(Integer change, String currentValue, String[] possibleValues) {
+        if (currentValue == "2D LBM") {
+            resolution.z = resolution.y;
+        } else if (currentValue == "3D LBM") {
+            resolution.z = 1;
+        }
+
         Integer index = 0;
         for (Integer count=0; count<possibleValues.length; count++) {
             if (possibleValues[count] == currentValue) {
@@ -61,6 +73,7 @@ public class Settings {
             }
             return possibleValues[index-1];
         }
+
         return currentValue;
     }
 
@@ -86,6 +99,12 @@ public class Settings {
             }
         }
     }
+
+    public Integer getCameraDistance() {return this.cameraDistance;}
+    public void setCameraDistance(Integer cameraDistance) {this.cameraDistance = cameraDistance;}
+
+    public Vector3 getRotationAngles() {return this.rotationAngles;}
+    public void setRotationAngles(Vector3 rotationAngles) {this.rotationAngles = rotationAngles;}
 
     public boolean getSimulationRunning() {return this.simulationRunning;}
     public void setSimulationRunning(boolean simulationRunning) {this.simulationRunning = simulationRunning;}
