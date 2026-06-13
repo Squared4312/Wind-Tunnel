@@ -20,9 +20,9 @@ public class Settings {
     private boolean simulationRunning = false;
 
     private Vector3 rotationAngles;
-    private Vector3 cameraPosition;
+    private Integer cameraDistance;
     private Integer fov;
-
+    private Vector3 origin;
 
     private static Settings instance;
 
@@ -47,8 +47,9 @@ public class Settings {
         this.showFlowLines = false;
 
         this.rotationAngles = new Vector3(0, 0, 0);
-        this.cameraPosition = new Vector3(0, 0, 0);
+        this.cameraDistance = 8;
         this.fov = 95;
+        this.origin = new Vector3(0, 0, 0);
     }
 
     public String cycleOptions(Integer change, String currentValue, String[] possibleValues) {
@@ -103,8 +104,11 @@ public class Settings {
         }
     }
 
-    public Vector3 getCameraPosition() {return this.cameraPosition;}
-    public void setCameraPosition(Vector3 cameraPosition) {this.cameraPosition = cameraPosition;}
+    public Vector3 getOrigin() {return this.origin;}
+    public void setOrigin(Vector3 origin) {this.origin = origin;}
+
+    public Integer getCameraDistance() {return this.cameraDistance;}
+    public void setCameraDistance(Integer cameraDistance) {if (cameraDistance > 0) {this.cameraDistance = cameraDistance;}}
 
     public Integer getFov() {return this.fov;}
     public void setFov(Integer fov) {this.fov = fov;}

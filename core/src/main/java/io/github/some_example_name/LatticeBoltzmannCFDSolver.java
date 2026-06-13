@@ -58,14 +58,14 @@ public class LatticeBoltzmannCFDSolver {
 
     public void render(ShapeRenderer sr) {
         Vector3 rotatedPoint;
-        Vector3 screenPos;
+        Vector2 screenPos;
         for (int x=0; x<settings.getResolution().x; x++) {
             for (int y=0; y<settings.getResolution().y; y++) {
                 for (int z=0; z<settings.getResolution().z; z++) {
                     // calculate colour here
                     sr.setColor(Color.WHITE);
                     if (settings.getSolver() == "2D LBM") {
-                        sr.rect(x, y, cellDimensions, cellDimensions);
+                        sr.circle(x, y, 1); // sr.rect(x, y, cellDimensions, cellDimensions);
                     } else {
                         rotatedPoint = renderer.rotate(x-(settings.getResolution().x/2), y-(settings.getResolution().y/2), z-(settings.getResolution().z/2));
                         screenPos = renderer.pointProjection(rotatedPoint.x, rotatedPoint.y, rotatedPoint.z);

@@ -9,24 +9,25 @@ public class ThreeDimensionalRenderer {
 
     private Settings settings;
 
-    private Vector3 cameraPosition;
+    private Integer cameraDistance;
     private Integer fov;
     private Vector3 rotationAngles;
+    private Vector3 origin;
 
     private Vector2 screenDimensions;
 
     public ThreeDimensionalRenderer() {
         this.settings = Settings.getInstance();
 
-        this.rotationAngles = settings.getRotationAngles();
-        this.cameraPosition = settings.getCameraPosition();
-        this.fov = settings.getFov();
+        /*this.rotationAngles = settings.getRotationAngles();
+        this.cameraDistance = settings.getCameraDistance();
+        this.fov = settings.getFov();*/
 
         this.screenDimensions = new Vector2(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
     }
 
     public Vector3 rotate(float x, float y, float z) {
-        this.rotationAngles = new Vector3(settings.getRotationAnglesX(), settings.getRotationAnglesY(), settings.getRotationAnglesZ());
+        rotationAngles = new Vector3(settings.getRotationAnglesX(), settings.getRotationAnglesY(), settings.getRotationAnglesZ());
         // 3x3 rotation matrices in each x y z dimension
         double[][] rotationX = {
             {1, 0, 0},
@@ -47,7 +48,8 @@ public class ThreeDimensionalRenderer {
         };
 
         // this calculates the dot product of all the rotation vectors above with a point
-        Vector3 rotated = new Vector3(x-cameraPosition.x, y-cameraPosition.y, z-cameraPosition.z); // translated point
+        origin = settings.getOrigin();
+        Vector3 rotated = new Vector3(x-origin.x, y-origin.y, z-origin.z); // translated point
 
         // x rotation
         rotated.x = (float) (rotationX[0][0]*rotated.x + rotationX[0][1]*rotated.y + rotationX[0][2]*rotated.z);
@@ -63,46 +65,15 @@ public class ThreeDimensionalRenderer {
         rotated.z = (float) (rotationZ[2][0]*rotated.x + rotationZ[2][1]*rotated.y + rotationZ[2][2]*rotated.z);
 
         // translate back
-        rotated.x = rotated.x+cameraPosition.x;
-        rotated.y = rotated.y+cameraPosition.y;
-        rotated.z = rotated.z+cameraPosition.z;
+        rotated.x = rotated.x+origin.x;
+        rotated.y = rotated.y+origin.y;
+        rotated.z = rotated.z+origin.z;
 
         return rotated;
     }
 
-    public Vector3 pointProjection(float x, float y, float z) {
-        Vector3 projectedPoint = new Vector3(x, y, z);
-        float viewFar = 1000f;
-        float viewNear = 1f;
-
-        double[][] matrixProjection = {
-            {(screenDimensions.y/screenDimensions.x)*Math.toRadians(fov), 0, 0, 0},
-            {0, Math.toRadians(fov), 0, 0},
-            {0, viewFar/(viewFar-viewNear), 0, 1},
-            {0, 0, (-viewFar*viewNear)/(viewFar-viewNear), 0}
-        };
-
-        projectedPoint = multiplyMatrixWithVector(matrixProjection, projectedPoint);
-
-        projectedPoint.x += 1.0f;
-        projectedPoint.y += 1.0f;
-        projectedPoint.x *= 0.5f*screenDimensions.x;
-        projectedPoint.y *= 0.5f*screenDimensions.y;
-
-        return projectedPoint;
-    }
-
-    public Vector3 multiplyMatrixWithVector(double[][] m, Vector3 v) {
-        v.x = (float) (v.x * m[0][0] + v.y * m[1][0] + v.z * m[2][0] + m[3][0]);
-        v.y = (float) (v.x * m[0][1] + v.y * m[1][1] + v.z * m[2][1] + m[3][1]);
-        v.z = (float) (v.x * m[0][2] + v.y * m[1][2] + v.z * m[2][2] + m[3][2]);
-        float w = (float) (v.x * m[0][3] + v.y * m[1][3] + v.z * m[2][3] + m[3][3]);
-
-        if (w != 0) {
-            v.x /= w;
-            v.y /= w;
-            v.z /= w;
-        }
-        return v;
+    public Vector2 pointProjection(float x, float y, float z) {
+        float factor = settings.getFov()/(settings.getCameraDistance()+z);
+        return new Vector2(x*factor+screenDimensions.x/2, -y*factor+screenDimensions.y/2);
     }
 }
