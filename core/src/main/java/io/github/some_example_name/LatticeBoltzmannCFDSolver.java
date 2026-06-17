@@ -70,6 +70,7 @@ public class LatticeBoltzmannCFDSolver {
                     } else {
                         rotatedPoint = renderer.rotate(x-(settings.getResolution().x/2), y-(settings.getResolution().y/2), z-(settings.getResolution().z/2));
                         screenPos = renderer.pointProjection(rotatedPoint.x, rotatedPoint.y, rotatedPoint.z);
+                        if (screenPos == null) continue;
                         sr.circle(screenPos.x, screenPos.y, 1);
                     }
                 }

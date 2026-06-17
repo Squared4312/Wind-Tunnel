@@ -47,16 +47,16 @@ public class Main extends ApplicationAdapter {
         ScreenUtils.clear(0f, 0f, 0f, 1f);
 
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            settings.setRotationAnglesY((float) (settings.getRotationAnglesY()-Math.toRadians(1)));
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
             settings.setRotationAnglesY((float) (settings.getRotationAnglesY()+Math.toRadians(1)));
         }
+        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+            settings.setRotationAnglesY((float) (settings.getRotationAnglesY()-Math.toRadians(1)));
+        }
         if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-            settings.setCameraDistance(settings.getCameraDistance()+1);
+            settings.setCameraDistance(settings.getCameraDistance()-1);
         }
         if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-            settings.setCameraDistance(settings.getCameraDistance()-1);
+            settings.setCameraDistance(settings.getCameraDistance()+1);
         }
 
         if (menu.equals("main")) {

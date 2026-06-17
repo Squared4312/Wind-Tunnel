@@ -73,7 +73,9 @@ public class ThreeDimensionalRenderer {
     }
 
     public Vector2 pointProjection(float x, float y, float z) {
-        float factor = settings.getFov()/(settings.getCameraDistance()+z);
+        float depth = settings.getCameraDistance()+z;
+        if (depth <= 0) {return null;}
+        float factor = settings.getFov()/depth;
         return new Vector2(x*factor+screenDimensions.x/2, -y*factor+screenDimensions.y/2);
     }
 }
