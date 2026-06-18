@@ -1,7 +1,7 @@
 package io.github.some_example_name;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.math.Matrix3;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
@@ -65,17 +65,38 @@ public class ThreeDimensionalRenderer {
         rotated.z = (float) (rotationZ[2][0]*rotated.x + rotationZ[2][1]*rotated.y + rotationZ[2][2]*rotated.z);
 
         // translate back
-        rotated.x = rotated.x+origin.x;
-        rotated.y = rotated.y+origin.y;
-        rotated.z = rotated.z+origin.z;
+        rotated.x += origin.x;
+        rotated.y += origin.y;
+        rotated.z += origin.z;
 
         return rotated;
     }
 
-    public Vector2 pointProjection(float x, float y, float z) {
-        float depth = settings.getCameraDistance()+z;
-        if (depth <= 0) {return null;}
-        float factor = settings.getFov()/depth;
-        return new Vector2(x*factor+screenDimensions.x/2, -y*factor+screenDimensions.y/2);
+    public Vector2 pointProjection(Vector3 point) {
+        float zFar = 1000f; // max distance the camera can see
+        float zNear = 0.1f; // min distance the camera can see
+        float aspectRatio = screenDimensions.x/screenDimensions.y;
+        float fovCalculation = (float) (1/Math.tan(0.5*Math.toRadians(settings.getFov())));
+        float zNormalisation = zFar/(zFar-zNear);
+
+        // removes points that are too close to the camera to prevent the wrapping/clipping of points
+        point.z += settings.getCameraDistance();
+        if (point.z <= zNear) {return null;}
+
+        Matrix4 projectionMatrix = new Matrix4(new float[]{
+            fovCalculation/aspectRatio, 0, 0, 0,
+            0, fovCalculation, 0, 0,
+            0, 0, zNormalisation, 1,
+            0, 0, -zNear*zNormalisation, 0
+        });
+
+        // apply the projection matrix
+        point.prj(projectionMatrix);
+
+        // convert 3d point to the 2d screen
+        point.x = (point.x+1)*(screenDimensions.x/2);
+        point.y = (1-point.y)*(screenDimensions.y/2);
+
+        return new Vector2(point.x, point.y);
     }
 }

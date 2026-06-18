@@ -53,9 +53,15 @@ public class Main extends ApplicationAdapter {
             settings.setRotationAnglesY((float) (settings.getRotationAnglesY()-Math.toRadians(1)));
         }
         if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-            settings.setCameraDistance(settings.getCameraDistance()-1);
+            settings.setRotationAnglesZ((float) (settings.getRotationAnglesZ()+Math.toRadians(1)));
         }
         if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+            settings.setRotationAnglesZ((float) (settings.getRotationAnglesZ()-Math.toRadians(1)));
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.Z)) {
+            settings.setCameraDistance(settings.getCameraDistance()-1);
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.X)) {
             settings.setCameraDistance(settings.getCameraDistance()+1);
         }
 

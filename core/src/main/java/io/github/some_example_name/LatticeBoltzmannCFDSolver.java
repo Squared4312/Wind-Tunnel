@@ -21,7 +21,7 @@ public class LatticeBoltzmannCFDSolver {
         {0, 0, 0}, {1, 0, 0}, {1, 1, 0}, {1, -1, 0}, {-1, 0, 0}, {-1, 1, 0}, {-1, -1, 0}, {0, 1, 0}, {0, -1, 0},
         {0, 0, -1}, {1, 0, -1}, {-1, 0, -1}, {0, 1, -1}, {0, -1, -1}, {0, 0, 1}, {1, 0, 1}, {-1, 0, 1}, {0, 1, 1}, {0, -1, 1}
     };
-    private ArrayList<String> barriers = new ArrayList<>(); // the xyz coords are stored as a String, separated by spaces, for example, 32 2 54
+    private ArrayList<String> barriers = new ArrayList<>(); // the xyz coords are stored as a String, separated by spaces, for example: 32 2 54
     private Integer neighbours;
 
     public LatticeBoltzmannCFDSolver() {
@@ -57,6 +57,7 @@ public class LatticeBoltzmannCFDSolver {
     }
 
     public void render(ShapeRenderer sr) {
+        if (settings.getSolver() == "2D LBM") {cellDimensions = 1920/settings.getResolution().x;}
         Vector3 rotatedPoint;
         Vector2 screenPos;
         for (int x=0; x<settings.getResolution().x; x++) {
@@ -64,12 +65,12 @@ public class LatticeBoltzmannCFDSolver {
                 for (int z=0; z<settings.getResolution().z; z++) {
                     if (!(x == 0 || y == 0 || z == 0 || x == settings.getResolution().x-1 || y == settings.getResolution().y-1 || z == settings.getResolution().z-1)) {continue;}
                     // calculate colour here
-                    sr.setColor(Color.WHITE);
+                    sr.setColor(1f, 1f, 1f, 1f);
                     if (settings.getSolver() == "2D LBM") {
-                        sr.circle(x, y, 1); // sr.rect(x, y, cellDimensions, cellDimensions);
+                        sr.circle(x*cellDimensions, y*cellDimensions, 1); // sr.rect(x, y, cellDimensions, cellDimensions);
                     } else {
                         rotatedPoint = renderer.rotate(x-(settings.getResolution().x/2), y-(settings.getResolution().y/2), z-(settings.getResolution().z/2));
-                        screenPos = renderer.pointProjection(rotatedPoint.x, rotatedPoint.y, rotatedPoint.z);
+                        screenPos = renderer.pointProjection(rotatedPoint);
                         if (screenPos == null) continue;
                         sr.circle(screenPos.x, screenPos.y, 1);
                     }
