@@ -46,14 +46,14 @@ public class LatticeBoltzmannCFDSolver {
     float v;
 
     int numOfColors = 600;
-    //float[] colours = new float[numOfColors];
+    ArrayList<Color> colours = new ArrayList<>();
 
     public LatticeBoltzmannCFDSolver() {
         this.util = new MenuUtil();
         this.settings = Settings.getInstance();
         this.renderer = new ThreeDimensionalRenderer();
         initialiseFluid();
-        //colours = calculateColours(colours);
+        colours = calculateColours(colours, numOfColors);
     }
 
     /*public void collide() {
@@ -104,26 +104,27 @@ public class LatticeBoltzmannCFDSolver {
     public void render(ShapeRenderer sr) {
         if (settings.getSolver() == "2D LBM") {
             cellDimensions = 1920/settings.getResolution().x;
-        } else {
+        } /*else {
             origin = renderer.rotate(-(settings.getResolution().x/2), -(settings.getResolution().x/2), -(settings.getResolution().x/2));
             originX = renderer.rotate(settings.getResolution().x/2, -(settings.getResolution().x/2), -(settings.getResolution().x/2));
             originY = renderer.rotate(-(settings.getResolution().x/2), settings.getResolution().x/2, -(settings.getResolution().x/2));
             originZ = renderer.rotate(-(settings.getResolution().x/2), -(settings.getResolution().x/2), settings.getResolution().x/2);
-        }
+        }*/
 
         for (int x=0; x<settings.getResolution().x; x++) {
             for (int y=0; y<settings.getResolution().y; y++) {
                 for (int z=0; z<settings.getResolution().z; z++) {
                     if (!(x == 0 || y == 0 || z == 0 || x == settings.getResolution().x-1 || y == settings.getResolution().y-1 || z == settings.getResolution().z-1)) {continue;}
-                    //int index = calculateColourIndex();
+                    //sr.setColor(colours.get(calculateColourIndex(cell's xVelocity)));
                     sr.setColor(1f, 1f, 1f, 1f);
                     if (settings.getSolver() == "2D LBM") {
-                        sr.circle((x+0.5f)*cellDimensions, (y+0.5f)*cellDimensions, 1); // sr.rect(x, y, cellDimensions, cellDimensions);
+                        sr.circle((x+0.5f)*cellDimensions, (y+0.5f)*cellDimensions, 1);
+                        //sr.rect(x*cellDimensions, y*cellDimensions, cellDimensions, cellDimensions);
                     } else {
-                        rotatedPoint.x = (originX.x*x + originY.y*x + originZ.z*x);
+                        /*rotatedPoint.x = (originX.x*x + originY.y*x + originZ.z*x);
                         rotatedPoint.y = (originX.x*y + originY.y*y + originZ.z*y);
-                        rotatedPoint.z = (originX.x*z + originY.y*z + originZ.z*z);
-                        //rotatedPoint = renderer.rotate(x-(settings.getResolution().x/2), y-(settings.getResolution().y/2), z-(settings.getResolution().z/2));
+                        rotatedPoint.z = (originX.x*z + originY.y*z + originZ.z*z);*/
+                        rotatedPoint = renderer.rotate(x-(settings.getResolution().x/2), y-(settings.getResolution().y/2), z-(settings.getResolution().z/2));
                         screenPos = renderer.pointProjection(rotatedPoint);
                         if (screenPos == null) continue;
                         sr.circle(screenPos.x, screenPos.y, 1);
@@ -133,19 +134,22 @@ public class LatticeBoltzmannCFDSolver {
         }
     }
 
-    public float[] calculateColours(float[] colours) {
-        for (int c=0; c<numOfColors; c++) {
-            double h = (2.0/3) * (1 - c*1.0/numOfColors); // hue from blue to cyan to green to yellow to red
+    public ArrayList<Color> calculateColours(ArrayList<Color> colours, int numOfColours) {
+        colours = new ArrayList<>();
+        for (int c=0; c<numOfColours; c++) {
+            double h = (2.0/3)*(1 - c*1.0/numOfColours);
             h += 0.03 * Math.sin(6*Math.PI*h);
-            colours[c] = java.awt.Color.HSBtoRGB((float) h, 1, 1);
+            java.awt.Color awtColour = new java.awt.Color(java.awt.Color.HSBtoRGB((float) h, 1, 1));
+            float r = awtColour.getRed()/255f;
+            float g = awtColour.getGreen()/255f;
+            float b = awtColour.getBlue()/255f;
+            colours.add(new Color(r, g, b, 1f));
         }
         return colours;
     }
 
-    public int calculateColourIndex() {
-        int contrast = 1;
-        int xvel = 1;
-        int index = (int) (numOfColors*(0.5 + xvel*contrast*0.2));
+    public int calculateColourIndex(float xVelocity) {
+        int index = (int) (numOfColors*(0.5 + xVelocity*0.2));
         if (index < 0) {index = 0;}
         if (index >= numOfColors) {index = numOfColors-1;}
         return index;
