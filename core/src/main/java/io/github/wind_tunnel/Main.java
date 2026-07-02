@@ -43,7 +43,7 @@ public class Main extends ApplicationAdapter {
     @Override
     public void render() {
         ScreenUtils.clear(0f, 0f, 0f, 1f);
-        Gdx.graphics.setTitle("Wind Tunnel FPS: " + Gdx.graphics.getFramesPerSecond());
+        Gdx.graphics.setTitle("Wind Tunnel FPS: " + Gdx.graphics.getFramesPerSecond() + "/" + Gdx.graphics.getDisplayMode().refreshRate);
 
         if (Gdx.input.isKeyPressed(Input.Keys.W)) {
             settings.setRotationAnglesX((float) (settings.getRotationAnglesX()-(Math.PI/180)));
