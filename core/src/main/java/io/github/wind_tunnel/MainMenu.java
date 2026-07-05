@@ -50,7 +50,7 @@ public class MainMenu implements Menu {
 
     @Override
     public String checkIfButtonsClicked() {
-        if (util.isButtonClicked(quitButton)) {Gdx.app.exit();}
+        if (util.isButtonClicked(quitButton)) {return "quit";}
         if (util.isButtonClicked(settingsButton)) {return "settings";}
         if (util.isButtonClicked(levelsButton)) {return "levels";}
         if (util.isButtonClicked(freeplayButton)) {return "freeplay";}
