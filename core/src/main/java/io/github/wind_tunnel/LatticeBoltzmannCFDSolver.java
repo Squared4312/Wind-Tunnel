@@ -50,6 +50,10 @@ public class LatticeBoltzmannCFDSolver {
     private double one3v3vv;
     private double one_3v3vv;
 
+    private double cellDensity;
+    private double cellXVelocity;
+    private double cellYVelocity;
+
     int numOfColors = 600;
     ArrayList<Color> colours = new ArrayList<>();
 
@@ -58,7 +62,7 @@ public class LatticeBoltzmannCFDSolver {
         this.settings = Settings.getInstance();
         this.renderer = new ThreeDimensionalRenderer();
         initialiseFluid();
-        colours = calculateColours(colours, numOfColors);
+        colours = calculateColours(numOfColors);
     }
 
     /*public void collide() {
@@ -128,6 +132,29 @@ public class LatticeBoltzmannCFDSolver {
         densities = zeroBarriers();
     }
 
+    public void collide() {
+        if (settings.getSolver() == "2D LBM") {
+            neighbours = 9;
+        } else {
+            neighbours = 19;
+        }
+        /*private Integer[][] relativeDirections = {
+            {0, 0, 0}, {1, 0, 0}, {1, 1, 0}, {1, -1, 0}, {-1, 0, 0}, {-1, 1, 0}, {-1, -1, 0}, {0, 1, 0}, {0, -1, 0},
+            {0, 0, -1}, {1, 0, -1}, {-1, 0, -1}, {0, 1, -1}, {0, -1, -1}, {0, 0, 1}, {1, 0, 1}, {-1, 0, 1}, {0, 1, 1}, {0, -1, 1}
+        };*/
+        for (int x=0; x<settings.getResolution().x; x++) {
+            for (int y=0; y<settings.getResolution().y; y++) {
+                for (int z=0; z<settings.getResolution().z; z++) {
+                    cellDensity = 0;
+                    for (int count=0; count<neighbours; count++) {
+                        cellDensity += densities[x][y][z][count];
+                    }
+                    cellXVelocity = densities[x][y][z][1] + densities[x][y][z][2] + densities[x][y][z][3] - densities[x][y][z][4] - densities[x][y][z][5] - densities[x][y][z][6] + densities[x][y][z][10] - densities[x][y][z][11] + densities[x][y][z][15] - densities[x][y][z][16];
+                }
+            }
+        }
+    }
+
     public void render(ShapeRenderer sr) {
         if (settings.getSolver() == "2D LBM") {
             cellDimensions = 1920/settings.getResolution().x;
@@ -161,7 +188,7 @@ public class LatticeBoltzmannCFDSolver {
         }
     }
 
-    public ArrayList<Color> calculateColours(ArrayList<Color> colours, int numOfColours) {
+    public ArrayList<Color> calculateColours(int numOfColours) {
         colours = new ArrayList<>();
         for (int c=0; c<numOfColours; c++) {
             double h = (2.0/3)*(1 - c*1.0/numOfColours);
