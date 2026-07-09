@@ -53,6 +53,18 @@ public class LatticeBoltzmannCFDSolver {
     private double cellDensity;
     private double cellXVelocity;
     private double cellYVelocity;
+    private double omega;
+    private double vx3;
+    private double vy3;
+    private double vxvx;
+    private double vyvy;
+    private double twovxvy;
+    private double vxvxvyvy;
+    private double one5vxvxvyvy;
+    private double one9thDensity;
+    private double one36thDensity;
+    private double one3rdDensity;
+    private double one18thDensity;
 
     int numOfColors = 600;
     ArrayList<Color> colours = new ArrayList<>();
@@ -138,10 +150,7 @@ public class LatticeBoltzmannCFDSolver {
         } else {
             neighbours = 19;
         }
-        /*private Integer[][] relativeDirections = {
-            {0, 0, 0}, {1, 0, 0}, {1, 1, 0}, {1, -1, 0}, {-1, 0, 0}, {-1, 1, 0}, {-1, -1, 0}, {0, 1, 0}, {0, -1, 0},
-            {0, 0, -1}, {1, 0, -1}, {-1, 0, -1}, {0, 1, -1}, {0, -1, -1}, {0, 0, 1}, {1, 0, 1}, {-1, 0, 1}, {0, 1, 1}, {0, -1, 1}
-        };*/
+        omega = 1/(3*settings.getViscosity()+0.5);
         for (int x=0; x<settings.getResolution().x; x++) {
             for (int y=0; y<settings.getResolution().y; y++) {
                 for (int z=0; z<settings.getResolution().z; z++) {
@@ -149,7 +158,30 @@ public class LatticeBoltzmannCFDSolver {
                     for (int count=0; count<neighbours; count++) {
                         cellDensity += densities[x][y][z][count];
                     }
-                    cellXVelocity = densities[x][y][z][1] + densities[x][y][z][2] + densities[x][y][z][3] - densities[x][y][z][4] - densities[x][y][z][5] - densities[x][y][z][6] + densities[x][y][z][10] - densities[x][y][z][11] + densities[x][y][z][15] - densities[x][y][z][16];
+                    cellXVelocity = (densities[x][y][z][1]+densities[x][y][z][2]+densities[x][y][z][3]-densities[x][y][z][4]-densities[x][y][z][5]-densities[x][y][z][6]+densities[x][y][z][10]-densities[x][y][z][11]+densities[x][y][z][15]-densities[x][y][z][16])/cellDensity;
+                    cellYVelocity = (densities[x][y][z][2]-densities[x][y][z][3]+densities[x][y][z][5]-densities[x][y][z][6]+densities[x][y][z][7]-densities[x][y][z][8]+densities[x][y][z][12]-densities[x][y][z][13]+densities[x][y][z][17]-densities[x][y][z][18])/cellDensity;
+
+                    vx3 = 3*cellXVelocity;
+                    vy3 = 3*cellYVelocity;
+                    vxvx = cellXVelocity*cellXVelocity;
+                    vyvy = cellYVelocity*cellYVelocity;
+                    twovxvy = 2*cellXVelocity*cellYVelocity;
+                    vxvxvyvy = vxvx+vyvy;
+                    one5vxvxvyvy = 1.5*vxvxvyvy;
+                    one9thDensity = one9th*cellDensity;
+                    one36thDensity = one36th*cellDensity;
+
+                    if (settings.getSolver() == "2D LBM"){
+                        densities[x][y][z][0] += omega*(four9ths*cellDensity * (1-one5vxvxvyvy)-densities[x][y][z][0]);
+                        densities[x][y][z][1]  += omega*(one9thDensity*(1+vx3 + 4.5*vxvx - one5vxvxvyvy)-densities[x][y][z][1]);
+                        densities[x][y][z][4]  += omega*(one9thDensity*(1-vx3 + 4.5*vxvx - one5vxvxvyvy)-densities[x][y][z][4]);
+                        densities[x][y][z][7]  += omega*(one9thDensity*(1+vy3 + 4.5*vyvy - one5vxvxvyvy)-densities[x][y][z][7]);
+                        densities[x][y][z][8]  += omega*(one9thDensity*(1-vy3 + 4.5*vyvy - one5vxvxvyvy)-densities[x][y][z][8]);
+                        densities[x][y][z][2] += omega*(one36thDensity*(1+vx3+vy3 + 4.5*(vxvxvyvy+twovxvy) - one5vxvxvyvy)-densities[x][y][z][2]);
+                        densities[x][y][z][5] += omega*(one36thDensity*(1-vx3+vy3 + 4.5*(vxvxvyvy-twovxvy) - one5vxvxvyvy)-densities[x][y][z][5]);
+                        densities[x][y][z][3] += omega*(one36thDensity*(1+vx3-vy3 + 4.5*(vxvxvyvy-twovxvy) - one5vxvxvyvy)-densities[x][y][z][3]);
+                        densities[x][y][z][6] += omega*(one36thDensity*(1-vx3-vy3 + 4.5*(vxvxvyvy+twovxvy) - one5vxvxvyvy)-densities[x][y][z][6]);
+                    }
                 }
             }
         }
