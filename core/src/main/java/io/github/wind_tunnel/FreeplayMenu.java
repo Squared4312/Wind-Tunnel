@@ -38,9 +38,7 @@ public class FreeplayMenu implements Menu {
     public void render(ShapeRenderer sr, SpriteBatch batch) {
 
         if (settings.getSimulationRunning()) {
-            //cfdSolver.collision();
-            //cfdSolver.movement();
-            //cfdSolver.boundaries();
+            cfdSolver.doStep();
         }
 
         sr.begin(ShapeRenderer.ShapeType.Filled);

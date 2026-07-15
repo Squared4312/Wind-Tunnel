@@ -63,29 +63,21 @@ public class LatticeBoltzmannCFDSolver {
     private double one5vxvxvyvy;
     private double one9thDensity;
     private double one36thDensity;
-    private double one3rdDensity;
     private double one18thDensity;
 
-    int numOfColors = 600;
-    ArrayList<Color> colours = new ArrayList<>();
+    private int numOfColors = 600;
+    private ArrayList<Color> colours = new ArrayList<>();
+
+    private double[][][][] cellAverageVelocities;
 
     public LatticeBoltzmannCFDSolver() {
         this.util = new MenuUtil();
         this.settings = Settings.getInstance();
         this.renderer = new ThreeDimensionalRenderer();
         initialiseFluid();
-        colours = calculateColours(numOfColors);
+        this.colours = calculateColours(numOfColors);
+        this.cellAverageVelocities = new double[(int) settings.getResolution().x][(int) settings.getResolution().y][(int) settings.getResolution().z][2];
     }
-
-    /*public void collide() {
-        for (int x=0; x<settings.getResolution().x; x++) {
-            for (int y=0; y<settings.getResolution().y; y++) {
-                for (int z=0; z<settings.getResolution().z; z++) {
-
-                }
-            }
-        }
-    }*/
 
     public void initialiseFluid() {
         if (settings.getSolver() == "2D LBM") {
@@ -107,6 +99,8 @@ public class LatticeBoltzmannCFDSolver {
                     for (int count=0; count<neighbours; count++) {
                         densities[x][y][z][count] = settings.getFlowSpeed()/neighbours;
                     }*/
+
+                    // this moves the fluid towards an equilibruim/resting state based on the Maxwell-Boltzmann Distribution curve
                     if (settings.getSolver() == "2D LBM") {
                         densities[x][y][z][0] = four9ths * one15vv;
                         densities[x][y][z][1] = one9th * one3v3vv;
@@ -144,6 +138,12 @@ public class LatticeBoltzmannCFDSolver {
         densities = zeroBarriers();
     }
 
+    public void doStep() {
+        collide();
+        //stream();
+        //bounce();
+    }
+
     public void collide() {
         if (settings.getSolver() == "2D LBM") {
             neighbours = 9;
@@ -158,9 +158,21 @@ public class LatticeBoltzmannCFDSolver {
                     for (int count=0; count<neighbours; count++) {
                         cellDensity += densities[x][y][z][count];
                     }
-                    cellXVelocity = (densities[x][y][z][1]+densities[x][y][z][2]+densities[x][y][z][3]-densities[x][y][z][4]-densities[x][y][z][5]-densities[x][y][z][6]+densities[x][y][z][10]-densities[x][y][z][11]+densities[x][y][z][15]-densities[x][y][z][16])/cellDensity;
-                    cellYVelocity = (densities[x][y][z][2]-densities[x][y][z][3]+densities[x][y][z][5]-densities[x][y][z][6]+densities[x][y][z][7]-densities[x][y][z][8]+densities[x][y][z][12]-densities[x][y][z][13]+densities[x][y][z][17]-densities[x][y][z][18])/cellDensity;
+                    // calculate the cell's x and y average velocity for calculating colours and relaxation time
+                    cellXVelocity = densities[x][y][z][1]+densities[x][y][z][2]+densities[x][y][z][3]-densities[x][y][z][4]-densities[x][y][z][5]-densities[x][y][z][6];
+                    cellYVelocity = densities[x][y][z][2]-densities[x][y][z][3]+densities[x][y][z][5]-densities[x][y][z][6]+densities[x][y][z][7]-densities[x][y][z][8];
+                    if (settings.getSolver() == "3D LBM") {
+                        cellXVelocity += densities[x][y][z][10]-densities[x][y][z][11]+densities[x][y][z][15]-densities[x][y][z][16];
+                        cellYVelocity += densities[x][y][z][12]-densities[x][y][z][13]+densities[x][y][z][17]-densities[x][y][z][18];
+                    }
+                    cellXVelocity /= cellDensity;
+                    cellYVelocity /= cellDensity;
 
+                    // store the x and y velocities to draw colours later
+                    cellAverageVelocities[x][y][z][0] = cellXVelocity;
+                    cellAverageVelocities[x][y][z][1] = cellYVelocity;
+
+                    // pre-calculate re-used values
                     vx3 = 3*cellXVelocity;
                     vy3 = 3*cellYVelocity;
                     vxvx = cellXVelocity*cellXVelocity;
@@ -170,17 +182,29 @@ public class LatticeBoltzmannCFDSolver {
                     one5vxvxvyvy = 1.5*vxvxvyvy;
                     one9thDensity = one9th*cellDensity;
                     one36thDensity = one36th*cellDensity;
+                    one18thDensity = one18th*cellDensity;
 
+                    // relaxation equations based on the Maxwell-Boltzmann Distribution curve
                     if (settings.getSolver() == "2D LBM"){
                         densities[x][y][z][0] += omega*(four9ths*cellDensity * (1-one5vxvxvyvy)-densities[x][y][z][0]);
-                        densities[x][y][z][1]  += omega*(one9thDensity*(1+vx3 + 4.5*vxvx - one5vxvxvyvy)-densities[x][y][z][1]);
-                        densities[x][y][z][4]  += omega*(one9thDensity*(1-vx3 + 4.5*vxvx - one5vxvxvyvy)-densities[x][y][z][4]);
-                        densities[x][y][z][7]  += omega*(one9thDensity*(1+vy3 + 4.5*vyvy - one5vxvxvyvy)-densities[x][y][z][7]);
-                        densities[x][y][z][8]  += omega*(one9thDensity*(1-vy3 + 4.5*vyvy - one5vxvxvyvy)-densities[x][y][z][8]);
+                        densities[x][y][z][1] += omega*(one9thDensity*(1+vx3 + 4.5*vxvx - one5vxvxvyvy)-densities[x][y][z][1]);
+                        densities[x][y][z][4] += omega*(one9thDensity*(1-vx3 + 4.5*vxvx - one5vxvxvyvy)-densities[x][y][z][4]);
+                        densities[x][y][z][7] += omega*(one9thDensity*(1+vy3 + 4.5*vyvy - one5vxvxvyvy)-densities[x][y][z][7]);
+                        densities[x][y][z][8] += omega*(one9thDensity*(1-vy3 + 4.5*vyvy - one5vxvxvyvy)-densities[x][y][z][8]);
                         densities[x][y][z][2] += omega*(one36thDensity*(1+vx3+vy3 + 4.5*(vxvxvyvy+twovxvy) - one5vxvxvyvy)-densities[x][y][z][2]);
                         densities[x][y][z][5] += omega*(one36thDensity*(1-vx3+vy3 + 4.5*(vxvxvyvy-twovxvy) - one5vxvxvyvy)-densities[x][y][z][5]);
                         densities[x][y][z][3] += omega*(one36thDensity*(1+vx3-vy3 + 4.5*(vxvxvyvy-twovxvy) - one5vxvxvyvy)-densities[x][y][z][3]);
                         densities[x][y][z][6] += omega*(one36thDensity*(1-vx3-vy3 + 4.5*(vxvxvyvy+twovxvy) - one5vxvxvyvy)-densities[x][y][z][6]);
+                    } else {
+                        densities[x][y][z][0] += omega*(one3rd*cellDensity * (1-one5vxvxvyvy)-densities[x][y][z][0]);
+                        densities[x][y][z][1] += omega*(one9thDensity*(1+vx3 + 4.5*vxvx - one5vxvxvyvy)-densities[x][y][z][1]);
+                        densities[x][y][z][4] += omega*(one9thDensity*(1-vx3 + 4.5*vxvx - one5vxvxvyvy)-densities[x][y][z][4]);
+                        densities[x][y][z][7] += omega*(one9thDensity*(1+vy3 + 4.5*vyvy - one5vxvxvyvy)-densities[x][y][z][7]);
+                        densities[x][y][z][8] += omega*(one9thDensity*(1-vy3 + 4.5*vyvy - one5vxvxvyvy)-densities[x][y][z][8]);
+                        densities[x][y][z][2] += omega*(one18thDensity*(1+vx3+vy3 + 4.5*(vxvxvyvy+twovxvy) - one5vxvxvyvy)-densities[x][y][z][2]);
+                        densities[x][y][z][5] += omega*(one18thDensity*(1-vx3+vy3 + 4.5*(vxvxvyvy-twovxvy) - one5vxvxvyvy)-densities[x][y][z][5]);
+                        densities[x][y][z][3] += omega*(one18thDensity*(1+vx3-vy3 + 4.5*(vxvxvyvy-twovxvy) - one5vxvxvyvy)-densities[x][y][z][3]);
+                        densities[x][y][z][6] += omega*(one18thDensity*(1-vx3-vy3 + 4.5*(vxvxvyvy+twovxvy) - one5vxvxvyvy)-densities[x][y][z][6]);
                     }
                 }
             }
@@ -201,8 +225,8 @@ public class LatticeBoltzmannCFDSolver {
             for (int y=0; y<settings.getResolution().y; y++) {
                 for (int z=0; z<settings.getResolution().z; z++) {
                     if (!(x == 0 || y == 0 || z == 0 || x == settings.getResolution().x-1 || y == settings.getResolution().y-1 || z == settings.getResolution().z-1)) {continue;}
-                    //sr.setColor(colours.get(calculateColourIndex(cell's xVelocity)));
-                    sr.setColor(1f, 1f, 1f, 1f);
+                    sr.setColor(colours.get(calculateColourIndex(cellAverageVelocities[x][y][z][0]))); // calculates colour based on xVelocity
+                    //sr.setColor(1f, 1f, 1f, 1f);
                     if (settings.getSolver() == "2D LBM") {
                         sr.circle((x+0.5f)*cellDimensions, (y+0.5f)*cellDimensions, 1);
                         //sr.rect(x*cellDimensions, y*cellDimensions, cellDimensions, cellDimensions);
@@ -234,7 +258,7 @@ public class LatticeBoltzmannCFDSolver {
         return colours;
     }
 
-    public int calculateColourIndex(float xVelocity) {
+    public int calculateColourIndex(double xVelocity) {
         int index = (int) (numOfColors*(0.5 + xVelocity*0.2));
         if (index < 0) {index = 0;}
         if (index >= numOfColors) {index = numOfColors-1;}
