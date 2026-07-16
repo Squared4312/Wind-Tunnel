@@ -88,16 +88,16 @@ public class LevelsMenu implements Menu {
 
         if (!settings.getSimulationRunning() && util.isButtonClicked(runButton)) {settings.setSimulationRunning(true);}
         else if (settings.getSimulationRunning() && util.isButtonClicked(pauseButton)) {settings.setSimulationRunning(false);}
-        if (!settings.getSimulationRunning() && util.isButtonClicked(stepButton)) {System.out.println("step simulation");}
+        if (!settings.getSimulationRunning() && util.isButtonClicked(stepButton)) {cfdSolver.doStep();}
 
         if (util.isButtonClicked(backButton)) {return "back";}
         if (util.isButtonClicked(settingsButton)) {return "settings";}
         return "levels";
     }
 
-    public Integer changeLevelNumber(Integer change) {
+    public int changeLevelNumber(int change) {
         if (change == 1) {
-            if (levelNumber == totalLevels) {
+            if (levelNumber.equals(totalLevels)) {
                 return 1;
             }
             return levelNumber+1;

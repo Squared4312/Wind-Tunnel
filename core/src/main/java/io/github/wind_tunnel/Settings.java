@@ -14,14 +14,14 @@ public class Settings {
 
     private String[] plotValues = {"density", "x velocity", "y velocity", "speed", "curl"};
     private String[] modeValues = {"draw barriers", "erase barriers", "drag fluid"};
-    private Integer[][] resolutionValues = {{32, 18}, {64, 36}, {128, 72}, {256, 144}, {512, 288}, {1024, 576}}; // keep the 16:9 aspect ratio
+    private int[][] resolutionValues = {{32, 18}, {64, 36}, {128, 72}, {256, 144}, {512, 288}, {1024, 576}}; // keep the 16:9 aspect ratio
     private String[] solverValues = {"2D LBM", "3D LBM"};
 
     private boolean simulationRunning = false;
 
     private Vector3 rotationAngles;
-    private Integer cameraDistance;
-    private Integer fov;
+    private int cameraDistance;
+    private int fov;
     private Vector3 origin;
 
     private static Settings instance;
@@ -52,16 +52,16 @@ public class Settings {
         this.origin = new Vector3(0, 0, 0);
     }
 
-    public String cycleOptions(Integer change, String currentValue, String[] possibleValues) {
-        if (currentValue == "2D LBM") {
+    public String cycleOptions(int change, String currentValue, String[] possibleValues) {
+        if (currentValue.equals("2D LBM")) {
             resolution.z = resolution.y;
-        } else if (currentValue == "3D LBM") {
+        } else if (currentValue.equals("3D LBM")) {
             resolution.z = 1;
         }
 
-        Integer index = 0;
-        for (Integer count=0; count<possibleValues.length; count++) {
-            if (possibleValues[count] == currentValue) {
+        int index = 0;
+        for (int count=0; count<possibleValues.length; count++) {
+            if (possibleValues[count].equals(currentValue)) {
                 index = count;
                 break;
             }
@@ -81,9 +81,9 @@ public class Settings {
         return currentValue;
     }
 
-    public void cycleResolutionOptions(Integer change) {
-        Integer index = 0;
-        for (Integer count=0; count<resolutionValues.length; count++) {
+    public void cycleResolutionOptions(int change) {
+        int index = 0;
+        for (int count=0; count<resolutionValues.length; count++) {
             if (resolutionValues[count][0] == this.resolution.x && resolutionValues[count][1] == this.resolution.y) {
                 index = count;
                 break;
@@ -107,11 +107,11 @@ public class Settings {
     public Vector3 getOrigin() {return this.origin;}
     public void setOrigin(Vector3 origin) {this.origin = origin;}
 
-    public Integer getCameraDistance() {return this.cameraDistance;}
-    public void setCameraDistance(Integer cameraDistance) {if (cameraDistance > 0) {this.cameraDistance = cameraDistance;}}
+    public int getCameraDistance() {return this.cameraDistance;}
+    public void setCameraDistance(int cameraDistance) {if (cameraDistance > 0) {this.cameraDistance = cameraDistance;}}
 
-    public Integer getFov() {return this.fov;}
-    public void setFov(Integer fov) {this.fov = fov;}
+    public int getFov() {return this.fov;}
+    public void setFov(int fov) {this.fov = fov;}
 
     public Vector3 getRotationAngles() {return this.rotationAngles;}
     public void setRotationAngles(Vector3 angles) {this.rotationAngles = angles;}
@@ -155,8 +155,8 @@ public class Settings {
     public String[] getModeValues() {return this.modeValues;}
     public void setModeValues(String[] modeValues) {this.modeValues = modeValues;}
 
-    public Integer[][] getResolutionValues() {return this.resolutionValues;}
-    public void setResolutionValues(Integer[][] resolutionValues) {this.resolutionValues = resolutionValues;}
+    public int[][] getResolutionValues() {return this.resolutionValues;}
+    public void setResolutionValues(int[][] resolutionValues) {this.resolutionValues = resolutionValues;}
 
     public String[] getSolverValues() {return this.solverValues;}
     public void setSolverValues(String[] solverValues) {this.solverValues = solverValues;}

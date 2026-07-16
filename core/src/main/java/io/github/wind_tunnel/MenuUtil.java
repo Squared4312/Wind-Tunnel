@@ -52,8 +52,8 @@ public class MenuUtil {
 
     public Rectangle renderRoundedTriangle(ShapeRenderer sr, Color color, float x, float y, float radius, float rotation) {
         Vector2[] points = new Vector2[3];
-        for (Integer count=0; count<points.length; count++) {
-            Integer increment = count*120;
+        for (int count=0; count<points.length; count++) {
+            int increment = count*120;
             points[count] = new Vector2((float) (x+(radius*Math.cos(Math.toRadians(-rotation+90+increment)))), (float) (y+(radius*Math.sin(Math.toRadians(-rotation+90+increment)))));
         }
 
@@ -84,13 +84,13 @@ public class MenuUtil {
         font.setColor(color);
         font.getData().setScale(size/256);
         layout.setText(font, text);
-        if (alignment == "centre") {
+        if (alignment.equals("centre")) {
             font.draw(batch, text, x-layout.width/2, y+layout.height/2);
             return x;
-        } else if (alignment == "left") {
+        } else if (alignment.equals("left")) {
             font.draw(batch, text, x, y+layout.height/2);
             return x+layout.width;
-        } else if (alignment == "right") {
+        } else if (alignment.equals("right")) {
             font.draw(batch, text, x-layout.width, y+layout.height/2);
             return x-layout.width;
         }

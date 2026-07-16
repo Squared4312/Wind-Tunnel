@@ -117,7 +117,7 @@ public class SettingsMenu implements Menu {
                 util.renderText(batch, "show flowlines", Color.WHITE, 1040, 342.5f, 36, "left"); // r5
             }
 
-            if (settings.getSolver() == "2D LBM") {
+            if (settings.getSolver().equals("2D LBM")) {
                 resolutionZValue = "";
                 settings.setResolution(new Vector3(settings.getResolution().x, settings.getResolution().y, 1));
             } else {
@@ -133,7 +133,7 @@ public class SettingsMenu implements Menu {
             solverTextX = util.renderText(batch, settings.getSolver(), Color.WHITE, 1545, 742.5f, 36, "right"); // r1 value
 
             if (renderDropdown) {
-                for (Integer count=0; count<barrierShapeValues.length; count++) {
+                for (int count=0; count<barrierShapeValues.length; count++) {
                     util.renderText(batch, barrierShapeValues[count], Color.WHITE, 1040, 580-(50*count), 36, "left");
                     barrierShapesDropdownButtons[count] = new Rectangle(1020, 580-(50*count)-25, 600, 50);
                 }
@@ -179,7 +179,7 @@ public class SettingsMenu implements Menu {
         if (!renderDropdown && util.isButtonClicked(showFlowlinesButton)) {settings.setShowFlowLines(!settings.getShowFlowLines());}
 
         if (renderDropdown) {
-            for (Integer count=0; count<barrierShapeValues.length; count++) {
+            for (int count=0; count<barrierShapeValues.length; count++) {
                 if (util.isButtonClicked(barrierShapesDropdownButtons[count])) {
                     System.out.println(barrierShapeValues[count]);
                     renderDropdown = false;

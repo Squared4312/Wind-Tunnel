@@ -9,8 +9,8 @@ public class ThreeDimensionalRenderer {
 
     private Settings settings;
 
-    private Integer cameraDistance;
-    private Integer fov;
+    private int cameraDistance;
+    private int fov;
     private Vector3 rotationAngles;
     private Vector3 origin;
 

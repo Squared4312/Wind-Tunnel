@@ -2,9 +2,9 @@ package io.github.wind_tunnel;
 
 public class Stack {
     private String[] stack;
-    private Integer pointer = 0;
+    private int pointer = 0;
 
-    public Stack(Integer length) {
+    public Stack(int length) {
         stack = new String[length];
     }
 

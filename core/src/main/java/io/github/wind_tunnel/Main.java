@@ -76,7 +76,7 @@ public class Main extends ApplicationAdapter {
             nextMenu = freeplayMenu.checkIfButtonsClicked();
         }
 
-        if (nextMenu == "quit") {
+        if (nextMenu.equals("quit")) {
             Gdx.app.exit();
         } else if (!nextMenu.equals(menu)) {
             if (menu.equals("main") && (nextMenu.equals("levels") || nextMenu.equals("freeplay"))) {
