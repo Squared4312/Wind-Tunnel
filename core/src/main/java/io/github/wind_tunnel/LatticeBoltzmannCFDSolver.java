@@ -11,10 +11,10 @@ public class LatticeBoltzmannCFDSolver {
 
     /*
     TO DO:
-    - research how to initialise a cell with the correct starting densities
-    - research why each relative internal cell direction gets a specific weight
-    - create a collide function - 75%
-    - create a stream function - 0%
+    - research how to initialise a cell with the correct starting densities - done
+    - research why each relative internal cell direction gets a specific weight - done
+    - create a collide function - 100% - done
+    - create a stream function - 0% - WIP
     - create a bounce function - 0%
      */
 
@@ -140,7 +140,7 @@ public class LatticeBoltzmannCFDSolver {
 
     public void doStep() {
         collide();
-        //stream();
+        stream();
         //bounce();
     }
 
@@ -222,6 +222,10 @@ public class LatticeBoltzmannCFDSolver {
         }
     }
 
+    public void stream() {
+        // move fluid using the LBM optimization Esoteric Pull
+    }
+
     public void render(ShapeRenderer sr) {
         if (settings.getSolver().equals("2D LBM")) {
             cellDimensions = 1920/settings.getResolution().x;
@@ -236,7 +240,7 @@ public class LatticeBoltzmannCFDSolver {
             for (int y=0; y<settings.getResolution().y; y++) {
                 for (int z=0; z<settings.getResolution().z; z++) {
                     if (!(x == 0 || y == 0 || z == 0 || x == settings.getResolution().x-1 || y == settings.getResolution().y-1 || z == settings.getResolution().z-1)) {continue;}
-                    sr.setColor(colours.get(calculateColourIndex(cellAverageVelocities[x][y][z][0]))); // calculates colour based on xVelocity
+                    sr.setColor(colours.get(calculateColourIndex(x, y, z))); // calculates colour based on plotMode
                     //sr.setColor(1f, 1f, 1f, 1f);
                     if (settings.getSolver().equals("2D LBM")) {
                         sr.circle((x+0.5f)*cellDimensions, (y+0.5f)*cellDimensions, 1);
@@ -269,11 +273,22 @@ public class LatticeBoltzmannCFDSolver {
         return colours;
     }
 
-    public int calculateColourIndex(double xVelocity) {
-        int index = (int) (numOfColors*(0.5 + xVelocity*0.2));
+    public int calculateColourIndex(int x, int y, int z) {
+        double index = 0;
+        /*if (settings.getPlot().equals("speed")) {
+            index = ;
+        } else */if (settings.getPlot().equals("x velocity")) {
+            index = numOfColors*(0.5+(cellAverageVelocities[x][y][z][0]*0.2));
+        } else if (settings.getPlot().equals("y velocity")) {
+            index = numOfColors*(0.5+(cellAverageVelocities[x][y][z][1]*0.2));
+        } /*else if (settings.getPlot().equals("density")) {
+            index = ;
+        } else if (settings.getPlot().equals("curl")) {
+            index = ;
+        }*/
         if (index < 0) {index = 0;}
         if (index >= numOfColors) {index = numOfColors-1;}
-        return index;
+        return (int) index;
     }
 
     public void addBarrier(int x, int y, int z) {

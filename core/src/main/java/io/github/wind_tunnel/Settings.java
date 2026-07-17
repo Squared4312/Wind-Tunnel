@@ -12,7 +12,7 @@ public class Settings {
     private String mode;
     private boolean showFlowLines;
 
-    private String[] plotValues = {"density", "x velocity", "y velocity", "speed", "curl"};
+    private String[] plotValues = {"speed", "x velocity", "y velocity", "density", "curl"};
     private String[] modeValues = {"draw barriers", "erase barriers", "drag fluid"};
     private int[][] resolutionValues = {{32, 18}, {64, 36}, {128, 72}, {256, 144}, {512, 288}, {1024, 576}}; // keep the 16:9 aspect ratio
     private String[] solverValues = {"2D LBM", "3D LBM"};
