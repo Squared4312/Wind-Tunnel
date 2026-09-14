@@ -224,8 +224,7 @@ public class LatticeBoltzmannCFDSolver {
 
     public void stream() {
         // move fluid using the LBM optimization Esoteric Pull
-
-        if (settings.getSolver() == "2D LBM") {
+        if (settings.getSolver().equals("2D LBM")) {
             for (int x=0; x<settings.getResolution().x-1; x++) {
                 for (int y = (int) (settings.getResolution().y-1); y>0; y--) {
                     densities[x][y][0][7] = densities[x][y-1][0][7]; // 010
@@ -310,7 +309,17 @@ public class LatticeBoltzmannCFDSolver {
     }
 
     public void bounce() {
-        // "bounce" the fluid off barriers
+        // Use the "bounce-back" method to rebound the fluid off/around barriers
+
+        for (int x=0; x<settings.getResolution().x; x++) {
+            for (int y=0; y<settings.getResolution().y; y++) {
+                for (int z=0; z<settings.getResolution().z; z++) {
+                    if (isBarrier(x, y, z)) {
+
+                    }
+                }
+            }
+        }
     }
 
     public void render(ShapeRenderer sr) {
@@ -395,4 +404,3 @@ public class LatticeBoltzmannCFDSolver {
         return barriers.contains(x + " " + y + " " + z);
     }
 }
-
