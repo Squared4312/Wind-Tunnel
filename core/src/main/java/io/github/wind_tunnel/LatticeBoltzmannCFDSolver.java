@@ -141,7 +141,7 @@ public class LatticeBoltzmannCFDSolver {
     public void doStep() {
         collide();
         stream();
-        //bounce();
+        bounce();
     }
 
     public void collide() {
@@ -224,6 +224,93 @@ public class LatticeBoltzmannCFDSolver {
 
     public void stream() {
         // move fluid using the LBM optimization Esoteric Pull
+
+        if (settings.getSolver() == "2D LBM") {
+            for (int x=0; x<settings.getResolution().x-1; x++) {
+                for (int y = (int) (settings.getResolution().y-1); y>0; y--) {
+                    densities[x][y][0][7] = densities[x][y-1][0][7]; // 010
+                    densities[x][y][0][5] = densities[x+1][y-1][0][5]; // -110
+                }
+            }
+            for (int x = (int) (settings.getResolution().x-1); x>0; x--) {
+                for (int y = (int) (settings.getResolution().y-1); y>0; y--) {
+                    densities[x][y][0][1] = densities[x-1][y][0][1]; // 100
+                    densities[x][y][0][2] = densities[x-1][y-1][0][2]; // 110
+                }
+            }
+            for (int x = (int) (settings.getResolution().x-1); x>0; x--) {
+                for (int y=0; y<settings.getResolution().y-1; y++) {
+                    densities[x][y][0][8] = densities[x][y+1][0][8]; // 0-10
+                    densities[x][y][0][3] = densities[x-1][y+1][0][3]; // 1-10
+                }
+            }
+            for (int x=0; x<settings.getResolution().x-1; x++) {
+                for (int y=0; y<settings.getResolution().y-1; y++) {
+                    densities[x][y][0][4] = densities[x+1][y][0][4]; // -100
+                    densities[x][y][0][6] = densities[x+1][y+1][0][6]; // -1-10
+                }
+            }
+
+            for (int y=0; y<settings.getResolution().y-1; y++) {
+                densities[0][y][0][8] = densities[0][y+1][0][8]; // 0-10
+            }
+            for (int y = (int) (settings.getResolution().y-1); y>0; y--) {
+                densities[(int) (settings.getResolution().x-1)][y][0][7] = densities[(int) (settings.getResolution().x-1)][y-1][0][7]; // 010
+            }
+
+            // set the left, right, top and bottom cells to be in equilibrium (aka inject new fluid)
+            v = settings.getFlowSpeed();
+
+            for (int y=0; y<settings.getResolution().y; y++) {
+                if (!isBarrier(0, y, 0)) { // left
+                    densities[0][y][0][1] = one9th*(1 + 3*v + 3*v*v); // 100
+                    densities[0][y][0][2] = one36th*(1 + 3*v + 3*v*v); // 110
+                    densities[0][y][0][3] = one36th*(1 + 3*v + 3*v*v); // 1-10
+                }
+                if (!isBarrier((int) (settings.getResolution().x-1), y, 0)) { // right
+                    densities[(int) (settings.getResolution().x-1)][y][0][4] = one9th*(1 - 3*v + 3*v*v); // -100
+                    densities[(int) (settings.getResolution().x-1)][y][0][5] = one36th*(1 - 3*v + 3*v*v); // -110
+                    densities[(int) (settings.getResolution().x-1)][y][0][6] = one36th*(1 - 3*v + 3*v*v); // -1-10
+                }
+            }
+
+            /*for (int y=0; y<settings.getResolution().y; y++) { // right
+                if (!isBarrier((int) (settings.getResolution().x-1), y, 0)) {
+                    densities[(int) (settings.getResolution().x-1)][y][0][4] = one9th*(1 - 3*v + 3*v*v); // -100
+                    densities[(int) (settings.getResolution().x-1)][y][0][5] = one36th*(1 - 3*v + 3*v*v); // -110
+                    densities[(int) (settings.getResolution().x-1)][y][0][6] = one36th*(1 - 3*v + 3*v*v); // -1-10
+                }
+            }*/
+
+            for (int x=0; x<settings.getResolution().x; x++) {
+                // top
+                densities[x][0][0][0] = four9ths*(1 - 1.5*v*v); // 000
+                densities[x][0][0][1] = one9th*(1 + 3*v + 3*v*v); // 100
+                densities[x][0][0][4] = one9th*(1 - 3*v + 3*v*v); // -100
+                densities[x][0][0][7] = one9th*(1 - 1.5*v*v); // 010
+                densities[x][0][0][8] = one9th*(1 - 1.5*v*v); // 0-10
+                densities[x][0][0][2] = one36th*(1 + 3*v + 3*v*v); // 110
+                densities[x][0][0][3] = one36th*(1 + 3*v + 3*v*v); // 1-10
+                densities[x][0][0][5] = one36th*(1 - 3*v + 3*v*v); // -110
+                densities[x][0][0][6] = one36th*(1 - 3*v + 3*v*v); // -1-10
+                // bottom
+                densities[x][(int) (settings.getResolution().y-1)][0][0] = four9ths*(1 - 1.5*v*v); // 000
+                densities[x][(int) (settings.getResolution().y-1)][0][1] = one9th*(1 + 3*v + 3*v*v); // 100
+                densities[x][(int) (settings.getResolution().y-1)][0][4] = one9th*(1 - 3*v + 3*v*v); // -100
+                densities[x][(int) (settings.getResolution().y-1)][0][7] = one9th*(1 - 1.5*v*v); // 010
+                densities[x][(int) (settings.getResolution().y-1)][0][8] = one9th*(1 - 1.5*v*v); // 0-10
+                densities[x][(int) (settings.getResolution().y-1)][0][2] = one36th*(1 + 3*v + 3*v*v); // 110
+                densities[x][(int) (settings.getResolution().y-1)][0][3] = one36th*(1 + 3*v + 3*v*v); // 1-10
+                densities[x][(int) (settings.getResolution().y-1)][0][5] = one36th*(1 - 3*v + 3*v*v); // -110
+                densities[x][(int) (settings.getResolution().y-1)][0][6] = one36th*(1 - 3*v + 3*v*v); // -1-10
+            }
+        }
+
+        // add 3D streaming
+    }
+
+    public void bounce() {
+        // "bounce" the fluid off barriers
     }
 
     public void render(ShapeRenderer sr) {
@@ -302,6 +389,10 @@ public class LatticeBoltzmannCFDSolver {
             Arrays.fill(densities[Integer.parseInt(pos[0])][Integer.parseInt(pos[1])][Integer.parseInt(pos[2])], 0);
         }
         return densities;
+    }
+
+    public boolean isBarrier(int x, int y, int z) {
+        return barriers.contains(x + " " + y + " " + z);
     }
 }
 
