@@ -135,7 +135,8 @@ public class LatticeBoltzmannCFDSolver {
                 }
             }
         }
-        densities = zeroBarriers();
+        barriers.add("1 1 0");
+        zeroBarriers();
     }
 
     public void doStep() {
@@ -311,6 +312,34 @@ public class LatticeBoltzmannCFDSolver {
 
     public void bounce() {
         // "bounce" the fluid off barriers
+
+        /*private int[][] relativeDirections = {
+            {0, 0, 0}, {1, 0, 0}, {1, 1, 0}, {1, -1, 0}, {-1, 0, 0}, {-1, 1, 0}, {-1, -1, 0}, {0, 1, 0}, {0, -1, 0},
+            {0, 0, -1}, {1, 0, -1}, {-1, 0, -1}, {0, 1, -1}, {0, -1, -1}, {0, 0, 1}, {1, 0, 1}, {-1, 0, 1}, {0, 1, 1}, {0, -1, 1}
+        };*/
+
+        for (int x=0; x<settings.getResolution().x; x++) {
+            for (int y=0; y<settings.getResolution().y; y++) {
+                for (int z=0; z<settings.getResolution().z; z++) {
+                    if (isBarrier(x, y, z)) {
+                        if (densities[x][y][z][7] > 0) {densities[x][y-1][z][8] += densities[x][y][z][7];} // 010
+                        if (densities[x][y][z][8] > 0) {densities[x][y+1][z][7] += densities[x][y][z][8];} // 0-10
+                        if (densities[x][y][z][1] > 0) {densities[x-1][y][z][4] += densities[x][y][z][1];} // 100
+                        if (densities[x][y][z][4] > 0) {densities[x+1][y][z][1] += densities[x][y][z][4];} // -100
+
+                        if (densities[x][y][z][2] > 0) {densities[x-1][y-1][z][6] += densities[x][y][z][2];} // 110
+                        if (densities[x][y][z][5] > 0) {densities[x+1][y-1][z][3] += densities[x][y][z][5];} // -110
+                        if (densities[x][y][z][6] > 0) {densities[x+1][y+1][z][2] += densities[x][y][z][6];} // -1-10
+                        if (densities[x][y][z][3] > 0) {densities[x-1][y+1][z][5] += densities[x][y][z][3];} // 1-10
+
+                        if (settings.getSolver().equals("3D LBM")) {
+                            // add 3D bounce-back
+                        }
+                    }
+                }
+            }
+        }
+        zeroBarriers();
     }
 
     public void render(ShapeRenderer sr) {
@@ -382,13 +411,12 @@ public class LatticeBoltzmannCFDSolver {
         barriers.add(x + " " + y + " " + z);
     }
 
-    public double[][][][] zeroBarriers() {
+    public void zeroBarriers() {
         String[] pos;
         for (String xyz : barriers) {
             pos = xyz.split(" ");
             Arrays.fill(densities[Integer.parseInt(pos[0])][Integer.parseInt(pos[1])][Integer.parseInt(pos[2])], 0);
         }
-        return densities;
     }
 
     public boolean isBarrier(int x, int y, int z) {
