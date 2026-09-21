@@ -25,7 +25,7 @@ public class LatticeBoltzmannCFDSolver {
     private float cellDimensions;
 
     // array of densities named by their relative offset to the cell (in 3D)
-    private double[][][][] densities;
+    private float[][][][] densities;
     private int[][] relativeDirections = {
         {0, 0, 0}, {1, 0, 0}, {1, 1, 0}, {1, -1, 0}, {-1, 0, 0}, {-1, 1, 0}, {-1, -1, 0}, {0, 1, 0}, {0, -1, 0},
         {0, 0, -1}, {1, 0, -1}, {-1, 0, -1}, {0, 1, -1}, {0, -1, -1}, {0, 0, 1}, {1, 0, 1}, {-1, 0, 1}, {0, 1, 1}, {0, -1, 1}
@@ -46,29 +46,29 @@ public class LatticeBoltzmannCFDSolver {
     private float one3rd = 1/3f;
     private float one18th = 1/18f;
     private float v;
-    private double one15vv;
-    private double one3v3vv;
-    private double one_3v3vv;
+    private float one15vv;
+    private float one3v3vv;
+    private float one_3v3vv;
 
-    private double cellDensity;
-    private double cellXVelocity;
-    private double cellYVelocity;
-    private double omega;
-    private double vx3;
-    private double vy3;
-    private double vxvx;
-    private double vyvy;
-    private double twovxvy;
-    private double vxvxvyvy;
-    private double one5vxvxvyvy;
-    private double one9thDensity;
-    private double one36thDensity;
-    private double one18thDensity;
+    private float cellDensity;
+    private float cellXVelocity;
+    private float cellYVelocity;
+    private float omega;
+    private float vx3;
+    private float vy3;
+    private float vxvx;
+    private float vyvy;
+    private float twovxvy;
+    private float vxvxvyvy;
+    private float one5vxvxvyvy;
+    private float one9thDensity;
+    private float one36thDensity;
+    private float one18thDensity;
 
     private int numOfColors = 600;
     private ArrayList<Color> colours = new ArrayList<>();
 
-    private double[][][][] cellAverageVelocities;
+    private float[][][][] cellAverageVelocities;
 
     public LatticeBoltzmannCFDSolver() {
         this.util = new MenuUtil();
@@ -84,11 +84,11 @@ public class LatticeBoltzmannCFDSolver {
         } else {
             neighbours = 19;
         }
-        this.densities = new double[(int) settings.getResolution().x][(int) settings.getResolution().y][(int) settings.getResolution().z][neighbours];
-        this.cellAverageVelocities = new double[(int) settings.getResolution().x][(int) settings.getResolution().y][(int) settings.getResolution().z][2];
+        this.densities = new float[(int) settings.getResolution().x][(int) settings.getResolution().y][(int) settings.getResolution().z][neighbours];
+        this.cellAverageVelocities = new float[(int) settings.getResolution().x][(int) settings.getResolution().y][(int) settings.getResolution().z][2];
 
         v = settings.getFlowSpeed();
-        one15vv = 1-1.5*v*v;
+        one15vv = 1-1.5f*v*v;
         one3v3vv = 1+3*v+3*v*v;
         one_3v3vv = 1-3*v+3*v*v;
 
@@ -135,7 +135,7 @@ public class LatticeBoltzmannCFDSolver {
                 }
             }
         }
-        barriers.add("1 1 0");
+        addBarrier(100, 50, 0);
         zeroBarriers();
     }
 
@@ -151,7 +151,7 @@ public class LatticeBoltzmannCFDSolver {
         } else {
             neighbours = 19;
         }
-        omega = 1/(3*settings.getViscosity()+0.5);
+        omega = 1/(3*settings.getViscosity()+0.5f);
         for (int x=0; x<settings.getResolution().x; x++) {
             for (int y=0; y<settings.getResolution().y; y++) {
                 for (int z=0; z<settings.getResolution().z; z++) {
@@ -180,7 +180,7 @@ public class LatticeBoltzmannCFDSolver {
                     vyvy = cellYVelocity*cellYVelocity;
                     twovxvy = 2*cellXVelocity*cellYVelocity;
                     vxvxvyvy = vxvx+vyvy;
-                    one5vxvxvyvy = 1.5*vxvxvyvy;
+                    one5vxvxvyvy = 1.5f*vxvxvyvy;
                     one9thDensity = one9th*cellDensity;
                     one36thDensity = one36th*cellDensity;
                     one18thDensity = one18th*cellDensity;
@@ -188,35 +188,35 @@ public class LatticeBoltzmannCFDSolver {
                     // relaxation equations based on the Maxwell-Boltzmann Distribution curve
                     if (settings.getSolver().equals("2D LBM")){
                         densities[x][y][z][0] += omega*(four9ths*cellDensity * (1-one5vxvxvyvy)-densities[x][y][z][0]);
-                        densities[x][y][z][1] += omega*(one9thDensity*(1+vx3 + 4.5*vxvx - one5vxvxvyvy)-densities[x][y][z][1]);
-                        densities[x][y][z][4] += omega*(one9thDensity*(1-vx3 + 4.5*vxvx - one5vxvxvyvy)-densities[x][y][z][4]);
-                        densities[x][y][z][7] += omega*(one9thDensity*(1+vy3 + 4.5*vyvy - one5vxvxvyvy)-densities[x][y][z][7]);
-                        densities[x][y][z][8] += omega*(one9thDensity*(1-vy3 + 4.5*vyvy - one5vxvxvyvy)-densities[x][y][z][8]);
-                        densities[x][y][z][2] += omega*(one36thDensity*(1+vx3+vy3 + 4.5*(vxvxvyvy+twovxvy) - one5vxvxvyvy)-densities[x][y][z][2]);
-                        densities[x][y][z][5] += omega*(one36thDensity*(1-vx3+vy3 + 4.5*(vxvxvyvy-twovxvy) - one5vxvxvyvy)-densities[x][y][z][5]);
-                        densities[x][y][z][3] += omega*(one36thDensity*(1+vx3-vy3 + 4.5*(vxvxvyvy-twovxvy) - one5vxvxvyvy)-densities[x][y][z][3]);
-                        densities[x][y][z][6] += omega*(one36thDensity*(1-vx3-vy3 + 4.5*(vxvxvyvy+twovxvy) - one5vxvxvyvy)-densities[x][y][z][6]);
+                        densities[x][y][z][1] += omega*(one9thDensity*(1+vx3 + 4.5f*vxvx - one5vxvxvyvy)-densities[x][y][z][1]);
+                        densities[x][y][z][4] += omega*(one9thDensity*(1-vx3 + 4.5f*vxvx - one5vxvxvyvy)-densities[x][y][z][4]);
+                        densities[x][y][z][7] += omega*(one9thDensity*(1+vy3 + 4.5f*vyvy - one5vxvxvyvy)-densities[x][y][z][7]);
+                        densities[x][y][z][8] += omega*(one9thDensity*(1-vy3 + 4.5f*vyvy - one5vxvxvyvy)-densities[x][y][z][8]);
+                        densities[x][y][z][2] += omega*(one36thDensity*(1+vx3+vy3 + 4.5f*(vxvxvyvy+twovxvy) - one5vxvxvyvy)-densities[x][y][z][2]);
+                        densities[x][y][z][5] += omega*(one36thDensity*(1-vx3+vy3 + 4.5f*(vxvxvyvy-twovxvy) - one5vxvxvyvy)-densities[x][y][z][5]);
+                        densities[x][y][z][3] += omega*(one36thDensity*(1+vx3-vy3 + 4.5f*(vxvxvyvy-twovxvy) - one5vxvxvyvy)-densities[x][y][z][3]);
+                        densities[x][y][z][6] += omega*(one36thDensity*(1-vx3-vy3 + 4.5f*(vxvxvyvy+twovxvy) - one5vxvxvyvy)-densities[x][y][z][6]);
                     } else {
                         densities[x][y][z][0] += omega*(one3rd*cellDensity * (1-one5vxvxvyvy)-densities[x][y][z][0]);
-                        densities[x][y][z][1] += omega*(one9thDensity*(1+vx3 + 4.5*vxvx - one5vxvxvyvy)-densities[x][y][z][1]);
-                        densities[x][y][z][4] += omega*(one9thDensity*(1-vx3 + 4.5*vxvx - one5vxvxvyvy)-densities[x][y][z][4]);
-                        densities[x][y][z][7] += omega*(one9thDensity*(1+vy3 + 4.5*vyvy - one5vxvxvyvy)-densities[x][y][z][7]);
-                        densities[x][y][z][8] += omega*(one9thDensity*(1-vy3 + 4.5*vyvy - one5vxvxvyvy)-densities[x][y][z][8]);
-                        densities[x][y][z][9] += omega*(one9thDensity*(1-vy3 + 4.5*vyvy - one5vxvxvyvy)-densities[x][y][z][9]);
-                        densities[x][y][z][14] += omega*(one9thDensity*(1-vy3 + 4.5*vyvy - one5vxvxvyvy)-densities[x][y][z][14]);
+                        densities[x][y][z][1] += omega*(one9thDensity*(1+vx3 + 4.5f*vxvx - one5vxvxvyvy)-densities[x][y][z][1]);
+                        densities[x][y][z][4] += omega*(one9thDensity*(1-vx3 + 4.5f*vxvx - one5vxvxvyvy)-densities[x][y][z][4]);
+                        densities[x][y][z][7] += omega*(one9thDensity*(1+vy3 + 4.5f*vyvy - one5vxvxvyvy)-densities[x][y][z][7]);
+                        densities[x][y][z][8] += omega*(one9thDensity*(1-vy3 + 4.5f*vyvy - one5vxvxvyvy)-densities[x][y][z][8]);
+                        densities[x][y][z][9] += omega*(one9thDensity*(1-vy3 + 4.5f*vyvy - one5vxvxvyvy)-densities[x][y][z][9]);
+                        densities[x][y][z][14] += omega*(one9thDensity*(1-vy3 + 4.5f*vyvy - one5vxvxvyvy)-densities[x][y][z][14]);
 
-                        densities[x][y][z][2] += omega*(one36thDensity*(1+vx3+vy3 + 4.5*(vxvxvyvy+twovxvy) - one5vxvxvyvy)-densities[x][y][z][2]);
-                        densities[x][y][z][3] += omega*(one36thDensity*(1+vx3+vy3 + 4.5*(vxvxvyvy+twovxvy) - one5vxvxvyvy)-densities[x][y][z][3]);
-                        densities[x][y][z][5] += omega*(one36thDensity*(1-vx3+vy3 + 4.5*(vxvxvyvy-twovxvy) - one5vxvxvyvy)-densities[x][y][z][5]);
-                        densities[x][y][z][6] += omega*(one36thDensity*(1-vx3-vy3 + 4.5*(vxvxvyvy+twovxvy) - one5vxvxvyvy)-densities[x][y][z][6]);
-                        densities[x][y][z][10] += omega*(one36thDensity*(1+vx3+vy3 + 4.5*(vxvxvyvy+twovxvy) - one5vxvxvyvy)-densities[x][y][z][10]);
-                        densities[x][y][z][11] += omega*(one36thDensity*(1+vx3+vy3 + 4.5*(vxvxvyvy+twovxvy) - one5vxvxvyvy)-densities[x][y][z][11]);
-                        densities[x][y][z][12] += omega*(one36thDensity*(1+vx3+vy3 + 4.5*(vxvxvyvy+twovxvy) - one5vxvxvyvy)-densities[x][y][z][12]);
-                        densities[x][y][z][13] += omega*(one36thDensity*(1+vx3+vy3 + 4.5*(vxvxvyvy+twovxvy) - one5vxvxvyvy)-densities[x][y][z][13]);
-                        densities[x][y][z][15] += omega*(one36thDensity*(1+vx3+vy3 + 4.5*(vxvxvyvy+twovxvy) - one5vxvxvyvy)-densities[x][y][z][15]);
-                        densities[x][y][z][16] += omega*(one36thDensity*(1+vx3+vy3 + 4.5*(vxvxvyvy+twovxvy) - one5vxvxvyvy)-densities[x][y][z][16]);
-                        densities[x][y][z][17] += omega*(one36thDensity*(1+vx3+vy3 + 4.5*(vxvxvyvy+twovxvy) - one5vxvxvyvy)-densities[x][y][z][17]);
-                        densities[x][y][z][18] += omega*(one36thDensity*(1+vx3+vy3 + 4.5*(vxvxvyvy+twovxvy) - one5vxvxvyvy)-densities[x][y][z][18]);
+                        densities[x][y][z][2] += omega*(one36thDensity*(1+vx3+vy3 + 4.5f*(vxvxvyvy+twovxvy) - one5vxvxvyvy)-densities[x][y][z][2]);
+                        densities[x][y][z][3] += omega*(one36thDensity*(1+vx3+vy3 + 4.5f*(vxvxvyvy+twovxvy) - one5vxvxvyvy)-densities[x][y][z][3]);
+                        densities[x][y][z][5] += omega*(one36thDensity*(1-vx3+vy3 + 4.5f*(vxvxvyvy-twovxvy) - one5vxvxvyvy)-densities[x][y][z][5]);
+                        densities[x][y][z][6] += omega*(one36thDensity*(1-vx3-vy3 + 4.5f*(vxvxvyvy+twovxvy) - one5vxvxvyvy)-densities[x][y][z][6]);
+                        densities[x][y][z][10] += omega*(one36thDensity*(1+vx3+vy3 + 4.5f*(vxvxvyvy+twovxvy) - one5vxvxvyvy)-densities[x][y][z][10]);
+                        densities[x][y][z][11] += omega*(one36thDensity*(1+vx3+vy3 + 4.5f*(vxvxvyvy+twovxvy) - one5vxvxvyvy)-densities[x][y][z][11]);
+                        densities[x][y][z][12] += omega*(one36thDensity*(1+vx3+vy3 + 4.5f*(vxvxvyvy+twovxvy) - one5vxvxvyvy)-densities[x][y][z][12]);
+                        densities[x][y][z][13] += omega*(one36thDensity*(1+vx3+vy3 + 4.5f*(vxvxvyvy+twovxvy) - one5vxvxvyvy)-densities[x][y][z][13]);
+                        densities[x][y][z][15] += omega*(one36thDensity*(1+vx3+vy3 + 4.5f*(vxvxvyvy+twovxvy) - one5vxvxvyvy)-densities[x][y][z][15]);
+                        densities[x][y][z][16] += omega*(one36thDensity*(1+vx3+vy3 + 4.5f*(vxvxvyvy+twovxvy) - one5vxvxvyvy)-densities[x][y][z][16]);
+                        densities[x][y][z][17] += omega*(one36thDensity*(1+vx3+vy3 + 4.5f*(vxvxvyvy+twovxvy) - one5vxvxvyvy)-densities[x][y][z][17]);
+                        densities[x][y][z][18] += omega*(one36thDensity*(1+vx3+vy3 + 4.5f*(vxvxvyvy+twovxvy) - one5vxvxvyvy)-densities[x][y][z][18]);
                     }
                 }
             }
@@ -285,21 +285,21 @@ public class LatticeBoltzmannCFDSolver {
 
             for (int x=0; x<settings.getResolution().x; x++) {
                 // top
-                densities[x][0][0][0] = four9ths*(1 - 1.5*v*v); // 000
+                densities[x][0][0][0] = four9ths*(1 - 1.5f*v*v); // 000
                 densities[x][0][0][1] = one9th*(1 + 3*v + 3*v*v); // 100
                 densities[x][0][0][4] = one9th*(1 - 3*v + 3*v*v); // -100
-                densities[x][0][0][7] = one9th*(1 - 1.5*v*v); // 010
-                densities[x][0][0][8] = one9th*(1 - 1.5*v*v); // 0-10
+                densities[x][0][0][7] = one9th*(1 - 1.5f*v*v); // 010
+                densities[x][0][0][8] = one9th*(1 - 1.5f*v*v); // 0-10
                 densities[x][0][0][2] = one36th*(1 + 3*v + 3*v*v); // 110
                 densities[x][0][0][3] = one36th*(1 + 3*v + 3*v*v); // 1-10
                 densities[x][0][0][5] = one36th*(1 - 3*v + 3*v*v); // -110
                 densities[x][0][0][6] = one36th*(1 - 3*v + 3*v*v); // -1-10
                 // bottom
-                densities[x][(int) (settings.getResolution().y-1)][0][0] = four9ths*(1 - 1.5*v*v); // 000
+                densities[x][(int) (settings.getResolution().y-1)][0][0] = four9ths*(1 - 1.5f*v*v); // 000
                 densities[x][(int) (settings.getResolution().y-1)][0][1] = one9th*(1 + 3*v + 3*v*v); // 100
                 densities[x][(int) (settings.getResolution().y-1)][0][4] = one9th*(1 - 3*v + 3*v*v); // -100
-                densities[x][(int) (settings.getResolution().y-1)][0][7] = one9th*(1 - 1.5*v*v); // 010
-                densities[x][(int) (settings.getResolution().y-1)][0][8] = one9th*(1 - 1.5*v*v); // 0-10
+                densities[x][(int) (settings.getResolution().y-1)][0][7] = one9th*(1 - 1.5f*v*v); // 010
+                densities[x][(int) (settings.getResolution().y-1)][0][8] = one9th*(1 - 1.5f*v*v); // 0-10
                 densities[x][(int) (settings.getResolution().y-1)][0][2] = one36th*(1 + 3*v + 3*v*v); // 110
                 densities[x][(int) (settings.getResolution().y-1)][0][3] = one36th*(1 + 3*v + 3*v*v); // 1-10
                 densities[x][(int) (settings.getResolution().y-1)][0][5] = one36th*(1 - 3*v + 3*v*v); // -110
@@ -312,11 +312,6 @@ public class LatticeBoltzmannCFDSolver {
 
     public void bounce() {
         // "bounce" the fluid off barriers
-
-        /*private int[][] relativeDirections = {
-            {0, 0, 0}, {1, 0, 0}, {1, 1, 0}, {1, -1, 0}, {-1, 0, 0}, {-1, 1, 0}, {-1, -1, 0}, {0, 1, 0}, {0, -1, 0},
-            {0, 0, -1}, {1, 0, -1}, {-1, 0, -1}, {0, 1, -1}, {0, -1, -1}, {0, 0, 1}, {1, 0, 1}, {-1, 0, 1}, {0, 1, 1}, {0, -1, 1}
-        };*/
 
         for (int x=0; x<settings.getResolution().x; x++) {
             for (int y=0; y<settings.getResolution().y; y++) {
@@ -335,39 +330,31 @@ public class LatticeBoltzmannCFDSolver {
                         if (settings.getSolver().equals("3D LBM")) {
                             // add 3D bounce-back
                         }
+                        zeroBarrier(x, y, z);
                     }
                 }
             }
         }
-        zeroBarriers();
     }
 
     public void render(ShapeRenderer sr) {
         if (settings.getSolver().equals("2D LBM")) {
             cellDimensions = 1920/settings.getResolution().x;
-        } /*else {
-            origin = renderer.rotate(-(settings.getResolution().x/2), -(settings.getResolution().x/2), -(settings.getResolution().x/2));
-            originX = renderer.rotate(settings.getResolution().x/2, -(settings.getResolution().x/2), -(settings.getResolution().x/2));
-            originY = renderer.rotate(-(settings.getResolution().x/2), settings.getResolution().x/2, -(settings.getResolution().x/2));
-            originZ = renderer.rotate(-(settings.getResolution().x/2), -(settings.getResolution().x/2), settings.getResolution().x/2);
-        }*/
+        }
 
         for (int x=0; x<settings.getResolution().x; x++) {
             for (int y=0; y<settings.getResolution().y; y++) {
                 for (int z=0; z<settings.getResolution().z; z++) {
                     if (!(x == 0 || y == 0 || z == 0 || x == settings.getResolution().x-1 || y == settings.getResolution().y-1 || z == settings.getResolution().z-1)) {continue;}
                     sr.setColor(colours.get(calculateColourIndex(x, y, z))); // calculates colour based on plotMode
-                    //sr.setColor(1f, 1f, 1f, 1f);
+                    if (isBarrier(x, y, z)) {sr.setColor(Color.WHITE);}
                     if (settings.getSolver().equals("2D LBM")) {
                         sr.circle((x+0.5f)*cellDimensions, (y+0.5f)*cellDimensions, 1);
                         //sr.rect(x*cellDimensions, y*cellDimensions, cellDimensions, cellDimensions);
                     } else {
-                        /*rotatedPoint.x = (originX.x*x + originY.y*x + originZ.z*x);
-                        rotatedPoint.y = (originX.x*y + originY.y*y + originZ.z*y);
-                        rotatedPoint.z = (originX.x*z + originY.y*z + originZ.z*z);*/
                         rotatedPoint = renderer.rotate(x-(settings.getResolution().x/2), y-(settings.getResolution().y/2), z-(settings.getResolution().z/2));
                         screenPos = renderer.pointProjection(rotatedPoint);
-                        if (screenPos == null) continue;
+                        if (screenPos == null) {continue;}
                         sr.circle(screenPos.x, screenPos.y, 1);
                     }
                 }
@@ -408,7 +395,9 @@ public class LatticeBoltzmannCFDSolver {
     }
 
     public void addBarrier(int x, int y, int z) {
-        barriers.add(x + " " + y + " " + z);
+        if (!barriers.contains(x + " " + y + " " + z)) {
+            barriers.add(x + " " + y + " " + z);
+        }
     }
 
     public void zeroBarriers() {
@@ -417,6 +406,10 @@ public class LatticeBoltzmannCFDSolver {
             pos = xyz.split(" ");
             Arrays.fill(densities[Integer.parseInt(pos[0])][Integer.parseInt(pos[1])][Integer.parseInt(pos[2])], 0);
         }
+    }
+
+    public void zeroBarrier(int x, int y, int z) {
+        Arrays.fill(densities[x][y][z], 0);
     }
 
     public boolean isBarrier(int x, int y, int z) {
