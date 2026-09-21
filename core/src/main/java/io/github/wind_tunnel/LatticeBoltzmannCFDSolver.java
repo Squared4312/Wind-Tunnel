@@ -135,7 +135,12 @@ public class LatticeBoltzmannCFDSolver {
                 }
             }
         }
-        addBarrier(100, 50, 0);
+        for (int y=31; y<=40; y++) {
+            addBarrier(64, y, 0);
+        }
+        for (int y=40; y<=60; y++) {
+            addBarrier(32, y, 0);
+        }
         zeroBarriers();
     }
 
@@ -155,6 +160,8 @@ public class LatticeBoltzmannCFDSolver {
         for (int x=0; x<settings.getResolution().x; x++) {
             for (int y=0; y<settings.getResolution().y; y++) {
                 for (int z=0; z<settings.getResolution().z; z++) {
+                    if (isBarrier(x, y, z)) {continue;}
+
                     cellDensity = 0;
                     for (int count=0; count<neighbours; count++) {
                         cellDensity += densities[x][y][z][count];
@@ -330,11 +337,11 @@ public class LatticeBoltzmannCFDSolver {
                         if (settings.getSolver().equals("3D LBM")) {
                             // add 3D bounce-back
                         }
-                        zeroBarrier(x, y, z);
                     }
                 }
             }
         }
+        zeroBarriers();
     }
 
     public void render(ShapeRenderer sr) {
@@ -349,8 +356,7 @@ public class LatticeBoltzmannCFDSolver {
                     sr.setColor(colours.get(calculateColourIndex(x, y, z))); // calculates colour based on plotMode
                     if (isBarrier(x, y, z)) {sr.setColor(Color.WHITE);}
                     if (settings.getSolver().equals("2D LBM")) {
-                        sr.circle((x+0.5f)*cellDimensions, (y+0.5f)*cellDimensions, 1);
-                        //sr.rect(x*cellDimensions, y*cellDimensions, cellDimensions, cellDimensions);
+                        sr.rect(x*cellDimensions, y*cellDimensions, cellDimensions, cellDimensions);
                     } else {
                         rotatedPoint = renderer.rotate(x-(settings.getResolution().x/2), y-(settings.getResolution().y/2), z-(settings.getResolution().z/2));
                         screenPos = renderer.pointProjection(rotatedPoint);
@@ -378,12 +384,13 @@ public class LatticeBoltzmannCFDSolver {
 
     public int calculateColourIndex(int x, int y, int z) {
         double index = 0;
+        float contrast = 1/(3*settings.getFlowSpeed());
         /*if (settings.getPlot().equals("speed")) {
             index = ;
         } else */if (settings.getPlot().equals("x velocity")) {
-            index = numOfColors*(0.5+(cellAverageVelocities[x][y][z][0]*0.2));
+            index = numOfColors*(0.5+(cellAverageVelocities[x][y][z][0]*contrast));
         } else if (settings.getPlot().equals("y velocity")) {
-            index = numOfColors*(0.5+(cellAverageVelocities[x][y][z][1]*0.2));
+            index = numOfColors*(0.5+(cellAverageVelocities[x][y][z][1]*contrast));
         } /*else if (settings.getPlot().equals("density")) {
             index = ;
         } else if (settings.getPlot().equals("curl")) {
