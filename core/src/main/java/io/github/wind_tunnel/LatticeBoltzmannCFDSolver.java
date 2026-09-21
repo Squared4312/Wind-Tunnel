@@ -226,7 +226,7 @@ public class LatticeBoltzmannCFDSolver {
     public void stream() {
         // move fluid using the LBM optimization Esoteric Pull
 
-        if (settings.getSolver() == "2D LBM") {
+        if (settings.getSolver().equals("2D LBM")) {
             for (int x=0; x<settings.getResolution().x-1; x++) {
                 for (int y = (int) (settings.getResolution().y-1); y>0; y--) {
                     densities[x][y][0][7] = densities[x][y-1][0][7]; // 010
