@@ -14,8 +14,8 @@ public class LatticeBoltzmannCFDSolver {
     - research how to initialise a cell with the correct starting densities - done
     - research why each relative internal cell direction gets a specific weight - done
     - create a collide function - 100% - done
-    - create a stream function - 0% - WIP
-    - create a bounce function - 0%
+    - create a stream function - 50% - need 3D
+    - create a bounce function - 50% - need 3D
      */
 
     private MenuUtil util;
@@ -26,19 +26,15 @@ public class LatticeBoltzmannCFDSolver {
 
     // array of densities named by their relative offset to the cell (in 3D)
     private float[][][][] densities;
-    private int[][] relativeDirections = {
+    /*relativeDirections = {
         {0, 0, 0}, {1, 0, 0}, {1, 1, 0}, {1, -1, 0}, {-1, 0, 0}, {-1, 1, 0}, {-1, -1, 0}, {0, 1, 0}, {0, -1, 0},
         {0, 0, -1}, {1, 0, -1}, {-1, 0, -1}, {0, 1, -1}, {0, -1, -1}, {0, 0, 1}, {1, 0, 1}, {-1, 0, 1}, {0, 1, 1}, {0, -1, 1}
-    };
+    };*/
     private ArrayList<String> barriers = new ArrayList<>(); // the xyz coords are stored as a String, separated by spaces, for example, 32 2 54
     private int neighbours;
 
     private Vector3 rotatedPoint = new Vector3();
     private Vector2 screenPos;
-    private Vector3 origin;
-    private Vector3 originX;
-    private Vector3 originY;
-    private Vector3 originZ;
 
     private float four9ths = 4/9f;
     private float one9th = 1/9f;
@@ -138,7 +134,7 @@ public class LatticeBoltzmannCFDSolver {
         for (int y=31; y<=40; y++) {
             addBarrier(64, y, 0);
         }
-        for (int y=40; y<=60; y++) {
+        for (int y=40; y<=50; y++) {
             addBarrier(32, y, 0);
         }
         zeroBarriers();
@@ -413,10 +409,6 @@ public class LatticeBoltzmannCFDSolver {
             pos = xyz.split(" ");
             Arrays.fill(densities[Integer.parseInt(pos[0])][Integer.parseInt(pos[1])][Integer.parseInt(pos[2])], 0);
         }
-    }
-
-    public void zeroBarrier(int x, int y, int z) {
-        Arrays.fill(densities[x][y][z], 0);
     }
 
     public boolean isBarrier(int x, int y, int z) {
