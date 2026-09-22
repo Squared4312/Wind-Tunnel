@@ -18,7 +18,6 @@ public class LatticeBoltzmannCFDSolver {
     - create a bounce function - 50% - need 3D
      */
 
-    private MenuUtil util;
     private Settings settings;
     private ThreeDimensionalRenderer renderer;
 
@@ -30,7 +29,7 @@ public class LatticeBoltzmannCFDSolver {
         {0, 0, 0}, {1, 0, 0}, {1, 1, 0}, {1, -1, 0}, {-1, 0, 0}, {-1, 1, 0}, {-1, -1, 0}, {0, 1, 0}, {0, -1, 0},
         {0, 0, -1}, {1, 0, -1}, {-1, 0, -1}, {0, 1, -1}, {0, -1, -1}, {0, 0, 1}, {1, 0, 1}, {-1, 0, 1}, {0, 1, 1}, {0, -1, 1}
     };*/
-    private ArrayList<String> barriers = new ArrayList<>(); // the xyz coords are stored as a String, separated by spaces, for example, 32 2 54
+    private ArrayList<String> barriers = new ArrayList<>(); // the xyz coordinates are stored as a String, separated by spaces, for example, 32 2 54
     private int neighbours;
 
     private Vector3 rotatedPoint = new Vector3();
@@ -67,7 +66,6 @@ public class LatticeBoltzmannCFDSolver {
     private float[][][][] cellAverageVelocities;
 
     public LatticeBoltzmannCFDSolver() {
-        this.util = new MenuUtil();
         this.settings = Settings.getInstance();
         this.renderer = new ThreeDimensionalRenderer();
         initialiseFluid();
@@ -201,12 +199,12 @@ public class LatticeBoltzmannCFDSolver {
                         densities[x][y][z][6] += omega*(one36thDensity*(1-vx3-vy3 + 4.5f*(vxvxvyvy+twovxvy) - one5vxvxvyvy)-densities[x][y][z][6]);
                     } else {
                         densities[x][y][z][0] += omega*(one3rd*cellDensity * (1-one5vxvxvyvy)-densities[x][y][z][0]);
-                        densities[x][y][z][1] += omega*(one9thDensity*(1+vx3 + 4.5f*vxvx - one5vxvxvyvy)-densities[x][y][z][1]);
-                        densities[x][y][z][4] += omega*(one9thDensity*(1-vx3 + 4.5f*vxvx - one5vxvxvyvy)-densities[x][y][z][4]);
-                        densities[x][y][z][7] += omega*(one9thDensity*(1+vy3 + 4.5f*vyvy - one5vxvxvyvy)-densities[x][y][z][7]);
-                        densities[x][y][z][8] += omega*(one9thDensity*(1-vy3 + 4.5f*vyvy - one5vxvxvyvy)-densities[x][y][z][8]);
-                        densities[x][y][z][9] += omega*(one9thDensity*(1-vy3 + 4.5f*vyvy - one5vxvxvyvy)-densities[x][y][z][9]);
-                        densities[x][y][z][14] += omega*(one9thDensity*(1-vy3 + 4.5f*vyvy - one5vxvxvyvy)-densities[x][y][z][14]);
+                        densities[x][y][z][1] += omega*(one18thDensity*(1+vx3 + 4.5f*vxvx - one5vxvxvyvy)-densities[x][y][z][1]);
+                        densities[x][y][z][4] += omega*(one18thDensity*(1-vx3 + 4.5f*vxvx - one5vxvxvyvy)-densities[x][y][z][4]);
+                        densities[x][y][z][7] += omega*(one18thDensity*(1+vy3 + 4.5f*vyvy - one5vxvxvyvy)-densities[x][y][z][7]);
+                        densities[x][y][z][8] += omega*(one18thDensity*(1-vy3 + 4.5f*vyvy - one5vxvxvyvy)-densities[x][y][z][8]);
+                        densities[x][y][z][9] += omega*(one18thDensity*(1-vy3 + 4.5f*vyvy - one5vxvxvyvy)-densities[x][y][z][9]);
+                        densities[x][y][z][14] += omega*(one18thDensity*(1-vy3 + 4.5f*vyvy - one5vxvxvyvy)-densities[x][y][z][14]);
 
                         densities[x][y][z][2] += omega*(one36thDensity*(1+vx3+vy3 + 4.5f*(vxvxvyvy+twovxvy) - one5vxvxvyvy)-densities[x][y][z][2]);
                         densities[x][y][z][3] += omega*(one36thDensity*(1+vx3+vy3 + 4.5f*(vxvxvyvy+twovxvy) - one5vxvxvyvy)-densities[x][y][z][3]);
