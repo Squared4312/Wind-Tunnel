@@ -76,20 +76,27 @@ public class Main extends ApplicationAdapter {
             nextMenu = freeplayMenu.checkIfButtonsClicked();
         }
 
+        if (nextMenu.equals("clear barriers")) {
+            freeplayMenu.getCfdSolver().clearBarriers();
+            levelsMenu.getCfdSolver().clearBarriers();
+            nextMenu = "settings";
+        }
+
         if (nextMenu.equals("quit")) {
             Gdx.app.exit();
         } else if (!nextMenu.equals(menu)) {
             if (menu.equals("main") && (nextMenu.equals("levels") || nextMenu.equals("freeplay"))) {
-                freeplayMenu.reinitialise();
-                levelsMenu.reinitialise();
+                if (nextMenu.equals("levels")) {levelsMenu.getCfdSolver().clearBarriers();}
+                freeplayMenu.getCfdSolver().initialiseFluid();
+                levelsMenu.getCfdSolver().initialiseFluid();
                 settings.setSimulationRunning(false);
             }
             if ("back".equals(nextMenu)) {
                 if (!menuHistory.isEmpty()) {
                     String previousMenu = menuHistory.pop();
                     if (menu.equals("settings") && (previousMenu.equals("freeplay") || previousMenu.equals("levels"))) {
-                        freeplayMenu.reinitialise();
-                        levelsMenu.reinitialise();
+                        freeplayMenu.getCfdSolver().initialiseFluid();
+                        levelsMenu.getCfdSolver().initialiseFluid();
                     }
                     menu = previousMenu;
                 }

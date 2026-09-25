@@ -25,7 +25,7 @@ public class FreeplayMenu implements Menu {
 
     public FreeplayMenu() {
         this.util = new MenuUtil();
-        this.cfdSolver = new LatticeBoltzmannCFDSolver();
+        this.cfdSolver = LatticeBoltzmannCFDSolver.getInstance();
         this.settings = Settings.getInstance();
 
         this.backIcon = util.loadIcon("back");
@@ -82,5 +82,5 @@ public class FreeplayMenu implements Menu {
         return "freeplay";
     }
 
-    public void reinitialise() {cfdSolver.initialiseFluid();}
+    public LatticeBoltzmannCFDSolver getCfdSolver() {return cfdSolver;}
 }

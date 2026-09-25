@@ -25,8 +25,6 @@ public class SettingsMenu implements Menu {
     private Rectangle[] viscosityButtons = new Rectangle[2];
     private Rectangle[] plotButtons = new Rectangle[2];
     private float plotTextX = 0;
-    private Rectangle[] modeButtons = new Rectangle[2];
-    private float modeTextX = 0;
 
     private Rectangle barrierShapesButton;
     private boolean renderDropdown = false;
@@ -34,7 +32,6 @@ public class SettingsMenu implements Menu {
     private Rectangle[] barrierShapesDropdownButtons = new Rectangle[barrierShapeValues.length];
 
     private Rectangle clearBarrierButton;
-    private Rectangle resetFluidButton;
     private Rectangle showFlowlinesButton;
 
     private Texture backIcon;
@@ -66,13 +63,11 @@ public class SettingsMenu implements Menu {
             util.renderRoundedRectangle(sr, util.getButtonColor(), 600, 642.5f, 600, 75, 16); // l2
             util.renderRoundedRectangle(sr, util.getButtonColor(), 600, 542.5f, 600, 75, 16); // l3
             util.renderRoundedRectangle(sr, util.getButtonColor(), 600, 442.5f, 600, 75, 16); // l4
-            util.renderRoundedRectangle(sr, util.getButtonColor(), 600, 342.5f, 600, 75, 16); // l5
 
             util.renderRoundedRectangle(sr, util.getButtonColor(), 1320, 742.5f, 600, 75, 16); // r1
             barrierShapesButton = util.renderRoundedRectangle(sr, util.getButtonColor(), 1320, 642.5f, 600, 75, 16); // r2
             clearBarrierButton = util.renderRoundedRectangle(sr, util.getButtonColor(), 1320, 542.5f, 600, 75, 16); // r3
-            resetFluidButton = util.renderRoundedRectangle(sr, util.getButtonColor(), 1320, 442.5f, 600, 75, 16); // r4
-            showFlowlinesButton = util.renderRoundedRectangle(sr, util.getButtonColor(), 1320, 342.5f, 600, 75, 16); // r5
+            showFlowlinesButton = util.renderRoundedRectangle(sr, util.getButtonColor(), 1320, 442.5f, 600, 75, 16); // r4
 
             resolutionButtons[0] = util.renderRoundedTriangle(sr, Color.WHITE, 865, 742.5f, 12, 90);
             resolutionButtons[1] = util.renderRoundedTriangle(sr, Color.WHITE, resolutionTextX-40, 742.5f, 12, 270);
@@ -89,9 +84,6 @@ public class SettingsMenu implements Menu {
             plotButtons[0] = util.renderRoundedTriangle(sr, Color.WHITE, 865, 442.5f, 12, 90);
             plotButtons[1] = util.renderRoundedTriangle(sr, Color.WHITE, plotTextX-40, 442.5f, 12, 270);
 
-            modeButtons[0] = util.renderRoundedTriangle(sr, Color.WHITE, 865, 342.5f, 12, 90);
-            modeButtons[1] = util.renderRoundedTriangle(sr, Color.WHITE, modeTextX-40, 342.5f, 12, 270);
-
             if (renderDropdown) {
                 util.renderRoundedTriangle(sr, Color.WHITE, 1585, 642.5f, 12, 0);
                 util.renderRoundedRectangle(sr, util.getButtonColor(), 1320, 605-(0.5f*50*barrierShapeValues.length), 600, 50*barrierShapeValues.length, 16);
@@ -107,14 +99,12 @@ public class SettingsMenu implements Menu {
             util.renderText(batch, "flow speed", Color.WHITE, 320, 642.5f, 36, "left"); // l2
             util.renderText(batch, "viscosity", Color.WHITE, 320, 542.5f, 36, "left"); // l3
             util.renderText(batch, "plot", Color.WHITE, 320, 442.5f, 36, "left"); // l4
-            util.renderText(batch, "mode", Color.WHITE, 320, 342.5f, 36, "left"); // l5
 
             util.renderText(batch, "solver", Color.WHITE, 1040, 742.5f, 36, "left"); // r1
             util.renderText(batch, "barrier shapes", Color.WHITE, 1040, 642.5f, 36, "left"); // r2
             if (!renderDropdown) {
                 util.renderText(batch, "clear barriers", Color.WHITE, 1040, 542.5f, 36, "left"); // r3
-                util.renderText(batch, "reset fluid", Color.WHITE, 1040, 442.5f, 36, "left"); // r4
-                util.renderText(batch, "show flowlines", Color.WHITE, 1040, 342.5f, 36, "left"); // r5
+                util.renderText(batch, "show flowlines", Color.WHITE, 1040, 442.5f, 36, "left"); // r4
             }
 
             if (settings.getSolver().equals("2D LBM")) {
@@ -128,7 +118,6 @@ public class SettingsMenu implements Menu {
             util.renderText(batch, decimalFormat.format(settings.getFlowSpeed()), Color.WHITE, 765, 642.5f, 36, "centre"); // l2 value
             util.renderText(batch, decimalFormat.format(settings.getViscosity()), Color.WHITE, 765, 542.5f, 36, "centre"); // l3 value
             plotTextX = util.renderText(batch, settings.getPlot(), Color.WHITE, 825, 442.5f, 36, "right"); // l4 value
-            modeTextX = util.renderText(batch, settings.getMode(), Color.WHITE, 825, 342.5f, 36, "right"); // l5 value
 
             solverTextX = util.renderText(batch, settings.getSolver(), Color.WHITE, 1545, 742.5f, 36, "right"); // r1 value
 
@@ -144,9 +133,9 @@ public class SettingsMenu implements Menu {
 
             if (!renderDropdown) {
                 if (settings.getShowFlowLines()) {
-                    util.renderIcon(batch, flowLinesCheckBoxTrue, 1585, 342.5f);
+                    util.renderIcon(batch, flowLinesCheckBoxTrue, 1585, 442.5f);
                 } else {
-                    util.renderIcon(batch, flowLinesCheckBoxFalse, 1585, 342.5f);
+                    util.renderIcon(batch, flowLinesCheckBoxFalse, 1585, 442.5f);
                 }
             }
         batch.end();
@@ -169,12 +158,7 @@ public class SettingsMenu implements Menu {
         if (util.isButtonClicked(plotButtons[0])) {settings.setPlot(settings.cycleOptions(1, settings.getPlot(), settings.getPlotValues()));}
         if (util.isButtonClicked(plotButtons[1])) {settings.setPlot(settings.cycleOptions(-1, settings.getPlot(), settings.getPlotValues()));}
 
-        if (util.isButtonClicked(modeButtons[0])) {settings.setMode(settings.cycleOptions(1, settings.getMode(), settings.getModeValues()));}
-        if (util.isButtonClicked(modeButtons[1])) {settings.setMode(settings.cycleOptions(-1, settings.getMode(), settings.getModeValues()));}
-
-        if (!renderDropdown && util.isButtonClicked(clearBarrierButton)) {System.out.println("clear barriers");}
-
-        if (!renderDropdown && util.isButtonClicked(resetFluidButton)) {System.out.println("reset fluid");}
+        if (!renderDropdown && util.isButtonClicked(clearBarrierButton)) {return "clear barriers";}
 
         if (!renderDropdown && util.isButtonClicked(showFlowlinesButton)) {settings.setShowFlowLines(!settings.getShowFlowLines());}
 
@@ -189,8 +173,10 @@ public class SettingsMenu implements Menu {
         }
         if (util.isButtonClicked(barrierShapesButton)) {renderDropdown = !renderDropdown;}
 
-        if (util.isButtonClicked(backButton)) {return "back";}
-        if (util.isButtonClicked(settingsButton)) {return "settings";}
+        if (util.isButtonClicked(backButton)) {
+            settings.setDrawBarriers(false);
+            return "back";
+        }
         return "settings";
     }
 }

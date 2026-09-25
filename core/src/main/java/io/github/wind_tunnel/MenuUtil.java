@@ -67,7 +67,7 @@ public class MenuUtil {
         sr.rectLine(points[1].x, points[1].y, points[2].x, points[2].y, radius);
         sr.rectLine(points[2].x, points[2].y, points[0].x, points[0].y, radius);
 
-        return new Rectangle(x-radius, y-radius, radius*2, radius*2);
+        return new Rectangle(x-(radius*2.5f), y-(radius*2.5f), radius*5, radius*5);
     }
 
     public boolean isButtonClicked(Rectangle button) {return (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT) && button.contains(Gdx.input.getX(), screenDimensions.y-Gdx.input.getY()));}

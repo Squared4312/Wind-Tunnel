@@ -9,15 +9,14 @@ public class Settings {
     private float flowSpeed;
     private float viscosity;
     private String plot;
-    private String mode;
     private boolean showFlowLines;
 
     private String[] plotValues = {"speed", "x velocity", "y velocity", "density", "curl"};
-    private String[] modeValues = {"draw barriers", "erase barriers", "drag fluid"};
     private int[][] resolutionValues = {{32, 18}, {64, 36}, {128, 72}, {256, 144}, {512, 288}, {1024, 576}}; // keep the 16:9 aspect ratio
     private String[] solverValues = {"2D LBM", "3D LBM"};
 
     private boolean simulationRunning = false;
+    private boolean drawBarriers = false;
 
     private Vector3 rotationAngles;
     private int cameraDistance;
@@ -43,7 +42,6 @@ public class Settings {
         this.flowSpeed = 0.100f;
         this.viscosity = 0.020f;
         this.plot = this.plotValues[1];
-        this.mode = this.modeValues[0];
         this.showFlowLines = false;
 
         this.rotationAngles = new Vector3(0, 0, 0);
@@ -143,21 +141,18 @@ public class Settings {
     public String getPlot() {return this.plot;}
     public void setPlot(String plot) {this.plot = plot;}
 
-    public String getMode() {return this.mode;}
-    public void setMode(String mode) {this.mode = mode;}
-
     public boolean getShowFlowLines() {return this.showFlowLines;}
     public void setShowFlowLines(boolean showFlowLines) {this.showFlowLines = showFlowLines;}
 
     public String[] getPlotValues() {return this.plotValues;}
     public void setPlotValues(String[] plotValues) {this.plotValues = plotValues;}
 
-    public String[] getModeValues() {return this.modeValues;}
-    public void setModeValues(String[] modeValues) {this.modeValues = modeValues;}
-
     public int[][] getResolutionValues() {return this.resolutionValues;}
     public void setResolutionValues(int[][] resolutionValues) {this.resolutionValues = resolutionValues;}
 
     public String[] getSolverValues() {return this.solverValues;}
     public void setSolverValues(String[] solverValues) {this.solverValues = solverValues;}
+
+    public boolean getDrawBarriers() {return this.drawBarriers;}
+    public void setDrawBarriers(boolean drawBarriers) {this.drawBarriers = drawBarriers;}
 }

@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 
 public class MainMenu implements Menu {
+    private Settings settings;
     private MenuUtil util;
 
     private Rectangle quitButton;
@@ -20,6 +21,7 @@ public class MainMenu implements Menu {
     private Texture aboutIcon;
 
     public MainMenu() {
+        this.settings = Settings.getInstance();
         this.util = new MenuUtil();
 
         this.quitIcon = util.loadIcon("quit");
@@ -51,8 +53,14 @@ public class MainMenu implements Menu {
     public String checkIfButtonsClicked() {
         if (util.isButtonClicked(quitButton)) {return "quit";}
         if (util.isButtonClicked(settingsButton)) {return "settings";}
-        if (util.isButtonClicked(levelsButton)) {return "levels";}
-        if (util.isButtonClicked(freeplayButton)) {return "freeplay";}
+        if (util.isButtonClicked(levelsButton)) {
+            settings.setDrawBarriers(false);
+            return "levels";
+        }
+        if (util.isButtonClicked(freeplayButton)) {
+            settings.setDrawBarriers(false);
+            return "freeplay";
+        }
         if (util.isButtonClicked(aboutButton)) {return "about";}
         return "main";
     }

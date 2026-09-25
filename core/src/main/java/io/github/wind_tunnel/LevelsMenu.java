@@ -29,7 +29,7 @@ public class LevelsMenu implements Menu {
 
     public LevelsMenu() {
         this.util = new MenuUtil();
-        this.cfdSolver = new LatticeBoltzmannCFDSolver();
+        this.cfdSolver = LatticeBoltzmannCFDSolver.getInstance();
         this.settings = Settings.getInstance();
 
         this.backIcon = util.loadIcon("back");
@@ -110,5 +110,5 @@ public class LevelsMenu implements Menu {
         return levelNumber;
     }
 
-    public void reinitialise() {cfdSolver.initialiseFluid();}
+    public LatticeBoltzmannCFDSolver getCfdSolver() {return cfdSolver;}
 }
