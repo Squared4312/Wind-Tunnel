@@ -1,5 +1,7 @@
 package io.github.wind_tunnel;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
@@ -34,6 +36,7 @@ public class LatticeBoltzmannCFDSolver {
 
     private Vector3 rotatedPoint = new Vector3();
     private Vector2 screenPos;
+    private Vector2 mouse = new Vector2();
 
     private float four9ths = 4/9f;
     private float one9th = 1/9f;
@@ -343,6 +346,23 @@ public class LatticeBoltzmannCFDSolver {
             cellDimensions = 1920/settings.getResolution().x;
         }
 
+        mouse.x = Gdx.input.getX();
+        mouse.y = settings.getResolution().y-Gdx.input.getY();
+        if (settings.getSolver().equals("2D LBM")) {
+            mouse.x = Math.floorDiv((int) mouse.x, 1920)*settings.getResolution().x;
+            mouse.y = Math.floorDiv((int) mouse.y, 1080)*settings.getResolution().y;
+            if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+                addBarrier((int) mouse.x, (int) mouse.y, 0);
+            } /*else {
+                // add the ability to add a barrier using scroll wheel and left click in 3D
+            }*/
+            if (Gdx.input.isButtonPressed(Input.Buttons.RIGHT)) {
+                if (isBarrier((int) mouse.x, (int) mouse.y, 0)) {
+                    removeBarrier((int) mouse.x, (int) mouse.y, 0);
+                }
+            }
+        }
+
         for (int x=0; x<settings.getResolution().x; x++) {
             for (int y=0; y<settings.getResolution().y; y++) {
                 for (int z=0; z<settings.getResolution().z; z++) {
@@ -399,6 +419,10 @@ public class LatticeBoltzmannCFDSolver {
         if (!barriers.contains(x + " " + y + " " + z)) {
             barriers.add(x + " " + y + " " + z);
         }
+    }
+
+    public void removeBarrier(int x, int y, int z) {
+        barriers.remove(x + " " + y + " " + z);
     }
 
     public void zeroBarriers() {
