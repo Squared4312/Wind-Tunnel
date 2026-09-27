@@ -17,7 +17,8 @@ public class LatticeBoltzmannCFDSolver {
     - research why each relative internal cell direction gets a specific weight - done
     - create a collide function - 100% - done
     - create a stream function - 50% - need 3D
-    - create a bounce function - 50% - need 3D
+    - create a bounce function - 100% - done
+    - research how to get an intersection point between the selected plane and the mouse ray - 0%
      */
 
     private Settings settings;
@@ -37,7 +38,7 @@ public class LatticeBoltzmannCFDSolver {
     private Vector3 rotatedPoint = new Vector3();
     private Vector2 screenPos;
     private Vector2 mouse = new Vector2();
-    private Vector2 cellPosition = new Vector2();
+    private Vector3 cellPosition = new Vector3();
 
     private float four9ths = 4/9f;
     private float one9th = 1/9f;
@@ -240,13 +241,13 @@ public class LatticeBoltzmannCFDSolver {
                     densities[x][y][0][5] = densities[x+1][y-1][0][5]; // -110
                 }
             }
-            for (int x = (int) (settings.getResolution().x-1); x>0; x--) {
+            for (int x=(int) (settings.getResolution().x-1); x>0; x--) {
                 for (int y = (int) (settings.getResolution().y-1); y>0; y--) {
                     densities[x][y][0][1] = densities[x-1][y][0][1]; // 100
                     densities[x][y][0][2] = densities[x-1][y-1][0][2]; // 110
                 }
             }
-            for (int x = (int) (settings.getResolution().x-1); x>0; x--) {
+            for (int x=(int) (settings.getResolution().x-1); x>0; x--) {
                 for (int y=0; y<settings.getResolution().y-1; y++) {
                     densities[x][y][0][8] = densities[x][y+1][0][8]; // 0-10
                     densities[x][y][0][3] = densities[x-1][y+1][0][3]; // 1-10
@@ -262,7 +263,7 @@ public class LatticeBoltzmannCFDSolver {
             for (int y=0; y<settings.getResolution().y-1; y++) {
                 densities[0][y][0][8] = densities[0][y+1][0][8]; // 0-10
             }
-            for (int y = (int) (settings.getResolution().y-1); y>0; y--) {
+            for (int y=(int) (settings.getResolution().y-1); y>0; y--) {
                 densities[(int) (settings.getResolution().x-1)][y][0][7] = densities[(int) (settings.getResolution().x-1)][y-1][0][7]; // 010
             }
 
@@ -327,7 +328,16 @@ public class LatticeBoltzmannCFDSolver {
                         if (densities[x][y][z][3] > 0) {densities[x-1][y+1][z][5] += densities[x][y][z][3];} // 1-10
 
                         if (settings.getSolver().equals("3D LBM")) {
-                            // add 3D bounce-back
+                            if (densities[x][y][z][9] > 0) {densities[x][y][z+1][14] += densities[x][y][z][9];} // 00-1
+                            if (densities[x][y][z][10] > 0) {densities[x-1][y][z+1][16] += densities[x][y][z][10];} // 10-1
+                            if (densities[x][y][z][11] > 0) {densities[x+1][y][z+1][15] += densities[x][y][z][11];} // -10-1
+                            if (densities[x][y][z][12] > 0) {densities[x][y-1][z+1][18] += densities[x][y][z][12];} // 01-1
+                            if (densities[x][y][z][13] > 0) {densities[x][y+1][z+1][17] += densities[x][y][z][13];} // 0-1-1
+                            if (densities[x][y][z][14] > 0) {densities[x][y][z-1][9] += densities[x][y][z][14];} // 001
+                            if (densities[x][y][z][15] > 0) {densities[x-1][y][z-1][11] += densities[x][y][z][15];} // 101
+                            if (densities[x][y][z][16] > 0) {densities[x+1][y][z-1][10] += densities[x][y][z][16];} // -101
+                            if (densities[x][y][z][17] > 0) {densities[x][y-1][z-1][13] += densities[x][y][z][17];} // 011
+                            if (densities[x][y][z][18] > 0) {densities[x][y+1][z-1][12] += densities[x][y][z][18];} // 0-11
                         }
                     }
                 }
@@ -343,29 +353,39 @@ public class LatticeBoltzmannCFDSolver {
 
         mouse.x = Gdx.input.getX();
         mouse.y = 1080-Gdx.input.getY();
+        if (!settings.getDrawBarriers()) {
+            if (!Gdx.input.isButtonPressed(Input.Buttons.LEFT) && !Gdx.input.isButtonPressed(Input.Buttons.RIGHT)) {
+                settings.setDrawBarriers(true);
+            }
+        }
         if (settings.getSolver().equals("2D LBM")) {
             cellPosition.x = Math.round(((mouse.x-(cellDimensions/2))/1920)*settings.getResolution().x);
             cellPosition.y = Math.round(((mouse.y-(cellDimensions/2))/1080)*settings.getResolution().y);
 
-            if (!settings.getDrawBarriers()) {
-                if (!Gdx.input.isButtonPressed(Input.Buttons.LEFT) && !Gdx.input.isButtonPressed(Input.Buttons.RIGHT)) {
-                    settings.setDrawBarriers(true);
-                }
-            }
-
             if (settings.getDrawBarriers() && !(cellPosition.x == 0 || cellPosition.x == settings.getResolution().x-1 || cellPosition.y == 0 || cellPosition.y == settings.getResolution().y-1)) {
                 if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
                     addBarrier((int) cellPosition.x, (int) cellPosition.y, 0);
-                } /*else {
-                    // add the ability to add a barrier using scroll wheel and left click in 3D
-                }*/
+                }
                 if (Gdx.input.isButtonPressed(Input.Buttons.RIGHT)) {
                     if (isBarrier((int) cellPosition.x, (int) cellPosition.y, 0)) {
                         removeBarrier((int) cellPosition.x, (int) cellPosition.y, 0);
                     }
                 }
             }
-        }
+        } /*else {
+            // get intersection point between selected plane and ray from mouse
+
+            if (settings.getDrawBarriers() && !(cellPosition.x == 0 || cellPosition.x == settings.getResolution().x-1 || cellPosition.y == 0 || cellPosition.y == settings.getResolution().y-1 || cellPosition.z == 0 || cellPosition.z == settings.getResolution().z-1)) {
+                if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+                    addBarrier((int) cellPosition.x, (int) cellPosition.y, (int) cellPosition.z);
+                }
+                if (Gdx.input.isButtonPressed(Input.Buttons.RIGHT)) {
+                    if (isBarrier((int) cellPosition.x, (int) cellPosition.y, (int) cellPosition.z)) {
+                        removeBarrier((int) cellPosition.x, (int) cellPosition.y, (int) cellPosition.z);
+                    }
+                }
+            }
+        }*/
 
         for (int x=0; x<settings.getResolution().x; x++) {
             for (int y=0; y<settings.getResolution().y; y++) {
