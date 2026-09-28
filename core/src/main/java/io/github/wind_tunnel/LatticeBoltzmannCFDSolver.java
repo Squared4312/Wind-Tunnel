@@ -352,6 +352,28 @@ public class LatticeBoltzmannCFDSolver {
             cellDimensions = 1920/settings.getResolution().x;
         }
 
+        drawBarriers();
+
+        for (int x=0; x<settings.getResolution().x; x++) {
+            for (int y=0; y<settings.getResolution().y; y++) {
+                for (int z=0; z<settings.getResolution().z; z++) {
+                    if (!(x == 0 || y == 0 || z == 0 || x == settings.getResolution().x-1 || y == settings.getResolution().y-1 || z == settings.getResolution().z-1)) {continue;}
+                    sr.setColor(colours.get(calculateColourIndex(x, y, z))); // calculates colour based on plotMode
+                    if (isBarrier(x, y, z)) {sr.setColor(Color.WHITE);}
+                    if (settings.getSolver().equals("2D LBM")) {
+                        sr.rect(x*cellDimensions, y*cellDimensions, cellDimensions, cellDimensions);
+                    } else {
+                        rotatedPoint = renderer.rotate(x-(settings.getResolution().x/2), y-(settings.getResolution().y/2), z-(settings.getResolution().z/2));
+                        screenPos = renderer.pointProjection(rotatedPoint);
+                        if (screenPos == null) {continue;}
+                        sr.circle(screenPos.x, screenPos.y, 1);
+                    }
+                }
+            }
+        }
+    }
+
+    public void drawBarriers() {
         mouse.x = Gdx.input.getX();
         mouse.y = 1080-Gdx.input.getY();
         if (!settings.getPlaceBarriers()) {
@@ -363,7 +385,7 @@ public class LatticeBoltzmannCFDSolver {
             cellPosition.x = Math.round(((mouse.x-(cellDimensions/2))/1920)*settings.getResolution().x);
             cellPosition.y = Math.round(((mouse.y-(cellDimensions/2))/1080)*settings.getResolution().y);
 
-            if (settings.getPlaceBarriers() && !(cellPosition.x == 0 || cellPosition.x == settings.getResolution().x-1 || cellPosition.y == 0 || cellPosition.y == settings.getResolution().y-1)) {
+            if (settings.getPlaceBarriers() && !(cellPosition.x <= 0 || cellPosition.x >= settings.getResolution().x-1 || cellPosition.y <= 0 || cellPosition.y >= settings.getResolution().y-1)) {
                 if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
                     addBarrier((int) cellPosition.x, (int) cellPosition.y, 0);
                 }
@@ -387,24 +409,6 @@ public class LatticeBoltzmannCFDSolver {
                 }
             }
         }*/
-
-        for (int x=0; x<settings.getResolution().x; x++) {
-            for (int y=0; y<settings.getResolution().y; y++) {
-                for (int z=0; z<settings.getResolution().z; z++) {
-                    if (!(x == 0 || y == 0 || z == 0 || x == settings.getResolution().x-1 || y == settings.getResolution().y-1 || z == settings.getResolution().z-1)) {continue;}
-                    sr.setColor(colours.get(calculateColourIndex(x, y, z))); // calculates colour based on plotMode
-                    if (isBarrier(x, y, z)) {sr.setColor(Color.WHITE);}
-                    if (settings.getSolver().equals("2D LBM")) {
-                        sr.rect(x*cellDimensions, y*cellDimensions, cellDimensions, cellDimensions);
-                    } else {
-                        rotatedPoint = renderer.rotate(x-(settings.getResolution().x/2), y-(settings.getResolution().y/2), z-(settings.getResolution().z/2));
-                        screenPos = renderer.pointProjection(rotatedPoint);
-                        if (screenPos == null) {continue;}
-                        sr.circle(screenPos.x, screenPos.y, 1);
-                    }
-                }
-            }
-        }
     }
 
     public ArrayList<Color> calculateColours(int numOfColours) {

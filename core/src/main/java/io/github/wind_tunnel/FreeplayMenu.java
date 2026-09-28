@@ -73,12 +73,29 @@ public class FreeplayMenu implements Menu {
 
     @Override
     public String checkIfButtonsClicked() {
-        if (!settings.getSimulationRunning() && util.isButtonClicked(runButton)) {settings.setSimulationRunning(true);}
-        else if (settings.getSimulationRunning() && util.isButtonClicked(pauseButton)) {settings.setSimulationRunning(false);}
-        if (!settings.getSimulationRunning() && util.isButtonClicked(stepButton)) {cfdSolver.doStep();}
+        if (!settings.getSimulationRunning() && util.isButtonClicked(runButton)) {
+            settings.setSimulationRunning(true);
+            settings.setPlaceBarriers(false);
+        }
+        else if (settings.getSimulationRunning() && util.isButtonClicked(pauseButton)) {
+            settings.setSimulationRunning(false);
+            settings.setPlaceBarriers(false);
+        }
+        if (util.isButtonClicked(stepButton)) {
+            settings.setPlaceBarriers(false);
+            if (!settings.getSimulationRunning()) {
+                cfdSolver.doStep();
+            }
+        }
 
-        if (util.isButtonClicked(backButton)) {return "back";}
-        if (util.isButtonClicked(settingsButton)) {return "settings";}
+        if (util.isButtonClicked(backButton)) {
+            settings.setPlaceBarriers(false);
+            return "back";
+        }
+        if (util.isButtonClicked(settingsButton)) {
+            settings.setPlaceBarriers(false);
+            return "settings";
+        }
         return "freeplay";
     }
 
