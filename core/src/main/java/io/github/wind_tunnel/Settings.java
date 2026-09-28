@@ -16,7 +16,7 @@ public class Settings {
     private String[] solverValues = {"2D LBM", "3D LBM"};
 
     private boolean simulationRunning = false;
-    private boolean drawBarriers = false;
+    private boolean placeBarriers = false;
 
     private Vector3 rotationAngles;
     private int cameraDistance;
@@ -153,6 +153,6 @@ public class Settings {
     public String[] getSolverValues() {return this.solverValues;}
     public void setSolverValues(String[] solverValues) {this.solverValues = solverValues;}
 
-    public boolean getDrawBarriers() {return this.drawBarriers;}
-    public void setDrawBarriers(boolean drawBarriers) {this.drawBarriers = drawBarriers;}
+    public boolean getPlaceBarriers() {return this.placeBarriers;}
+    public void setPlaceBarriers(boolean placeBarriers) {this.placeBarriers = placeBarriers;}
 }

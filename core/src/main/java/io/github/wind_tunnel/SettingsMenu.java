@@ -174,7 +174,7 @@ public class SettingsMenu implements Menu {
         if (util.isButtonClicked(barrierShapesButton)) {renderDropdown = !renderDropdown;}
 
         if (util.isButtonClicked(backButton)) {
-            settings.setDrawBarriers(false);
+            settings.setPlaceBarriers(false);
             return "back";
         }
         return "settings";

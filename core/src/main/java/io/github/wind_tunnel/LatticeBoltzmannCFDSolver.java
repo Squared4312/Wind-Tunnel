@@ -32,7 +32,7 @@ public class LatticeBoltzmannCFDSolver {
         {0, 0, 0}, {1, 0, 0}, {1, 1, 0}, {1, -1, 0}, {-1, 0, 0}, {-1, 1, 0}, {-1, -1, 0}, {0, 1, 0}, {0, -1, 0},
         {0, 0, -1}, {1, 0, -1}, {-1, 0, -1}, {0, 1, -1}, {0, -1, -1}, {0, 0, 1}, {1, 0, 1}, {-1, 0, 1}, {0, 1, 1}, {0, -1, 1}
     };*/
-    private ArrayList<String> barriers = new ArrayList<>(); // the xyz coordinates are stored as a String, separated by spaces, for example, 32 2 54
+    private boolean[][][] barriers;
     private int neighbours;
 
     private Vector3 rotatedPoint = new Vector3();
@@ -94,6 +94,7 @@ public class LatticeBoltzmannCFDSolver {
         }
         this.densities = new float[(int) settings.getResolution().x][(int) settings.getResolution().y][(int) settings.getResolution().z][neighbours];
         this.cellAverageVelocities = new float[(int) settings.getResolution().x][(int) settings.getResolution().y][(int) settings.getResolution().z][2];
+        this.barriers = new boolean[(int) settings.getResolution().x][(int) settings.getResolution().y][(int) settings.getResolution().z];
 
         v = settings.getFlowSpeed();
         one15vv = 1-1.5f*v*v;
@@ -353,16 +354,16 @@ public class LatticeBoltzmannCFDSolver {
 
         mouse.x = Gdx.input.getX();
         mouse.y = 1080-Gdx.input.getY();
-        if (!settings.getDrawBarriers()) {
+        if (!settings.getPlaceBarriers()) {
             if (!Gdx.input.isButtonPressed(Input.Buttons.LEFT) && !Gdx.input.isButtonPressed(Input.Buttons.RIGHT)) {
-                settings.setDrawBarriers(true);
+                settings.setPlaceBarriers(true);
             }
         }
         if (settings.getSolver().equals("2D LBM")) {
             cellPosition.x = Math.round(((mouse.x-(cellDimensions/2))/1920)*settings.getResolution().x);
             cellPosition.y = Math.round(((mouse.y-(cellDimensions/2))/1080)*settings.getResolution().y);
 
-            if (settings.getDrawBarriers() && !(cellPosition.x == 0 || cellPosition.x == settings.getResolution().x-1 || cellPosition.y == 0 || cellPosition.y == settings.getResolution().y-1)) {
+            if (settings.getPlaceBarriers() && !(cellPosition.x == 0 || cellPosition.x == settings.getResolution().x-1 || cellPosition.y == 0 || cellPosition.y == settings.getResolution().y-1)) {
                 if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
                     addBarrier((int) cellPosition.x, (int) cellPosition.y, 0);
                 }
@@ -375,7 +376,7 @@ public class LatticeBoltzmannCFDSolver {
         } /*else {
             // get intersection point between selected plane and ray from mouse
 
-            if (settings.getDrawBarriers() && !(cellPosition.x == 0 || cellPosition.x == settings.getResolution().x-1 || cellPosition.y == 0 || cellPosition.y == settings.getResolution().y-1 || cellPosition.z == 0 || cellPosition.z == settings.getResolution().z-1)) {
+            if (settings.getPlaceBarriers() && !(cellPosition.x == 0 || cellPosition.x == settings.getResolution().x-1 || cellPosition.y == 0 || cellPosition.y == settings.getResolution().y-1 || cellPosition.z == 0 || cellPosition.z == settings.getResolution().z-1)) {
                 if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
                     addBarrier((int) cellPosition.x, (int) cellPosition.y, (int) cellPosition.z);
                 }
@@ -440,30 +441,40 @@ public class LatticeBoltzmannCFDSolver {
     }
 
     public void addBarrier(int x, int y, int z) {
-        if (!barriers.contains(x + " " + y + " " + z)) {
-            barriers.add(x + " " + y + " " + z);
+        if (!isBarrier(x, y, z)) {
+            barriers[x][y][z] = true;
         }
     }
 
     public void removeBarrier(int x, int y, int z) {
-        barriers.remove(x + " " + y + " " + z);
+        barriers[x][y][z] = false;
         initialiseCell(x, y, z);
     }
 
     public void clearBarriers() {
-        barriers.clear();
+        for (int x=0; x<settings.getResolution().x; x++) {
+            for (int y=0; y<settings.getResolution().y; y++) {
+                for (int z=0; z<settings.getResolution().z; z++) {
+                    barriers[x][y][z] = false;
+                }
+            }
+        }
     }
 
     public void zeroBarriers() {
-        String[] pos;
-        for (String xyz : barriers) {
-            pos = xyz.split(" ");
-            Arrays.fill(densities[Integer.parseInt(pos[0])][Integer.parseInt(pos[1])][Integer.parseInt(pos[2])], 0);
+        for (int x=0; x<settings.getResolution().x; x++) {
+            for (int y=0; y<settings.getResolution().y; y++) {
+                for (int z=0; z<settings.getResolution().z; z++) {
+                    if (barriers[x][y][z]) {
+                        Arrays.fill(densities[x][y][z], 0);
+                    }
+                }
+            }
         }
     }
 
     public boolean isBarrier(int x, int y, int z) {
-        return barriers.contains(x + " " + y + " " + z);
+        return barriers[x][y][z];
     }
 }
 

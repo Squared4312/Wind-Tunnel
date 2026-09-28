@@ -54,11 +54,11 @@ public class MainMenu implements Menu {
         if (util.isButtonClicked(quitButton)) {return "quit";}
         if (util.isButtonClicked(settingsButton)) {return "settings";}
         if (util.isButtonClicked(levelsButton)) {
-            settings.setDrawBarriers(false);
+            settings.setPlaceBarriers(false);
             return "levels";
         }
         if (util.isButtonClicked(freeplayButton)) {
-            settings.setDrawBarriers(false);
+            settings.setPlaceBarriers(false);
             return "freeplay";
         }
         if (util.isButtonClicked(aboutButton)) {return "about";}
