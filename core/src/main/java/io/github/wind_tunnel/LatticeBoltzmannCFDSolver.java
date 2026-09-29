@@ -19,6 +19,7 @@ public class LatticeBoltzmannCFDSolver {
     - create a stream function - 50% - need 3D
     - create a bounce function - 100% - done
     - research how to get an intersection point between the selected plane and the mouse ray - 0%
+    - find out how to keep barriers when going back to settings (2D -> 3D or change in resolution)
      */
 
     private Settings settings;
@@ -51,8 +52,7 @@ public class LatticeBoltzmannCFDSolver {
     private float one_3v3vv;
 
     private float cellDensity;
-    private float cellXVelocity;
-    private float cellYVelocity;
+    private Vector3 cellVelocity;
     private float omega;
     private float vx3;
     private float vy3;
@@ -82,7 +82,6 @@ public class LatticeBoltzmannCFDSolver {
     private LatticeBoltzmannCFDSolver() {
         this.settings = Settings.getInstance();
         this.renderer = new ThreeDimensionalRenderer();
-        this.barriers = new boolean[(int) settings.getResolution().x][(int) settings.getResolution().y][(int) settings.getResolution().z];
         initialiseFluid();
         this.colours = calculateColours(numOfColors);
     }
@@ -94,7 +93,8 @@ public class LatticeBoltzmannCFDSolver {
             neighbours = 19;
         }
         this.densities = new float[(int) settings.getResolution().x][(int) settings.getResolution().y][(int) settings.getResolution().z][neighbours];
-        this.cellAverageVelocities = new float[(int) settings.getResolution().x][(int) settings.getResolution().y][(int) settings.getResolution().z][2];
+        this.cellAverageVelocities = new float[(int) settings.getResolution().x][(int) settings.getResolution().y][(int) settings.getResolution().z][3];
+        this.barriers = new boolean[(int) settings.getResolution().x][(int) settings.getResolution().y][(int) settings.getResolution().z];
 
         v = settings.getFlowSpeed();
         one15vv = 1-1.5f*v*v;
@@ -169,25 +169,27 @@ public class LatticeBoltzmannCFDSolver {
                         cellDensity += densities[x][y][z][count];
                     }
                     // calculate the cell's x and y average velocity for calculating colours and relaxation time
-                    cellXVelocity = densities[x][y][z][1]+densities[x][y][z][2]+densities[x][y][z][3]-densities[x][y][z][4]-densities[x][y][z][5]-densities[x][y][z][6];
-                    cellYVelocity = densities[x][y][z][2]-densities[x][y][z][3]+densities[x][y][z][5]-densities[x][y][z][6]+densities[x][y][z][7]-densities[x][y][z][8];
+                    cellVelocity.x = densities[x][y][z][1]+densities[x][y][z][2]+densities[x][y][z][3]-densities[x][y][z][4]-densities[x][y][z][5]-densities[x][y][z][6];
+                    cellVelocity.y = densities[x][y][z][2]-densities[x][y][z][3]+densities[x][y][z][5]-densities[x][y][z][6]+densities[x][y][z][7]-densities[x][y][z][8];
+
+                    cellVelocity.x /= cellDensity;
+                    cellVelocity.y /= cellDensity;
+
                     if (settings.getSolver().equals("3D LBM")) {
-                        cellXVelocity += densities[x][y][z][10]-densities[x][y][z][11]+densities[x][y][z][15]-densities[x][y][z][16];
-                        cellYVelocity += densities[x][y][z][12]-densities[x][y][z][13]+densities[x][y][z][17]-densities[x][y][z][18];
+                        cellVelocity.z = densities[x][y][z][14]-densities[x][y][z][9]+densities[x][y][z][15]+densities[x][y][z][16]+densities[x][y][z][17]+densities[x][y][z][18]-densities[x][y][z][10]-densities[x][y][z][11]-densities[x][y][z][12]-densities[x][y][z][13];
+                        cellVelocity.z /= cellDensity;
                     }
-                    cellXVelocity /= cellDensity;
-                    cellYVelocity /= cellDensity;
 
                     // store the x and y velocities to draw colours later
-                    cellAverageVelocities[x][y][z][0] = cellXVelocity;
-                    cellAverageVelocities[x][y][z][1] = cellYVelocity;
+                    cellAverageVelocities[x][y][z][0] = cellVelocity.x;
+                    cellAverageVelocities[x][y][z][1] = cellVelocity.y;
 
                     // pre-calculate re-used values
-                    vx3 = 3*cellXVelocity;
-                    vy3 = 3*cellYVelocity;
-                    vxvx = cellXVelocity*cellXVelocity;
-                    vyvy = cellYVelocity*cellYVelocity;
-                    twovxvy = 2*cellXVelocity*cellYVelocity;
+                    vx3 = 3*cellVelocity.x;
+                    vy3 = 3*cellVelocity.y;
+                    vxvx = cellVelocity.x*cellVelocity.x;
+                    vyvy = cellVelocity.y*cellVelocity.y;
+                    twovxvy = 2*cellVelocity.x*cellVelocity.y;
                     vxvxvyvy = vxvx+vyvy;
                     one5vxvxvyvy = 1.5f*vxvxvyvy;
                     one9thDensity = one9th*cellDensity;

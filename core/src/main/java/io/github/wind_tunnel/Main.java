@@ -18,6 +18,7 @@ public class Main extends ApplicationAdapter {
     private String nextMenu;
     private Stack menuHistory = new Stack(10);
     private Settings settings;
+    private Keybinds keybinds;
 
     private MainMenu mainMenu;
     private AboutMenu aboutMenu;
@@ -35,6 +36,7 @@ public class Main extends ApplicationAdapter {
         batch = new SpriteBatch();
 
         settings = Settings.getInstance();
+        keybinds = Keybinds.getInstance();
         mainMenu = new MainMenu();
         aboutMenu = new AboutMenu();
         settingsMenu = new SettingsMenu();
@@ -49,24 +51,7 @@ public class Main extends ApplicationAdapter {
         ScreenUtils.clear(0f, 0f, 0f, 1f);
         Gdx.graphics.setTitle("Wind Tunnel FPS: " + Gdx.graphics.getFramesPerSecond() + "/" + Gdx.graphics.getDisplayMode().refreshRate);
 
-        if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-            settings.setRotationAnglesX((float) (settings.getRotationAnglesX()-(Math.PI/180)));
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-            settings.setRotationAnglesX((float) (settings.getRotationAnglesX()+(Math.PI/180)));
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-            settings.setRotationAnglesY((float) (settings.getRotationAnglesY()+(Math.PI/180)));
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-            settings.setRotationAnglesY((float) (settings.getRotationAnglesY()-(Math.PI/180)));
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-            settings.setCameraDistance(settings.getCameraDistance()-1);
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-            settings.setCameraDistance(settings.getCameraDistance()+1);
-        }
+        keybinds.checkForKeyPresses();
 
         if (menu.equals("main")) {
             nextMenu = mainMenu.checkIfButtonsClicked();
