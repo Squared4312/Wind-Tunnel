@@ -25,6 +25,8 @@ public class Main extends ApplicationAdapter {
     private LevelsMenu levelsMenu;
     private FreeplayMenu freeplayMenu;
 
+    private LatticeBoltzmannCFDSolver cfdSolver;
+
     @Override
     public void create() {
         screenDimensions = new Vector2(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -38,6 +40,8 @@ public class Main extends ApplicationAdapter {
         settingsMenu = new SettingsMenu();
         levelsMenu = new LevelsMenu();
         freeplayMenu = new FreeplayMenu();
+
+        cfdSolver = LatticeBoltzmannCFDSolver.getInstance();
     }
 
     @Override
@@ -77,8 +81,7 @@ public class Main extends ApplicationAdapter {
         }
 
         if (nextMenu.equals("clear barriers")) {
-            freeplayMenu.getCfdSolver().clearBarriers();
-            levelsMenu.getCfdSolver().clearBarriers();
+            cfdSolver.clearBarriers();
             nextMenu = "settings";
         }
 
@@ -86,17 +89,15 @@ public class Main extends ApplicationAdapter {
             Gdx.app.exit();
         } else if (!nextMenu.equals(menu)) {
             if (menu.equals("main") && (nextMenu.equals("levels") || nextMenu.equals("freeplay"))) {
-                if (nextMenu.equals("levels")) {levelsMenu.getCfdSolver().clearBarriers();}
-                freeplayMenu.getCfdSolver().initialiseFluid();
-                levelsMenu.getCfdSolver().initialiseFluid();
+                if (nextMenu.equals("levels")) {cfdSolver.clearBarriers();}
+                cfdSolver.initialiseFluid();
                 settings.setSimulationRunning(false);
             }
             if ("back".equals(nextMenu)) {
                 if (!menuHistory.isEmpty()) {
                     String previousMenu = menuHistory.pop();
                     if (menu.equals("settings") && (previousMenu.equals("freeplay") || previousMenu.equals("levels"))) {
-                        freeplayMenu.getCfdSolver().initialiseFluid();
-                        levelsMenu.getCfdSolver().initialiseFluid();
+                        cfdSolver.initialiseFluid();
                     }
                     menu = previousMenu;
                 }

@@ -82,6 +82,7 @@ public class LatticeBoltzmannCFDSolver {
     private LatticeBoltzmannCFDSolver() {
         this.settings = Settings.getInstance();
         this.renderer = new ThreeDimensionalRenderer();
+        this.barriers = new boolean[(int) settings.getResolution().x][(int) settings.getResolution().y][(int) settings.getResolution().z];
         initialiseFluid();
         this.colours = calculateColours(numOfColors);
     }
@@ -94,7 +95,6 @@ public class LatticeBoltzmannCFDSolver {
         }
         this.densities = new float[(int) settings.getResolution().x][(int) settings.getResolution().y][(int) settings.getResolution().z][neighbours];
         this.cellAverageVelocities = new float[(int) settings.getResolution().x][(int) settings.getResolution().y][(int) settings.getResolution().z][2];
-        this.barriers = new boolean[(int) settings.getResolution().x][(int) settings.getResolution().y][(int) settings.getResolution().z];
 
         v = settings.getFlowSpeed();
         one15vv = 1-1.5f*v*v;
