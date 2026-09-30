@@ -52,7 +52,7 @@ public class LatticeBoltzmannCFDSolver {
     private float one_3v3vv;
 
     private float cellDensity;
-    private Vector3 cellVelocity;
+    private Vector3 cellVelocity = new Vector3();
     private float omega;
     private float vx3;
     private float vy3;
@@ -457,11 +457,12 @@ public class LatticeBoltzmannCFDSolver {
         initialiseCell(x, y, z);
     }
 
-    public void clearBarriers() {
+    public void removeAllBarriers() {
         for (int x=0; x<settings.getResolution().x; x++) {
             for (int y=0; y<settings.getResolution().y; y++) {
                 for (int z=0; z<settings.getResolution().z; z++) {
                     barriers[x][y][z] = false;
+                    initialiseCell(x, y, z);
                 }
             }
         }

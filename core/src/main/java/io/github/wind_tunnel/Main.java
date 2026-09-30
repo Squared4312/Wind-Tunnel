@@ -65,8 +65,8 @@ public class Main extends ApplicationAdapter {
             nextMenu = freeplayMenu.checkIfButtonsClicked();
         }
 
-        if (nextMenu.equals("clear barriers")) {
-            cfdSolver.clearBarriers();
+        if (nextMenu.equals("remove all barriers")) {
+            cfdSolver.removeAllBarriers();
             nextMenu = "settings";
         }
 
@@ -74,7 +74,7 @@ public class Main extends ApplicationAdapter {
             Gdx.app.exit();
         } else if (!nextMenu.equals(menu)) {
             if (menu.equals("main") && (nextMenu.equals("levels") || nextMenu.equals("freeplay"))) {
-                if (nextMenu.equals("levels")) {cfdSolver.clearBarriers();}
+                if (nextMenu.equals("levels")) {cfdSolver.removeAllBarriers();}
                 cfdSolver.initialiseFluid();
                 settings.setSimulationRunning(false);
             }

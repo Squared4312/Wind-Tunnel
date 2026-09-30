@@ -158,7 +158,7 @@ public class SettingsMenu implements Menu {
         if (util.isButtonClicked(plotButtons[0])) {settings.setPlot(settings.cycleOptions(1, settings.getPlot(), settings.getPlotValues()));}
         if (util.isButtonClicked(plotButtons[1])) {settings.setPlot(settings.cycleOptions(-1, settings.getPlot(), settings.getPlotValues()));}
 
-        if (!renderDropdown && util.isButtonClicked(clearBarrierButton)) {return "clear barriers";}
+        if (!renderDropdown && util.isButtonClicked(clearBarrierButton)) {return "remove all barriers";}
 
         if (!renderDropdown && util.isButtonClicked(showFlowlinesButton)) {settings.setShowFlowLines(!settings.getShowFlowLines());}
 
