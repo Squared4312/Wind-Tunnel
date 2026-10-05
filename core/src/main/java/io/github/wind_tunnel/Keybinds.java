@@ -12,7 +12,8 @@ public class Keybinds {
         Input.Keys.W, Input.Keys.S, Input.Keys.A, Input.Keys.D, // rotation of the simulation area in 3D, forwards, backwards, left, right
         Input.Keys.UP, Input.Keys.DOWN, // zoom in 3D, zoom in, zoom out
         Input.Keys.SPACE, Input.Keys.RIGHT, // pause/run the simulation, step the simulation (when paused)
-        Input.Keys.R // clear all barriers
+        Input.Keys.R, // clear all barriers
+        Input.Buttons.LEFT, Input.Buttons.RIGHT // draw/erase barriers
     };
 
     private static Keybinds instance;
@@ -64,5 +65,6 @@ public class Keybinds {
     }
 
     public int[] getBinds() {return this.binds;}
+    public int getBindAt(int index) {return this.binds[index];}
     public void setBindsAt(int index, int key) {this.binds[index] = key;}
 }

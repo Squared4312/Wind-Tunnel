@@ -1,7 +1,6 @@
 package io.github.wind_tunnel;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
@@ -24,6 +23,7 @@ public class LatticeBoltzmannCFDSolver {
 
     private Settings settings;
     private ThreeDimensionalRenderer renderer;
+    private Keybinds keybinds;
 
     private float cellDimensions;
 
@@ -82,6 +82,7 @@ public class LatticeBoltzmannCFDSolver {
     private LatticeBoltzmannCFDSolver() {
         this.settings = Settings.getInstance();
         this.renderer = new ThreeDimensionalRenderer();
+        this.keybinds = Keybinds.getInstance();
         initialiseFluid();
         this.colours = calculateColours(numOfColors);
     }
@@ -379,7 +380,7 @@ public class LatticeBoltzmannCFDSolver {
         mouse.x = Gdx.input.getX();
         mouse.y = 1080-Gdx.input.getY();
         if (!settings.getPlaceBarriers()) {
-            if (!Gdx.input.isButtonPressed(Input.Buttons.LEFT) && !Gdx.input.isButtonPressed(Input.Buttons.RIGHT)) {
+            if (!Gdx.input.isButtonPressed(keybinds.getBindAt(9)) && !Gdx.input.isButtonPressed(keybinds.getBindAt(10))) {
                 settings.setPlaceBarriers(true);
             }
         }
@@ -388,10 +389,10 @@ public class LatticeBoltzmannCFDSolver {
             cellPosition.y = Math.round(((mouse.y-(cellDimensions/2))/1080)*settings.getResolution().y);
 
             if (settings.getPlaceBarriers() && !(cellPosition.x <= 0 || cellPosition.x >= settings.getResolution().x-1 || cellPosition.y <= 0 || cellPosition.y >= settings.getResolution().y-1)) {
-                if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+                if (Gdx.input.isButtonPressed(keybinds.getBindAt(9))) {
                     addBarrier((int) cellPosition.x, (int) cellPosition.y, 0);
                 }
-                if (Gdx.input.isButtonPressed(Input.Buttons.RIGHT)) {
+                if (Gdx.input.isButtonPressed(keybinds.getBindAt(10))) {
                     if (isBarrier((int) cellPosition.x, (int) cellPosition.y, 0)) {
                         removeBarrier((int) cellPosition.x, (int) cellPosition.y, 0);
                     }
