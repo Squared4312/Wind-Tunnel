@@ -15,7 +15,7 @@ public class LatticeBoltzmannCFDSolver {
     - research how to initialise a cell with the correct starting densities - done
     - research why each relative internal cell direction gets a specific weight - done
     - create a collide function - 100% - done
-    - create a stream function - 50% - need 3D
+    - create a stream function - 100% - done
     - create a bounce function - 100% - done
     - research how to get an intersection point between the selected plane and the mouse ray - 0%
     - find out how to keep barriers when going back to settings (2D -> 3D or change in resolution)
@@ -29,10 +29,10 @@ public class LatticeBoltzmannCFDSolver {
 
     // array of densities named by their relative offset to the cell (in 3D)
     private float[][][][] densities;
-    /*relativeDirections = {
+    private int[][] relativeDirections = {
         {0, 0, 0}, {1, 0, 0}, {1, 1, 0}, {1, -1, 0}, {-1, 0, 0}, {-1, 1, 0}, {-1, -1, 0}, {0, 1, 0}, {0, -1, 0},
         {0, 0, -1}, {1, 0, -1}, {-1, 0, -1}, {0, 1, -1}, {0, -1, -1}, {0, 0, 1}, {1, 0, 1}, {-1, 0, 1}, {0, 1, 1}, {0, -1, 1}
-    };*/
+    };
     private boolean[][][] barriers;
     private int neighbours;
 
@@ -137,13 +137,13 @@ public class LatticeBoltzmannCFDSolver {
             densities[x][y][z][5] = one36th * one_3v3vv;
             densities[x][y][z][6] = one36th * one_3v3vv;
             densities[x][y][z][10] = one36th * one3v3vv;
-            densities[x][y][z][11] = one36th * one3v3vv;
-            densities[x][y][z][12] = one36th * one_3v3vv;
-            densities[x][y][z][13] = one36th * one_3v3vv;
+            densities[x][y][z][11] = one36th * one_3v3vv;
+            densities[x][y][z][12] = one36th * one15vv;
+            densities[x][y][z][13] = one36th * one15vv;
             densities[x][y][z][15] = one36th * one3v3vv;
-            densities[x][y][z][16] = one36th * one3v3vv;
-            densities[x][y][z][17] = one36th * one_3v3vv;
-            densities[x][y][z][18] = one36th * one_3v3vv;
+            densities[x][y][z][16] = one36th * one_3v3vv;
+            densities[x][y][z][17] = one36th * one15vv;
+            densities[x][y][z][18] = one36th * one15vv;
         }
     }
 
@@ -173,17 +173,20 @@ public class LatticeBoltzmannCFDSolver {
                     cellVelocity.x = densities[x][y][z][1]+densities[x][y][z][2]+densities[x][y][z][3]-densities[x][y][z][4]-densities[x][y][z][5]-densities[x][y][z][6];
                     cellVelocity.y = densities[x][y][z][2]-densities[x][y][z][3]+densities[x][y][z][5]-densities[x][y][z][6]+densities[x][y][z][7]-densities[x][y][z][8];
 
-                    cellVelocity.x /= cellDensity;
-                    cellVelocity.y /= cellDensity;
 
                     if (settings.getSolver().equals("3D LBM")) {
+                        //cellVelocity.x +=
                         cellVelocity.z = densities[x][y][z][14]-densities[x][y][z][9]+densities[x][y][z][15]+densities[x][y][z][16]+densities[x][y][z][17]+densities[x][y][z][18]-densities[x][y][z][10]-densities[x][y][z][11]-densities[x][y][z][12]-densities[x][y][z][13];
                         cellVelocity.z /= cellDensity;
                     }
 
+                    cellVelocity.x /= cellDensity;
+                    cellVelocity.y /= cellDensity;
+
                     // store the x and y velocities to draw colours later
                     cellAverageVelocities[x][y][z][0] = cellVelocity.x;
                     cellAverageVelocities[x][y][z][1] = cellVelocity.y;
+                    cellAverageVelocities[x][y][z][2] = cellVelocity.z;
 
                     // pre-calculate re-used values
                     vx3 = 3*cellVelocity.x;
@@ -309,9 +312,82 @@ public class LatticeBoltzmannCFDSolver {
                 densities[x][(int) (settings.getResolution().y-1)][0][5] = one36th*(1 - 3*v + 3*v*v); // -110
                 densities[x][(int) (settings.getResolution().y-1)][0][6] = one36th*(1 - 3*v + 3*v*v); // -1-10
             }
-        }
+        } else { // 3D streaming
 
-        // add 3D streaming
+            for (int d=1; d<19; d++) {
+                int cx = relativeDirections[d][0];
+                int cy = relativeDirections[d][1];
+                int cz = relativeDirections[d][2];
+
+                for (int i=0; i<settings.getResolution().x-Math.abs(cx); i++) {
+                    int x;
+                    if (cx > 0) {x = (int) settings.getResolution().x-1-i;}
+                    else {x = i;}
+
+                    for (int j=0; j<settings.getResolution().y-Math.abs(cy); j++) {
+                        int y;
+                        if (cy > 0) {y = (int) settings.getResolution().y-1-j;}
+                        else {y = j;}
+
+                        for (int k=0; k<settings.getResolution().z-Math.abs(cz); k++) {
+                            int z;
+                            if (cz > 0) {z = (int) settings.getResolution().z-1-k;}
+                            else {z = k;}
+                            densities[x][y][z][d] = densities[x-cx][y-cy][z-cz][d];
+                        }
+                    }
+                }
+            }
+
+            // set the inlet (left) and outlet (right) (directions pointing into the grid), top, bottom, front and back faces, to equilibrium (aka inject new fluid)
+            v = settings.getFlowSpeed();
+            one15vv = 1-1.5f*v*v;
+            one3v3vv = 1+3*v+3*v*v;
+            one_3v3vv = 1-3*v+3*v*v;
+
+            for (int x=0; x<settings.getResolution().x; x++) {
+                for (int y=0; y<settings.getResolution().y; y++) {
+                    for (int z=0; z<settings.getResolution().z; z++) {
+                        if (isBarrier(x, y, z)) {continue;} // skip all barriers
+                        if (x == 0) { // inlet (left) (directions pointing into the grid)
+                            densities[x][y][z][1] = one18th * one3v3vv;
+                            densities[x][y][z][2] = one36th * one3v3vv;
+                            densities[x][y][z][3] = one36th * one3v3vv;
+                            densities[x][y][z][10] = one36th * one3v3vv;
+                            densities[x][y][z][15] = one36th * one3v3vv;
+                        } else if (x == settings.getResolution().x-1) { // outlet (right) (directions pointing into the grid)
+                            densities[x][y][z][4] = one18th * one_3v3vv;
+                            densities[x][y][z][5] = one36th * one_3v3vv;
+                            densities[x][y][z][6] = one36th * one_3v3vv;
+                            densities[x][y][z][11] = one36th * one_3v3vv;
+                            densities[x][y][z][16] = one36th * one_3v3vv;
+                        }
+
+                        if (y == 0 || y == settings.getResolution().y-1 || z == 0 || z == settings.getResolution().z-1) { // top, bottom, front and back
+                            densities[x][y][z][0] = one3rd * one15vv;
+                            densities[x][y][z][1] = one18th * one3v3vv;
+                            densities[x][y][z][4] = one18th * one_3v3vv;
+                            densities[x][y][z][7] = one18th * one15vv;
+                            densities[x][y][z][8] = one18th * one15vv;
+                            densities[x][y][z][9] = one18th * one15vv;
+                            densities[x][y][z][14] = one18th * one15vv;
+                            densities[x][y][z][2] = one36th * one3v3vv;
+                            densities[x][y][z][3] = one36th * one3v3vv;
+                            densities[x][y][z][5] = one36th * one_3v3vv;
+                            densities[x][y][z][6] = one36th * one_3v3vv;
+                            densities[x][y][z][10] = one36th * one3v3vv;
+                            densities[x][y][z][11] = one36th * one_3v3vv;
+                            densities[x][y][z][12] = one36th * one15vv;
+                            densities[x][y][z][13] = one36th * one15vv;
+                            densities[x][y][z][15] = one36th * one3v3vv;
+                            densities[x][y][z][16] = one36th * one_3v3vv;
+                            densities[x][y][z][17] = one36th * one15vv;
+                            densities[x][y][z][18] = one36th * one15vv;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public void bounce() {
@@ -398,20 +474,20 @@ public class LatticeBoltzmannCFDSolver {
                     }
                 }
             }
-        } /*else {
+        } else {
             // get intersection point between selected plane and ray from mouse
 
-            if (settings.getPlaceBarriers() && !(cellPosition.x == 0 || cellPosition.x == settings.getResolution().x-1 || cellPosition.y == 0 || cellPosition.y == settings.getResolution().y-1 || cellPosition.z == 0 || cellPosition.z == settings.getResolution().z-1)) {
-                if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+            if (settings.getPlaceBarriers() && !(cellPosition.x <= 0 || cellPosition.x >= settings.getResolution().x-1 || cellPosition.y <= 0 || cellPosition.y >= settings.getResolution().y-1 || cellPosition.z <= 0 || cellPosition.z >= settings.getResolution().z-1)) {
+                if (Gdx.input.isButtonPressed(keybinds.getBindAt(9))) {
                     addBarrier((int) cellPosition.x, (int) cellPosition.y, (int) cellPosition.z);
                 }
-                if (Gdx.input.isButtonPressed(Input.Buttons.RIGHT)) {
+                if (Gdx.input.isButtonPressed(keybinds.getBindAt(10))) {
                     if (isBarrier((int) cellPosition.x, (int) cellPosition.y, (int) cellPosition.z)) {
                         removeBarrier((int) cellPosition.x, (int) cellPosition.y, (int) cellPosition.z);
                     }
                 }
             }
-        }*/
+        }
     }
 
     public ArrayList<Color> calculateColours(int numOfColours) {
