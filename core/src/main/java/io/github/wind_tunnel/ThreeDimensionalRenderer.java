@@ -9,8 +9,6 @@ public class ThreeDimensionalRenderer {
 
     private Settings settings;
 
-    private int cameraDistance;
-    private int fov;
     private Vector3 rotationAngles;
     private Vector3 origin;
 
@@ -33,9 +31,6 @@ public class ThreeDimensionalRenderer {
         this.settings = Settings.getInstance();
 
         this.rotationAngles = settings.getRotationAngles();
-        this.cameraDistance = settings.getCameraDistance();
-        this.fov = settings.getFov();
-
         this.screenDimensions = new Vector2(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         this.aspectRatio = screenDimensions.x/screenDimensions.y;
     }
@@ -112,27 +107,69 @@ public class ThreeDimensionalRenderer {
             {0, 0, 1, 0}
         };
 
-        // apply the projection matrix
-        pos.x = point.x;
-        pos.y = point.y;
-        pos.z = point.z;
-        pos.w = 1; // w = 1 as this is a position not a direction
-
-        // multiply the projection matrix by pos
-        point.x = projectionMatrix[0][0]*pos.x + projectionMatrix[0][1]*pos.y + projectionMatrix[0][2]*pos.z + projectionMatrix[0][3]*pos.w;
-        point.y = projectionMatrix[1][0]*pos.x + projectionMatrix[1][1]*pos.y + projectionMatrix[1][2]*pos.z + projectionMatrix[1][3]*pos.w;
-        point.z = projectionMatrix[2][0]*pos.x + projectionMatrix[2][1]*pos.y + projectionMatrix[2][2]*pos.z + projectionMatrix[2][3]*pos.w;
-        pos.w = projectionMatrix[3][0]*pos.x + projectionMatrix[3][1]*pos.y + projectionMatrix[3][2]*pos.z + projectionMatrix[3][3]*pos.w;
-
-        // perspective divide
-        point.x /= pos.w;
-        point.y /= pos.w;
-        point.z /= pos.w;
+        // w = 1 as this is a position not a direction
+        point = multiplyVector4withMatrix(new Vector4(point.x, point.y, point.z, 1), projectionMatrix);
 
         // convert 3d point to the 2d screen
         projectedPoint.x = (point.x+1)*(screenDimensions.x/2);
         projectedPoint.y = (1-point.y)*(screenDimensions.y/2);
 
         return projectedPoint;
+    }
+
+    public Vector3 getIntersectionBetweenPlaneAnd(Vector2 mouse) {
+        // map mouse screen coordinates to normalised device coordinates (NDC)
+
+        float xNDC = ((2*mouse.x)/settings.getResolution().x)-1;
+        float yNDC = ((2*mouse.y)/settings.getResolution().y)-1;
+
+        Vector3 near = new Vector3(xNDC, yNDC, -1);
+        Vector3 far = new Vector3(xNDC, yNDC, 1);
+
+        float[][] inverseProjectionMatrix = new float[][]{
+            {aspectRatio/fovCalculation, 0, 0, 0},
+            {0, 1/fovCalculation, 0, 0},
+            {0, 0, 0, 1},
+            {0, 0, -1/(zNear*zNormalisation), 1/zNear}
+        };
+
+        near = multiplyVector4withMatrix(new Vector4(near.x, near.y, near.z, 1), inverseProjectionMatrix);
+        far = multiplyVector4withMatrix(new Vector4(far.x, far.y, far.z, 1), inverseProjectionMatrix);
+
+        /*
+        3D Ray: R(t) = near + t*(far-near) = selectedZPlane
+        Solve for t:
+        t = (selectedZPlane-near.z)/(far.z-near.z)
+
+        therefore:
+        x = near.x + t*(far.x-near.x)
+        y = near.y + t*(far.y-near.y)
+        z = selectedZPlane
+         */
+
+        float t = (settings.getSelectedZPlane()-near.z)/(far.z-near.z);
+
+        return new Vector3(near.x + t*(far.x-near.x), near.y + t*(far.y-near.y), settings.getSelectedZPlane());
+    }
+
+    public Vector3 multiplyVector4withMatrix(Vector4 point, float[][] matrix) {
+        // apply the matrix
+        pos.x = point.x;
+        pos.y = point.y;
+        pos.z = point.z;
+        pos.w = point.w;
+
+        // multiply the matrix by pos
+        point.x = matrix[0][0]*pos.x + matrix[0][1]*pos.y + matrix[0][2]*pos.z + matrix[0][3]*pos.w;
+        point.y = matrix[1][0]*pos.x + matrix[1][1]*pos.y + matrix[1][2]*pos.z + matrix[1][3]*pos.w;
+        point.z = matrix[2][0]*pos.x + matrix[2][1]*pos.y + matrix[2][2]*pos.z + matrix[2][3]*pos.w;
+        pos.w = matrix[3][0]*pos.x + matrix[3][1]*pos.y + matrix[3][2]*pos.z + matrix[3][3]*pos.w;
+
+        // perspective divide
+        point.x /= pos.w;
+        point.y /= pos.w;
+        point.z /= pos.w;
+
+        return new Vector3(point.x, point.y, point.z);
     }
 }

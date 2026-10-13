@@ -23,6 +23,8 @@ public class Settings {
     private int fov;
     private Vector3 origin;
 
+    private int selectedZPlane;
+
     private static Settings instance;
 
     public static Settings getInstance() {
@@ -48,6 +50,7 @@ public class Settings {
         this.cameraDistance = 8;
         this.fov = 95;
         this.origin = new Vector3(0, 0, 0);
+        this.selectedZPlane = 0;
     }
 
     public String cycleOptions(int change, String currentValue, String[] possibleValues) {
@@ -104,6 +107,9 @@ public class Settings {
 
     public Vector3 getOrigin() {return this.origin;}
     public void setOrigin(Vector3 origin) {this.origin = origin;}
+
+    public int getSelectedZPlane() {return this.selectedZPlane;}
+    public void setSelectedZPlane(int selectedZPlane) {this.selectedZPlane = selectedZPlane;}
 
     public int getCameraDistance() {return this.cameraDistance;}
     public void setCameraDistance(int cameraDistance) {if (cameraDistance > 0) {this.cameraDistance = cameraDistance;}}

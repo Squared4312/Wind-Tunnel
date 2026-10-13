@@ -17,7 +17,8 @@ public class LatticeBoltzmannCFDSolver {
     - create a collide function - 100% - done
     - create a stream function - 100% - done
     - create a bounce function - 100% - done
-    - research how to get an intersection point between the selected plane and the mouse ray - 0%
+    - research how to get an intersection point between the selected plane and the mouse ray - 100% - done
+    - find how to use the scroll wheel to select a plane in 3D - 0%
     - find out how to keep barriers when going back to settings (2D -> 3D or change in resolution)
      */
 
@@ -40,6 +41,7 @@ public class LatticeBoltzmannCFDSolver {
     private Vector2 screenPos;
     private Vector2 mouse = new Vector2();
     private Vector3 cellPosition = new Vector3();
+    private Vector3 intersectionPoint = new Vector3();
 
     private float four9ths = 4/9f;
     private float one9th = 1/9f;
@@ -82,7 +84,6 @@ public class LatticeBoltzmannCFDSolver {
     private LatticeBoltzmannCFDSolver() {
         this.settings = Settings.getInstance();
         this.renderer = new ThreeDimensionalRenderer();
-        this.keybinds = Keybinds.getInstance();
         initialiseFluid();
         this.colours = calculateColours(numOfColors);
     }
@@ -361,9 +362,7 @@ public class LatticeBoltzmannCFDSolver {
                             densities[x][y][z][6] = one36th * one_3v3vv;
                             densities[x][y][z][11] = one36th * one_3v3vv;
                             densities[x][y][z][16] = one36th * one_3v3vv;
-                        }
-
-                        if (y == 0 || y == settings.getResolution().y-1 || z == 0 || z == settings.getResolution().z-1) { // top, bottom, front and back
+                        } else if (y == 0 || y == settings.getResolution().y-1 || z == 0 || z == settings.getResolution().z-1) { // top, bottom, front and back
                             densities[x][y][z][0] = one3rd * one15vv;
                             densities[x][y][z][1] = one18th * one3v3vv;
                             densities[x][y][z][4] = one18th * one_3v3vv;
@@ -453,6 +452,8 @@ public class LatticeBoltzmannCFDSolver {
     }
 
     public void drawBarriers() {
+        keybinds = Keybinds.getInstance();
+
         mouse.x = Gdx.input.getX();
         mouse.y = 1080-Gdx.input.getY();
         if (!settings.getPlaceBarriers()) {
@@ -476,6 +477,8 @@ public class LatticeBoltzmannCFDSolver {
             }
         } else {
             // get intersection point between selected plane and ray from mouse
+
+            cellPosition = renderer.getIntersectionBetweenPlaneAnd(mouse);
 
             if (settings.getPlaceBarriers() && !(cellPosition.x <= 0 || cellPosition.x >= settings.getResolution().x-1 || cellPosition.y <= 0 || cellPosition.y >= settings.getResolution().y-1 || cellPosition.z <= 0 || cellPosition.z >= settings.getResolution().z-1)) {
                 if (Gdx.input.isButtonPressed(keybinds.getBindAt(9))) {
