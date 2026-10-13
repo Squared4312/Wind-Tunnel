@@ -13,7 +13,7 @@ public class Keybinds {
         Input.Keys.UP, Input.Keys.DOWN, // zoom in 3D, zoom in, zoom out
         Input.Keys.SPACE, Input.Keys.RIGHT, // pause/run the simulation, step the simulation (when paused)
         Input.Keys.R, // clear all barriers
-        Input.Buttons.LEFT, Input.Buttons.RIGHT // draw/erase barriers
+        Input.Buttons.LEFT, Input.Buttons.RIGHT, // draw/erase barriers
     };
 
     private static Keybinds instance;

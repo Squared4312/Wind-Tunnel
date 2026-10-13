@@ -435,9 +435,10 @@ public class LatticeBoltzmannCFDSolver {
         for (int x=0; x<settings.getResolution().x; x++) {
             for (int y=0; y<settings.getResolution().y; y++) {
                 for (int z=0; z<settings.getResolution().z; z++) {
-                    if (!(x == 0 || y == 0 || z == 0 || x == settings.getResolution().x-1 || y == settings.getResolution().y-1 || z == settings.getResolution().z-1)) {continue;}
-                    sr.setColor(colours.get(calculateColourIndex(x, y, z))); // calculates colour based on plotMode
+                    if (isBarrier(x, y, z)) {}
+                    else if (!(x == 0 || y == 0 || z == 0 || x == settings.getResolution().x-1 || y == settings.getResolution().y-1 || z == settings.getResolution().z-1)) {continue;}
                     if (isBarrier(x, y, z)) {sr.setColor(Color.WHITE);}
+                    else {sr.setColor(colours.get(calculateColourIndex(x, y, z)));} // calculates colour based on plotMode
                     if (settings.getSolver().equals("2D LBM")) {
                         sr.rect(x*cellDimensions, y*cellDimensions, cellDimensions, cellDimensions);
                     } else {
@@ -467,18 +468,22 @@ public class LatticeBoltzmannCFDSolver {
 
             if (settings.getPlaceBarriers() && !(cellPosition.x <= 0 || cellPosition.x >= settings.getResolution().x-1 || cellPosition.y <= 0 || cellPosition.y >= settings.getResolution().y-1)) {
                 if (Gdx.input.isButtonPressed(keybinds.getBindAt(9))) {
-                    addBarrier((int) cellPosition.x, (int) cellPosition.y, 0);
+                    addBarrier((int) cellPosition.x, (int) cellPosition.y-1, 0);
                 }
                 if (Gdx.input.isButtonPressed(keybinds.getBindAt(10))) {
-                    if (isBarrier((int) cellPosition.x, (int) cellPosition.y, 0)) {
-                        removeBarrier((int) cellPosition.x, (int) cellPosition.y, 0);
+                    if (isBarrier((int) cellPosition.x, (int) cellPosition.y-1, 0)) {
+                        removeBarrier((int) cellPosition.x, (int) cellPosition.y-1, 0);
                     }
                 }
             }
-        } else {
-            // get intersection point between selected plane and ray from mouse
-
-            cellPosition = renderer.getIntersectionBetweenPlaneAnd(mouse);
+        } else { // 3D
+            cellPosition = renderer.getIntersectionBetweenPlaneAnd(mouse); // gets intersection point between selected plane and ray from mouse
+            if (cellPosition == null) { // ray (almost) parallel to the plane
+                return;
+            }
+            cellPosition.x = Math.round(cellPosition.x+settings.getResolution().x/2);
+            cellPosition.y = Math.round(cellPosition.y+settings.getResolution().y/2);
+            cellPosition.z = Math.round(cellPosition.z+settings.getResolution().z/2);
 
             if (settings.getPlaceBarriers() && !(cellPosition.x <= 0 || cellPosition.x >= settings.getResolution().x-1 || cellPosition.y <= 0 || cellPosition.y >= settings.getResolution().y-1 || cellPosition.z <= 0 || cellPosition.z >= settings.getResolution().z-1)) {
                 if (Gdx.input.isButtonPressed(keybinds.getBindAt(9))) {

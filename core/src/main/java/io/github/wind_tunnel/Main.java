@@ -29,6 +29,7 @@ public class Main extends ApplicationAdapter {
 
     @Override
     public void create() {
+        Gdx.input.setInputProcessor(new InputHandler());
         screenDimensions = new Vector2(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
         sr = new ShapeRenderer();

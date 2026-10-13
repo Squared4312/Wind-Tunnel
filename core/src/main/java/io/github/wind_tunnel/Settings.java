@@ -110,6 +110,11 @@ public class Settings {
 
     public int getSelectedZPlane() {return this.selectedZPlane;}
     public void setSelectedZPlane(int selectedZPlane) {this.selectedZPlane = selectedZPlane;}
+    public void moveSelectedZPlane(int direction) {
+        if (selectedZPlane+direction >= 0 && selectedZPlane+direction < resolution.z) {
+            selectedZPlane += direction;
+        }
+    }
 
     public int getCameraDistance() {return this.cameraDistance;}
     public void setCameraDistance(int cameraDistance) {if (cameraDistance > 0) {this.cameraDistance = cameraDistance;}}

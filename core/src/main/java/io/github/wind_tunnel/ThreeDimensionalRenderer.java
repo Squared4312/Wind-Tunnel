@@ -108,9 +108,9 @@ public class ThreeDimensionalRenderer {
         };
 
         // w = 1 as this is a position not a direction
-        point = multiplyVector4withMatrix(new Vector4(point.x, point.y, point.z, 1), projectionMatrix);
+        point = multiplyVectorWithMatrix(new Vector4(point.x, point.y, point.z, 1), projectionMatrix);
 
-        // convert 3d point to the 2d screen
+        // convert 3D point to the 2D screen
         projectedPoint.x = (point.x+1)*(screenDimensions.x/2);
         projectedPoint.y = (1-point.y)*(screenDimensions.y/2);
 
@@ -119,13 +119,11 @@ public class ThreeDimensionalRenderer {
 
     public Vector3 getIntersectionBetweenPlaneAnd(Vector2 mouse) {
         // map mouse screen coordinates to normalised device coordinates (NDC)
+        // between -1 and 1 where 0 is the middle of the screen
+        float xNDC = ((2*mouse.x)/screenDimensions.x)-1;
+        float yNDC = 1-(2*mouse.y/screenDimensions.y); // flipped as (0, 0, 0) is bottom left
 
-        float xNDC = ((2*mouse.x)/settings.getResolution().x)-1;
-        float yNDC = ((2*mouse.y)/settings.getResolution().y)-1;
-
-        Vector3 near = new Vector3(xNDC, yNDC, -1);
-        Vector3 far = new Vector3(xNDC, yNDC, 1);
-
+        fovCalculation = (float) (1/Math.tan(0.5*(settings.getFov()*(Math.PI/180))));
         float[][] inverseProjectionMatrix = new float[][]{
             {aspectRatio/fovCalculation, 0, 0, 0},
             {0, 1/fovCalculation, 0, 0},
@@ -133,26 +131,40 @@ public class ThreeDimensionalRenderer {
             {0, 0, -1/(zNear*zNormalisation), 1/zNear}
         };
 
-        near = multiplyVector4withMatrix(new Vector4(near.x, near.y, near.z, 1), inverseProjectionMatrix);
-        far = multiplyVector4withMatrix(new Vector4(far.x, far.y, far.z, 1), inverseProjectionMatrix);
+        Vector3 near = multiplyVectorWithMatrix(new Vector4(xNDC, yNDC, 0, 1), inverseProjectionMatrix);
+        Vector3 far = multiplyVectorWithMatrix(new Vector4(xNDC, yNDC, 1, 1), inverseProjectionMatrix);
+
+        // camera space to world space
+        near = screenToWorldPoint(near);
+        far = screenToWorldPoint(far);
 
         /*
-        3D Ray: R(t) = near + t*(far-near) = selectedZPlane
-        Solve for t:
-        t = (selectedZPlane-near.z)/(far.z-near.z)
+        Plane Equation:
+        P(t) = near+t*(far-near) = plane
+        at t = 0 -> near
+        at t = 1 -> far
+        */
 
-        therefore:
-        x = near.x + t*(far.x-near.x)
-        y = near.y + t*(far.y-near.y)
-        z = selectedZPlane
-         */
+        float dz = far.z-near.z;
+        if (Math.abs(dz) < 1e-6f) { // ray (almost) parallel to the plane
+            return null;
+        }
 
-        float t = (settings.getSelectedZPlane()-near.z)/(far.z-near.z);
+        float plane = settings.getSelectedZPlane()-settings.getResolution().z/2;
+        float t = (plane-near.z)/dz; // rearranged for t from the plane equation
 
-        return new Vector3(near.x + t*(far.x-near.x), near.y + t*(far.y-near.y), settings.getSelectedZPlane());
+        if (t < 0) { // plane intersects behind the camera
+            return null;
+        }
+
+        return new Vector3(
+            near.x+t*(far.x-near.x), // sub t back into plane equation for x
+            near.y+t*(far.y-near.y), // sub t back into plane equation for y
+            plane                    // the plane is in the z
+        );
     }
 
-    public Vector3 multiplyVector4withMatrix(Vector4 point, float[][] matrix) {
+    public Vector3 multiplyVectorWithMatrix(Vector4 point, float[][] matrix) {
         // apply the matrix
         pos.x = point.x;
         pos.y = point.y;
@@ -171,5 +183,61 @@ public class ThreeDimensionalRenderer {
         point.z /= pos.w;
 
         return new Vector3(point.x, point.y, point.z);
+    }
+
+    private Vector3 screenToWorldPoint(Vector3 point) {
+        origin = settings.getOrigin();
+
+        // undo camera offset and origin translation
+        translated.x = point.x-origin.x;
+        translated.y = point.y-origin.y;
+        translated.z = point.z-origin.z-settings.getCameraDistance();
+
+        rotationAngles.x = settings.getRotationAnglesX();
+        rotationAngles.y = settings.getRotationAnglesY();
+        rotationAngles.z = settings.getRotationAnglesZ();
+
+        float sinX = (float) Math.sin(rotationAngles.x);
+        float cosX = (float) Math.cos(rotationAngles.x);
+        float sinY = (float) Math.sin(rotationAngles.y);
+        float cosY = (float) Math.cos(rotationAngles.y);
+        float sinZ = (float) Math.sin(rotationAngles.z);
+        float cosZ = (float) Math.cos(rotationAngles.z);
+
+        // inverse of 3x3 rotation matrices in x y z
+        float[][] rotationX = {
+            {1, 0, 0},
+            {0, cosX, sinX},
+            {0, -sinX, cosX},
+        };
+
+        float[][] rotationY = {
+            {cosY, 0, -sinY},
+            {0, 1, 0},
+            {sinY, 0, cosY},
+        };
+
+        float[][] rotationZ = {
+            {cosZ, sinZ, 0},
+            {-sinZ, cosZ, 0},
+            {0, 0, 1},
+        };
+
+        // rotate point back to 3D world coordinates in reverse order of pointProjection (Z -> Y -> X) using the 3 inverse rotation matrices
+        // z rotation
+        rotatedX.x = rotationZ[0][0]*translated.x + rotationZ[0][1]*translated.y + rotationZ[0][2]*translated.z;
+        rotatedX.y = rotationZ[1][0]*translated.x + rotationZ[1][1]*translated.y + rotationZ[1][2]*translated.z;
+        rotatedX.z = rotationZ[2][0]*translated.x + rotationZ[2][1]*translated.y + rotationZ[2][2]*translated.z;
+        // y rotation
+        rotatedXY.x = rotationY[0][0]*rotatedX.x + rotationY[0][1]*rotatedX.y + rotationY[0][2]*rotatedX.z;
+        rotatedXY.y = rotationY[1][0]*rotatedX.x + rotationY[1][1]*rotatedX.y + rotationY[1][2]*rotatedX.z;
+        rotatedXY.z = rotationY[2][0]*rotatedX.x + rotationY[2][1]*rotatedX.y + rotationY[2][2]*rotatedX.z;
+        // x rotation
+        rotatedXYZ.x = rotationX[0][0]*rotatedXY.x + rotationX[0][1]*rotatedXY.y + rotationX[0][2]*rotatedXY.z;
+        rotatedXYZ.y = rotationX[1][0]*rotatedXY.x + rotationX[1][1]*rotatedXY.y + rotationX[1][2]*rotatedXY.z;
+        rotatedXYZ.z = rotationX[2][0]*rotatedXY.x + rotationX[2][1]*rotatedXY.y + rotationX[2][2]*rotatedXY.z;
+
+        // translate back
+        return new Vector3(rotatedXYZ.x+origin.x, rotatedXYZ.y+origin.y, rotatedXYZ.z+origin.z);
     }
 }
