@@ -435,8 +435,12 @@ public class LatticeBoltzmannCFDSolver {
         for (int x=0; x<settings.getResolution().x; x++) {
             for (int y=0; y<settings.getResolution().y; y++) {
                 for (int z=0; z<settings.getResolution().z; z++) {
-                    if (isBarrier(x, y, z)) {}
-                    else if (!(x == 0 || y == 0 || z == 0 || x == settings.getResolution().x-1 || y == settings.getResolution().y-1 || z == settings.getResolution().z-1)) {continue;}
+
+                    if (settings.getRenderOnlySelectedZPlane()) {
+                        if (z != settings.getSelectedZPlane()) {continue;}
+                    } else if (isBarrier(x, y, z)) {
+                    } else if (!(x == 0 || y == 0 || z == 0 || x == settings.getResolution().x-1 || y == settings.getResolution().y-1 || z == settings.getResolution().z-1)) {continue;}
+
                     if (isBarrier(x, y, z)) {sr.setColor(Color.WHITE);}
                     else {sr.setColor(colours.get(calculateColourIndex(x, y, z)));} // calculates colour based on plotMode
                     if (settings.getSolver().equals("2D LBM")) {
@@ -468,11 +472,11 @@ public class LatticeBoltzmannCFDSolver {
 
             if (settings.getPlaceBarriers() && !(cellPosition.x <= 0 || cellPosition.x >= settings.getResolution().x-1 || cellPosition.y <= 0 || cellPosition.y >= settings.getResolution().y-1)) {
                 if (Gdx.input.isButtonPressed(keybinds.getBindAt(9))) {
-                    addBarrier((int) cellPosition.x, (int) cellPosition.y-1, 0);
+                    addBarrier((int) cellPosition.x, (int) cellPosition.y, 0);
                 }
                 if (Gdx.input.isButtonPressed(keybinds.getBindAt(10))) {
-                    if (isBarrier((int) cellPosition.x, (int) cellPosition.y-1, 0)) {
-                        removeBarrier((int) cellPosition.x, (int) cellPosition.y-1, 0);
+                    if (isBarrier((int) cellPosition.x, (int) cellPosition.y, 0)) {
+                        removeBarrier((int) cellPosition.x, (int) cellPosition.y, 0);
                     }
                 }
             }

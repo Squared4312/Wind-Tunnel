@@ -10,6 +10,9 @@ public class Settings {
     private float viscosity;
     private String plot;
     private boolean showFlowLines;
+    private boolean renderUI;
+    private boolean renderOnlySelectedZPlane;
+    private int brushSize;
 
     private String[] plotValues = {"speed", "x velocity", "y velocity", "density", "curl"};
     private int[][] resolutionValues = {{32, 18}, {64, 36}, {128, 72}, {256, 144}, {512, 288}, {1024, 576}}; // keep the 16:9 aspect ratio
@@ -45,6 +48,9 @@ public class Settings {
         this.viscosity = 0.020f;
         this.plot = this.plotValues[1];
         this.showFlowLines = false;
+        this.renderUI = true;
+        this.renderOnlySelectedZPlane = false;
+        this.brushSize = 1;
 
         this.rotationAngles = new Vector3(0, 0, 0);
         this.cameraDistance = 8;
@@ -115,6 +121,15 @@ public class Settings {
             selectedZPlane += direction;
         }
     }
+
+    public boolean getRenderUI() {return this.renderUI;}
+    public void setRenderUI(boolean renderUI) {this.renderUI = renderUI;}
+
+    public boolean getRenderOnlySelectedZPlane() {return this.renderOnlySelectedZPlane;}
+    public void setRenderOnlySelectedZPlane(boolean renderOnlySelectedZPlane) {this.renderOnlySelectedZPlane = renderOnlySelectedZPlane;}
+
+    public int getBrushSize() {return this.brushSize;}
+    public void setBrushSize(int brushSize) {this.brushSize = brushSize;}
 
     public int getCameraDistance() {return this.cameraDistance;}
     public void setCameraDistance(int cameraDistance) {if (cameraDistance > 0) {this.cameraDistance = cameraDistance;}}

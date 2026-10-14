@@ -32,11 +32,15 @@ public class SettingsMenu implements Menu {
 
     private Rectangle clearBarrierButton;
     private Rectangle showFlowlinesButton;
+    private Rectangle renderUIButton;
+    private Rectangle renderOnlySelectedZPlaneButton;
+    private Rectangle[] brushSizeButtons = new Rectangle[2];
+    private float brushSizeTextX = 0;
 
     private Texture backIcon;
     private Texture settingsIcon;
-    private Texture flowLinesCheckBoxTrue;
-    private Texture flowLinesCheckBoxFalse;
+    private Texture checkBoxTrue;
+    private Texture checkBoxFalse;
 
     private String resolutionZValue;
 
@@ -48,8 +52,8 @@ public class SettingsMenu implements Menu {
 
         this.backIcon = util.loadIcon("back");
         this.settingsIcon = util.loadIcon("settings");
-        this.flowLinesCheckBoxTrue = util.loadIcon("checkBoxTrue");
-        this.flowLinesCheckBoxFalse = util.loadIcon("checkBoxFalse");
+        this.checkBoxTrue = util.loadIcon("checkBoxTrue");
+        this.checkBoxFalse = util.loadIcon("checkBoxFalse");
     }
 
     @Override
@@ -62,11 +66,18 @@ public class SettingsMenu implements Menu {
             util.renderRoundedRectangle(sr, util.getButtonColor(), 600, 642.5f, 600, 75, 16); // l2
             util.renderRoundedRectangle(sr, util.getButtonColor(), 600, 542.5f, 600, 75, 16); // l3
             util.renderRoundedRectangle(sr, util.getButtonColor(), 600, 442.5f, 600, 75, 16); // l4
+            util.renderRoundedRectangle(sr, util.getButtonColor(), 600, 342.5f, 600, 75, 16); // l5
 
             util.renderRoundedRectangle(sr, util.getButtonColor(), 1320, 742.5f, 600, 75, 16); // r1
             barrierShapesButton = util.renderRoundedRectangle(sr, util.getButtonColor(), 1320, 642.5f, 600, 75, 16); // r2
             clearBarrierButton = util.renderRoundedRectangle(sr, util.getButtonColor(), 1320, 542.5f, 600, 75, 16); // r3
             showFlowlinesButton = util.renderRoundedRectangle(sr, util.getButtonColor(), 1320, 442.5f, 600, 75, 16); // r4
+            renderUIButton = util.renderRoundedRectangle(sr, util.getButtonColor(), 1320, 342.5f, 600, 75, 16); // r5
+            if (settings.getSolver().equals("3D LBM")) {
+                renderOnlySelectedZPlaneButton = util.renderRoundedRectangle(sr, util.getButtonColor(), 1320, 242.5f, 600, 75, 16); // r6
+            } else {
+                renderOnlySelectedZPlaneButton = util.renderRoundedRectangle(sr, Color.BLACK, 1320, 242.5f, 600, 75, 16); // r6
+            }
 
             resolutionButtons[0] = util.renderRoundedTriangle(sr, Color.WHITE, 865, 742.5f, 12, 90);
             resolutionButtons[1] = util.renderRoundedTriangle(sr, Color.WHITE, resolutionTextX-40, 742.5f, 12, 270);
@@ -83,6 +94,9 @@ public class SettingsMenu implements Menu {
             plotButtons[0] = util.renderRoundedTriangle(sr, Color.WHITE, 865, 442.5f, 12, 90);
             plotButtons[1] = util.renderRoundedTriangle(sr, Color.WHITE, plotTextX-40, 442.5f, 12, 270);
 
+            brushSizeButtons[0] = util.renderRoundedTriangle(sr, Color.WHITE, 865, 342.5f, 12, 90);
+            brushSizeButtons[1] = util.renderRoundedTriangle(sr, Color.WHITE, brushSizeTextX-40, 342.5f, 12, 270);
+
             if (renderDropdown) {
                 util.renderRoundedTriangle(sr, Color.WHITE, 1585, 642.5f, 12, 0);
                 util.renderRoundedRectangle(sr, util.getButtonColor(), 1320, 605-(0.5f*50*barrierShapeValues.length), 600, 50*barrierShapeValues.length, 16);
@@ -98,12 +112,17 @@ public class SettingsMenu implements Menu {
             util.renderText(batch, "flow speed", Color.WHITE, 320, 642.5f, 36, "left"); // l2
             util.renderText(batch, "viscosity", Color.WHITE, 320, 542.5f, 36, "left"); // l3
             util.renderText(batch, "plot", Color.WHITE, 320, 442.5f, 36, "left"); // l4
+            util.renderText(batch, "brush size", Color.WHITE, 320, 342.5f, 36, "left"); // l5
 
             util.renderText(batch, "solver", Color.WHITE, 1040, 742.5f, 36, "left"); // r1
             util.renderText(batch, "barrier shapes", Color.WHITE, 1040, 642.5f, 36, "left"); // r2
             if (!renderDropdown) {
                 util.renderText(batch, "clear barriers", Color.WHITE, 1040, 542.5f, 36, "left"); // r3
                 util.renderText(batch, "show flowlines", Color.WHITE, 1040, 442.5f, 36, "left"); // r4
+                util.renderText(batch, "render ui", Color.WHITE, 1040, 342.5f, 36, "left"); // r5
+                if (settings.getSolver().equals("3D LBM")) {
+                    util.renderText(batch, "only render selected plane", Color.WHITE, 1040, 242.5f, 36, "left"); // r6
+                }
             }
 
             if (settings.getSolver().equals("2D LBM")) {
@@ -117,6 +136,7 @@ public class SettingsMenu implements Menu {
             util.renderText(batch, decimalFormat.format(settings.getFlowSpeed()), Color.WHITE, 765, 642.5f, 36, "centre"); // l2 value
             util.renderText(batch, decimalFormat.format(settings.getViscosity()), Color.WHITE, 765, 542.5f, 36, "centre"); // l3 value
             plotTextX = util.renderText(batch, settings.getPlot(), Color.WHITE, 825, 442.5f, 36, "right"); // l4 value
+            brushSizeTextX = util.renderText(batch, "" + settings.getBrushSize(), Color.WHITE, 825, 342.5f, 36, "right"); // l5 value
 
             solverTextX = util.renderText(batch, settings.getSolver(), Color.WHITE, 1545, 742.5f, 36, "right"); // r1 value
 
@@ -132,9 +152,21 @@ public class SettingsMenu implements Menu {
 
             if (!renderDropdown) {
                 if (settings.getShowFlowLines()) {
-                    util.renderIcon(batch, flowLinesCheckBoxTrue, 1585, 442.5f);
+                    util.renderIcon(batch, checkBoxTrue, 1585, 442.5f);
                 } else {
-                    util.renderIcon(batch, flowLinesCheckBoxFalse, 1585, 442.5f);
+                    util.renderIcon(batch, checkBoxFalse, 1585, 442.5f);
+                }
+                if (settings.getRenderUI()) {
+                    util.renderIcon(batch, checkBoxTrue, 1585, 342.5f);
+                } else {
+                    util.renderIcon(batch, checkBoxFalse, 1585, 342.5f);
+                }
+                if (settings.getSolver().equals("3D LBM")) {
+                    if (settings.getRenderOnlySelectedZPlane()) {
+                        util.renderIcon(batch, checkBoxTrue, 1585, 242.5f);
+                    } else {
+                        util.renderIcon(batch, checkBoxFalse, 1585, 242.5f);
+                    }
                 }
             }
         batch.end();
@@ -149,7 +181,7 @@ public class SettingsMenu implements Menu {
         if (util.isButtonClicked(solverButtons[1])) {settings.setSolver(settings.cycleOptions(-1, settings.getSolver(), settings.getSolverValues()));}
 
         if (util.isButtonClicked(flowSpeedButtons[0]) && settings.getFlowSpeed() < 0.120) {settings.setFlowSpeed(settings.getFlowSpeed()+0.005f); settings.setFlowSpeed(Math.round(settings.getFlowSpeed()*1000)/1000f);}
-        if (util.isButtonClicked(flowSpeedButtons[1]) && settings.getFlowSpeed() > 0.005) {settings.setFlowSpeed(settings.getFlowSpeed()-0.005f); settings.setFlowSpeed(Math.round(settings.getFlowSpeed()*1000)/1000f);}
+        if (util.isButtonClicked(flowSpeedButtons[1]) && settings.getFlowSpeed() > 0.025) {settings.setFlowSpeed(settings.getFlowSpeed()-0.005f); settings.setFlowSpeed(Math.round(settings.getFlowSpeed()*1000)/1000f);}
 
         if (util.isButtonClicked(viscosityButtons[0]) && settings.getViscosity() < 0.200) {settings.setViscosity(settings.getViscosity()+0.005f); settings.setViscosity(Math.round(settings.getViscosity()*1000)/1000f);}
         if (util.isButtonClicked(viscosityButtons[1]) && settings.getViscosity() > 0.005) {settings.setViscosity(settings.getViscosity()-0.005f); settings.setViscosity(Math.round(settings.getViscosity()*1000)/1000f);}
@@ -157,9 +189,17 @@ public class SettingsMenu implements Menu {
         if (util.isButtonClicked(plotButtons[0])) {settings.setPlot(settings.cycleOptions(1, settings.getPlot(), settings.getPlotValues()));}
         if (util.isButtonClicked(plotButtons[1])) {settings.setPlot(settings.cycleOptions(-1, settings.getPlot(), settings.getPlotValues()));}
 
-        if (!renderDropdown && util.isButtonClicked(clearBarrierButton)) {return "remove all barriers";}
+        if (util.isButtonClicked(brushSizeButtons[0]) && settings.getBrushSize() < 10) {settings.setBrushSize(settings.getBrushSize()+1);}
+        if (util.isButtonClicked(brushSizeButtons[1]) && settings.getBrushSize() > 1) {settings.setBrushSize(settings.getBrushSize()-1);}
 
-        if (!renderDropdown && util.isButtonClicked(showFlowlinesButton)) {settings.setShowFlowLines(!settings.getShowFlowLines());}
+        if (!renderDropdown) {
+            if (util.isButtonClicked(clearBarrierButton)) {return "remove all barriers";}
+            if (util.isButtonClicked(showFlowlinesButton)) {settings.setShowFlowLines(!settings.getShowFlowLines());}
+            if (util.isButtonClicked(renderUIButton)) {settings.setRenderUI(!settings.getRenderUI());}
+            if (settings.getSolver().equals("3D LBM")) {
+                if (util.isButtonClicked(renderOnlySelectedZPlaneButton)) {settings.setRenderOnlySelectedZPlane(!settings.getRenderOnlySelectedZPlane());}
+            }
+        }
 
         if (renderDropdown) {
             for (int count=0; count<barrierShapeValues.length; count++) {
@@ -167,6 +207,7 @@ public class SettingsMenu implements Menu {
                     System.out.println(barrierShapeValues[count]);
                     renderDropdown = false;
                     // addShapeToCells(barrierShapeValues[count]);
+                    break;
                 }
             }
         }

@@ -47,24 +47,28 @@ public class FreeplayMenu implements Menu {
             backButton = util.getHitbox(57.5f, 1022.5f, 75, 75);
             settingsButton = util.getHitbox(1862.5f, 57.5f, 75, 75);
 
-            if (!settings.getSimulationRunning()) {
-                runButton = util.renderRoundedRectangle(sr, util.getRunButtonColor(), 835, 62.5f, 200, 75, 16);
-                util.renderRoundedTriangle(sr, Color.WHITE, 790, 62.5f, 12, 90);
-            } else {
-                pauseButton = util.renderRoundedRectangle(sr, util.getPauseButtonColor(), 835, 62.5f, 200, 75, 16);
+            if (settings.getRenderUI()) {
+                if (!settings.getSimulationRunning()) {
+                    runButton = util.renderRoundedRectangle(sr, util.getRunButtonColor(), 835, 62.5f, 200, 75, 16);
+                    util.renderRoundedTriangle(sr, Color.WHITE, 790, 62.5f, 12, 90);
+                } else {
+                    pauseButton = util.renderRoundedRectangle(sr, util.getPauseButtonColor(), 835, 62.5f, 200, 75, 16);
+                }
+                stepButton = util.renderRoundedRectangle(sr, util.getStepButtonColor(), 1085, 62.5f, 200, 75, 16);
             }
-            stepButton = util.renderRoundedRectangle(sr, util.getStepButtonColor(), 1085, 62.5f, 200, 75, 16);
         sr.end();
 
         batch.begin();
-            if (!settings.getSimulationRunning()) {
-                util.renderText(batch, "run", Color.WHITE, 857.5f, 62.5f, 36, "centre");
-            } else {
-                util.renderText(batch, "pause", Color.WHITE, 852.5f, 62.5f, 36, "centre");
-                util.renderIcon(batch, pauseIcon, 770, 62.5f);
+            if (settings.getRenderUI()) {
+                if (!settings.getSimulationRunning()) {
+                    util.renderText(batch, "run", Color.WHITE, 857.5f, 62.5f, 36, "centre");
+                } else {
+                    util.renderText(batch, "pause", Color.WHITE, 852.5f, 62.5f, 36, "centre");
+                    util.renderIcon(batch, pauseIcon, 770, 62.5f);
+                }
+                util.renderText(batch, "step", Color.WHITE, 1110, 62.5f, 36, "centre");
+                util.renderIcon(batch, stepIcon, 1035, 62.5f);
             }
-            util.renderText(batch, "step", Color.WHITE, 1110, 62.5f, 36, "centre");
-            util.renderIcon(batch, stepIcon, 1035, 62.5f);
 
             util.renderIcon(batch, backIcon, 57.5f, 1022.5f);
             util.renderIcon(batch, settingsIcon, 1862.5f, 57.5f);
@@ -73,18 +77,20 @@ public class FreeplayMenu implements Menu {
 
     @Override
     public String checkIfButtonsClicked() {
-        if (!settings.getSimulationRunning() && util.isButtonClicked(runButton)) {
-            settings.setSimulationRunning(true);
-            settings.setPlaceBarriers(false);
-        }
-        else if (settings.getSimulationRunning() && util.isButtonClicked(pauseButton)) {
-            settings.setSimulationRunning(false);
-            settings.setPlaceBarriers(false);
-        }
-        if (util.isButtonClicked(stepButton)) {
-            settings.setPlaceBarriers(false);
-            if (!settings.getSimulationRunning()) {
-                cfdSolver.doStep();
+        if (settings.getRenderUI()) {
+            if (!settings.getSimulationRunning() && util.isButtonClicked(runButton)) {
+                settings.setSimulationRunning(true);
+                settings.setPlaceBarriers(false);
+            }
+            else if (settings.getSimulationRunning() && util.isButtonClicked(pauseButton)) {
+                settings.setSimulationRunning(false);
+                settings.setPlaceBarriers(false);
+            }
+            if (util.isButtonClicked(stepButton)) {
+                settings.setPlaceBarriers(false);
+                if (!settings.getSimulationRunning()) {
+                    cfdSolver.doStep();
+                }
             }
         }
 
