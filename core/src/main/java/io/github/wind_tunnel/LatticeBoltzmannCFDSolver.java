@@ -18,8 +18,8 @@ public class LatticeBoltzmannCFDSolver {
     - create a stream function - 100% - done
     - create a bounce function - 100% - done
     - research how to get an intersection point between the selected plane and the mouse ray - 100% - done
-    - find how to use the scroll wheel to select a plane in 3D - 0%
-    - find out how to keep barriers when going back to settings (2D -> 3D or change in resolution)
+    - find how to use the scroll wheel to select a plane in 3D - 100% - done
+    - find out how to keep barriers when going back to settings (2D -> 3D or change in resolution) - 0%
      */
 
     private Settings settings;
@@ -41,7 +41,6 @@ public class LatticeBoltzmannCFDSolver {
     private Vector2 screenPos;
     private Vector2 mouse = new Vector2();
     private Vector3 cellPosition = new Vector3();
-    private Vector3 intersectionPoint = new Vector3();
 
     private float four9ths = 4/9f;
     private float one9th = 1/9f;
@@ -488,6 +487,7 @@ public class LatticeBoltzmannCFDSolver {
             cellPosition.x = Math.round(cellPosition.x+settings.getResolution().x/2);
             cellPosition.y = Math.round(cellPosition.y+settings.getResolution().y/2);
             cellPosition.z = Math.round(cellPosition.z+settings.getResolution().z/2);
+            settings.setIntersectionPoint(cellPosition);
 
             if (settings.getPlaceBarriers() && !(cellPosition.x <= 0 || cellPosition.x >= settings.getResolution().x-1 || cellPosition.y <= 0 || cellPosition.y >= settings.getResolution().y-1 || cellPosition.z <= 0 || cellPosition.z >= settings.getResolution().z-1)) {
                 if (Gdx.input.isButtonPressed(keybinds.getBindAt(9))) {

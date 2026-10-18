@@ -15,6 +15,7 @@ public class SettingsMenu implements Menu {
 
     private Rectangle backButton;
     private Rectangle settingsButton;
+    private Rectangle keybindsButton;
 
     private Rectangle[] resolutionButtons = new Rectangle[2];
     private float resolutionTextX = 0;
@@ -39,6 +40,7 @@ public class SettingsMenu implements Menu {
 
     private Texture backIcon;
     private Texture settingsIcon;
+    private Texture keybindsIcon;
     private Texture checkBoxTrue;
     private Texture checkBoxFalse;
 
@@ -52,6 +54,7 @@ public class SettingsMenu implements Menu {
 
         this.backIcon = util.loadIcon("back");
         this.settingsIcon = util.loadIcon("settings");
+        this.keybindsIcon = util.loadIcon("keybinds");
         this.checkBoxTrue = util.loadIcon("checkBoxTrue");
         this.checkBoxFalse = util.loadIcon("checkBoxFalse");
     }
@@ -61,6 +64,7 @@ public class SettingsMenu implements Menu {
         sr.begin(ShapeRenderer.ShapeType.Filled);
             backButton = util.getHitbox(57.5f, 1022.5f, 75, 75);
             settingsButton = util.getHitbox(1862.5f, 57.5f, 75, 75);
+            keybindsButton = util.getHitbox(57.5f, 57.5f, 75, 75);
 
             util.renderRoundedRectangle(sr, util.getButtonColor(), 600, 742.5f, 600, 75, 16); // l1
             util.renderRoundedRectangle(sr, util.getButtonColor(), 600, 642.5f, 600, 75, 16); // l2
@@ -149,6 +153,7 @@ public class SettingsMenu implements Menu {
 
             util.renderIcon(batch, backIcon, 57.5f, 1022.5f);
             util.renderIcon(batch, settingsIcon, 1862.5f, 57.5f);
+            util.renderIcon(batch, keybindsIcon, 57.5f, 57.f);
 
             if (!renderDropdown) {
                 if (settings.getShowFlowLines()) {
@@ -216,6 +221,9 @@ public class SettingsMenu implements Menu {
         if (util.isButtonClicked(backButton)) {
             settings.setPlaceBarriers(false);
             return "back";
+        }
+        if (util.isButtonClicked(keybindsButton)) {
+            return "keybinds";
         }
         return "settings";
     }

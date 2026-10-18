@@ -27,6 +27,7 @@ public class Settings {
     private Vector3 origin;
 
     private int selectedZPlane;
+    private Vector3 intersectionPoint;
 
     private static Settings instance;
 
@@ -57,6 +58,7 @@ public class Settings {
         this.fov = 95;
         this.origin = new Vector3(0, 0, 0);
         this.selectedZPlane = 0;
+        this.intersectionPoint = new Vector3(0, 0, 0);
     }
 
     public String cycleOptions(int change, String currentValue, String[] possibleValues) {
@@ -120,7 +122,13 @@ public class Settings {
         if (selectedZPlane+direction >= 0 && selectedZPlane+direction < resolution.z) {
             selectedZPlane += direction;
         }
+        if (selectedZPlane >= resolution.z) {
+            selectedZPlane = (int) (resolution.z-1);
+        }
     }
+
+    public Vector3 getIntersectionPoint() {return this.intersectionPoint;}
+    public void setIntersectionPoint(Vector3 intersectionPoint) {this.intersectionPoint = intersectionPoint;}
 
     public boolean getRenderUI() {return this.renderUI;}
     public void setRenderUI(boolean renderUI) {this.renderUI = renderUI;}
