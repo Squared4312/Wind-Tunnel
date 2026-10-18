@@ -112,7 +112,7 @@ public class ThreeDimensionalRenderer {
 
         // convert 3D point to the 2D screen
         projectedPoint.x = (point.x+1)*(screenDimensions.x/2);
-        projectedPoint.y = (1-point.y)*(screenDimensions.y/2);
+        projectedPoint.y = (point.y+1)*(screenDimensions.y/2);
 
         return projectedPoint;
     }
@@ -121,7 +121,7 @@ public class ThreeDimensionalRenderer {
         // map mouse screen coordinates to normalised device coordinates (NDC)
         // between -1 and 1 where 0 is the middle of the screen
         float xNDC = ((2*mouse.x)/screenDimensions.x)-1;
-        float yNDC = 1-(2*mouse.y/screenDimensions.y); // flipped as (0, 0, 0) is bottom left
+        float yNDC = ((2*mouse.y)/screenDimensions.y)-1;
 
         fovCalculation = (float) (1/Math.tan(0.5*(settings.getFov()*(Math.PI/180))));
         float[][] inverseProjectionMatrix = new float[][]{
