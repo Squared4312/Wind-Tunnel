@@ -468,15 +468,15 @@ public class LatticeBoltzmannCFDSolver {
         if (settings.getSolver().equals("2D LBM")) {
             cellPosition.x = Math.round(((mouse.x-(cellDimensions/2))/1920)*settings.getResolution().x);
             cellPosition.y = Math.round(((mouse.y-(cellDimensions/2))/1080)*settings.getResolution().y);
+            cellPosition.z = 0;
+            settings.setIntersectionPoint(cellPosition);
 
             if (settings.getPlaceBarriers() && !(cellPosition.x <= 0 || cellPosition.x >= settings.getResolution().x-1 || cellPosition.y <= 0 || cellPosition.y >= settings.getResolution().y-1)) {
                 if (Gdx.input.isButtonPressed(keybinds.getBindAt(9))) {
-                    addBarrier((int) cellPosition.x, (int) cellPosition.y, 0);
+                    drawOrEraseBarriersUsingBrushSize((int) cellPosition.x, (int) cellPosition.y, 0, true);
                 }
                 if (Gdx.input.isButtonPressed(keybinds.getBindAt(10))) {
-                    if (isBarrier((int) cellPosition.x, (int) cellPosition.y, 0)) {
-                        removeBarrier((int) cellPosition.x, (int) cellPosition.y, 0);
-                    }
+                    drawOrEraseBarriersUsingBrushSize((int) cellPosition.x, (int) cellPosition.y, 0, false);
                 }
             }
         } else { // 3D
@@ -491,12 +491,34 @@ public class LatticeBoltzmannCFDSolver {
 
             if (settings.getPlaceBarriers() && !(cellPosition.x <= 0 || cellPosition.x >= settings.getResolution().x-1 || cellPosition.y <= 0 || cellPosition.y >= settings.getResolution().y-1 || cellPosition.z <= 0 || cellPosition.z >= settings.getResolution().z-1)) {
                 if (Gdx.input.isButtonPressed(keybinds.getBindAt(9))) {
-                    addBarrier((int) cellPosition.x, (int) cellPosition.y, (int) cellPosition.z);
+                    drawOrEraseBarriersUsingBrushSize((int) cellPosition.x, (int) cellPosition.y, (int) cellPosition.z, true);
                 }
                 if (Gdx.input.isButtonPressed(keybinds.getBindAt(10))) {
-                    if (isBarrier((int) cellPosition.x, (int) cellPosition.y, (int) cellPosition.z)) {
-                        removeBarrier((int) cellPosition.x, (int) cellPosition.y, (int) cellPosition.z);
-                    }
+                    drawOrEraseBarriersUsingBrushSize((int) cellPosition.x, (int) cellPosition.y, (int) cellPosition.z, false);
+                }
+            }
+        }
+    }
+
+    public void drawOrEraseBarriersUsingBrushSize(int x, int y, int z, boolean draw) {
+        int radius = settings.getBrushSize()-1;
+
+        for (int dx=-radius; dx<=radius; dx++) {
+            for (int dy=-radius; dy<=radius; dy++) {
+                if (dx*dx + dy*dy > radius*radius) { // if point is outside circle
+                    continue;
+                }
+                int cellX = x+dx;
+                int cellY = y+dy;
+
+                // point outside simulation area
+                if (cellX <= 0 || cellX >= settings.getResolution().x-1 || cellY <= 0 || cellY >= settings.getResolution().y-1) {
+                    continue;
+                }
+                if (draw) {
+                    addBarrier(cellX, cellY, z);
+                } else if (isBarrier(cellX, cellY, z)) {
+                    removeBarrier(cellX, cellY, z);
                 }
             }
         }

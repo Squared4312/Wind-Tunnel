@@ -70,9 +70,13 @@ public class MenuUtil {
         return new Rectangle(x-(radius*2.5f), y-(radius*2.5f), radius*5, radius*5);
     }
 
-    public boolean isButtonClicked(Rectangle button) {return (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT) && button.contains(Gdx.input.getX(), screenDimensions.y-Gdx.input.getY()));}
+    public boolean isButtonClicked(Rectangle button) {
+        return (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT) && button.contains(Gdx.input.getX(), screenDimensions.y-Gdx.input.getY()));
+    }
 
-    public Texture loadIcon(String name) {return new Texture(Gdx.files.internal("assets/icons/" + name + ".png"));}
+    public Texture loadIcon(String name) {
+        return new Texture(Gdx.files.internal("assets/icons/" + name + ".png"));
+    }
 
     public void renderIcon(SpriteBatch batch, Texture icon, float x, float y) {
         x -= 0.5f*icon.getWidth();

@@ -78,9 +78,7 @@ public class LevelsMenu implements Menu {
                 }
                 util.renderText(batch, "step", Color.WHITE, 1110, 62.5f, 36, "centre");
                 util.renderIcon(batch, stepIcon, 1035, 62.5f);
-                if (settings.getSolver().equals("3D LBM")) {
-                    util.renderText(batch, "(" + (int) settings.getIntersectionPoint().x + ", " + (int) settings.getIntersectionPoint().y + ", " + (int) settings.getIntersectionPoint().z + ")", Color.WHITE, 57.5f, 62.5f, 36, "left");
-                }
+                util.renderText(batch, "(" + (int) settings.getIntersectionPoint().x + ", " + (int) settings.getIntersectionPoint().y + ", " + (int) settings.getIntersectionPoint().z + ")", Color.WHITE, 57.5f, 57.5f, 36, "left");
             }
 
             util.renderIcon(batch, backIcon, 57.5f, 1022.5f);
