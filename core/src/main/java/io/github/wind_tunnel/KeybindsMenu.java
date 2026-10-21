@@ -44,6 +44,7 @@ public class KeybindsMenu implements Menu{
             util.renderRoundedRectangle(sr, util.getButtonColor(), 1320, 642.5f, 600, 75, 16); // r2
             util.renderRoundedRectangle(sr, util.getButtonColor(), 1320, 542.5f, 600, 75, 16); // r3
             util.renderRoundedRectangle(sr, util.getButtonColor(), 1320, 442.5f, 600, 75, 16); // r4
+            util.renderRoundedRectangle(sr, util.getButtonColor(), 1320, 342.5f, 600, 75, 16); // r5
         sr.end();
 
         batch.begin();
@@ -60,6 +61,7 @@ public class KeybindsMenu implements Menu{
             util.renderText(batch, "step simulation", Color.WHITE, 1040, 642.5f, 36, "left"); // r2
             util.renderText(batch, "draw barriers", Color.WHITE, 1040, 542.5f, 36, "left"); // r3
             util.renderText(batch, "erase barriers", Color.WHITE, 1040, 442.5f, 36, "left"); // r4
+            util.renderText(batch, "clear all barriers", Color.WHITE, 1040, 342.5f, 36, "left"); // r5
 
             util.renderText(batch, Input.Keys.toString(keybinds.getBindAt(0)).toLowerCase(), Color.WHITE, 865, 742.5f, 36, "right"); // l1 value
             util.renderText(batch, Input.Keys.toString(keybinds.getBindAt(1)).toLowerCase(), Color.WHITE, 865, 642.5f, 36, "right"); // l2 value
@@ -72,6 +74,7 @@ public class KeybindsMenu implements Menu{
             util.renderText(batch, Input.Keys.toString(keybinds.getBindAt(7)).toLowerCase(), Color.WHITE, 1585, 642.5f, 36, "right"); // r2 value
             util.renderText(batch, "left click", Color.WHITE, 1585, 542.5f, 36, "right"); // r3 value
             util.renderText(batch, "right click", Color.WHITE, 1585, 442.5f, 36, "right"); // r4 value
+            util.renderText(batch, Input.Keys.toString(keybinds.getBindAt(8)).toLowerCase(), Color.WHITE, 1585, 342.5f, 36, "right"); // r5 value
 
             util.renderIcon(batch, backIcon, 57.5f, 1022.5f);
             util.renderIcon(batch, keybindsIcon, 57.5f, 57.f);

@@ -18,6 +18,7 @@ public class Main extends ApplicationAdapter {
     private Stack menuHistory = new Stack(10);
     private Settings settings;
     private Keybinds keybinds;
+    private Levels levels;
 
     private MainMenu mainMenu;
     private AboutMenu aboutMenu;
@@ -38,6 +39,8 @@ public class Main extends ApplicationAdapter {
 
         settings = Settings.getInstance();
         keybinds = Keybinds.getInstance();
+        levels = new Levels();
+
         mainMenu = new MainMenu();
         aboutMenu = new AboutMenu();
         settingsMenu = new SettingsMenu();
@@ -79,16 +82,22 @@ public class Main extends ApplicationAdapter {
         } else if (!nextMenu.equals(menu)) {
             if (menu.equals("main") && (nextMenu.equals("levels") || nextMenu.equals("freeplay"))) {
                 if (nextMenu.equals("levels")) {cfdSolver.removeAllBarriers();}
+                else {settings.setLoadedLevel(false);}
                 cfdSolver.initialiseFluid();
                 settings.setSimulationRunning(false);
+                if (nextMenu.equals("levels")) {
+                    levels.loadSelectedLevel();
+                    settings.setLoadedLevel(true);
+                }
             }
             if ("back".equals(nextMenu)) {
                 if (!menuHistory.isEmpty()) {
                     String previousMenu = menuHistory.pop();
-                    if (menu.equals("settings") && (previousMenu.equals("freeplay") || previousMenu.equals("levels"))) {
+                    if (menu.equals("settings") && previousMenu.equals("freeplay")) {
                         cfdSolver.initialiseFluid();
                     }
                     menu = previousMenu;
+                    if (menu.equals("levels")) {levels.loadSelectedLevel();}
                 }
             } else {
                 menuHistory.push(menu);

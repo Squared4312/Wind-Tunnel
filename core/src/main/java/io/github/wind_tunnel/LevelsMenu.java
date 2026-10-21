@@ -7,12 +7,10 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 
 public class LevelsMenu implements Menu {
-    private Integer levelNumber = 1;
-    private Integer totalLevels = 5;
-
     private MenuUtil util;
     private Settings settings;
     private LatticeBoltzmannCFDSolver cfdSolver;
+    private Levels levels;
 
     private Rectangle backButton;
     private Rectangle settingsButton;
@@ -31,6 +29,7 @@ public class LevelsMenu implements Menu {
         this.util = new MenuUtil();
         this.cfdSolver = LatticeBoltzmannCFDSolver.getInstance();
         this.settings = Settings.getInstance();
+        this.levels = new Levels();
 
         this.backIcon = util.loadIcon("back");
         this.settingsIcon = util.loadIcon("settings");
@@ -68,10 +67,10 @@ public class LevelsMenu implements Menu {
 
         batch.begin();
             if (settings.getRenderUI()) {
-                util.renderText(batch, "level " + levelNumber, Color.WHITE, util.getScreenDimensions().x/2, 1022.5f, 36, "centre");
+                util.renderText(batch, "level " + settings.getLevelNumber(), Color.WHITE, util.getScreenDimensions().x/2, 1022.5f, 36, "centre");
 
                 if (!settings.getSimulationRunning()) {
-                    util.renderText(batch, "run", Color.WHITE, 857.5f, 62.5f, 36, "centre");
+                    util.renderText(batch, "run" + settings.getAvailableBarriers(), Color.WHITE, 857.5f, 62.5f, 36, "centre");
                 } else {
                     util.renderText(batch, "pause", Color.WHITE, 852.5f, 62.5f, 36, "centre");
                     util.renderIcon(batch, pauseIcon, 770, 62.5f);
@@ -91,11 +90,13 @@ public class LevelsMenu implements Menu {
         if (settings.getRenderUI()) {
             if (util.isButtonClicked(levelsButton[0])) {
                 settings.setPlaceBarriers(false);
-                levelNumber = changeLevelNumber(1);
+                changeLevelNumber(1);
+                levels.loadSelectedLevel();
             }
             if (util.isButtonClicked(levelsButton[1])) {
                 settings.setPlaceBarriers(false);
-                levelNumber = changeLevelNumber(-1);
+                changeLevelNumber(-1);
+                levels.loadSelectedLevel();
             }
 
             if (!settings.getSimulationRunning() && util.isButtonClicked(runButton)) {
@@ -125,19 +126,20 @@ public class LevelsMenu implements Menu {
         return "levels";
     }
 
-    public int changeLevelNumber(int change) {
+    public void changeLevelNumber(int change) {
         if (change == 1) {
-            if (levelNumber.equals(totalLevels)) {
-                return 1;
+            if (settings.getLevelNumber().equals(settings.getTotalLevels())) {
+                settings.setLevelNumber(1);
+            } else {
+                settings.setLevelNumber(settings.getLevelNumber()+1);
             }
-            return levelNumber+1;
         } else if (change == -1) {
-            if (levelNumber == 1) {
-                return totalLevels;
+            if (settings.getLevelNumber() == 1) {
+                settings.setLevelNumber(settings.getTotalLevels());
+            } else {
+                settings.setLevelNumber(settings.getLevelNumber()-1);
             }
-            return levelNumber-1;
         }
-        return levelNumber;
     }
 
     public LatticeBoltzmannCFDSolver getCfdSolver() {return cfdSolver;}

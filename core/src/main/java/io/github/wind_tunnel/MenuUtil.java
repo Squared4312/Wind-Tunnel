@@ -12,11 +12,14 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 public class MenuUtil {
+    private Settings settings;
+
     private Vector2 screenDimensions;
     private BitmapFont font;
     private GlyphLayout layout;
 
     public MenuUtil() {
+        this.settings = Settings.getInstance();
         this.screenDimensions = new Vector2(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         this.font = new BitmapFont(Gdx.files.internal("assets/fonts/inter-semi-bold.fnt"));
         this.layout = new GlyphLayout();
@@ -99,6 +102,17 @@ public class MenuUtil {
             return x-layout.width;
         }
         return x;
+    }
+
+    public void renderLockedSettings(ShapeRenderer sr, Rectangle[] buttons) {
+        // lockedSettings: resolution, flowspeed, viscosity, plot, brushSize, solver, barrierShapes, clearBarriers, showFlowLines, renderUI, renderSelectedZPlane
+        for (int index=0; index<buttons.length; index++) {
+            if (settings.getLockedSettingAt(index)) {
+                sr.setColor(Color.RED);
+                sr.rectLine(buttons[index].x, buttons[index].y, buttons[index].x+buttons[index].width, buttons[index].y+buttons[index].height, 4); // bl -> tr
+                sr.rectLine(buttons[index].x, buttons[index].y+buttons[index].height, buttons[index].x+buttons[index].width, buttons[index].y, 4); // tl -> br
+            }
+        }
     }
 
     public Vector2 getScreenDimensions() {return screenDimensions;}

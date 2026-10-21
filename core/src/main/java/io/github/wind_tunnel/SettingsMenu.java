@@ -31,6 +31,7 @@ public class SettingsMenu implements Menu {
     private String[] barrierShapeValues = {"short line", "long line", "diagonal", "shallow diagonal", "small circle", "large circle", "line with spoiler", "circle with spoiler", "right angle", "wedge", "airfoil"};
     private Rectangle[] barrierShapesDropdownButtons = new Rectangle[barrierShapeValues.length];
 
+    private Rectangle[] buttons = new Rectangle[11];
     private Rectangle clearBarrierButton;
     private Rectangle showFlowlinesButton;
     private Rectangle renderUIButton;
@@ -66,13 +67,13 @@ public class SettingsMenu implements Menu {
             settingsButton = util.getHitbox(1862.5f, 57.5f, 75, 75);
             keybindsButton = util.getHitbox(57.5f, 57.5f, 75, 75);
 
-            util.renderRoundedRectangle(sr, util.getButtonColor(), 600, 742.5f, 600, 75, 16); // l1
-            util.renderRoundedRectangle(sr, util.getButtonColor(), 600, 642.5f, 600, 75, 16); // l2
-            util.renderRoundedRectangle(sr, util.getButtonColor(), 600, 542.5f, 600, 75, 16); // l3
-            util.renderRoundedRectangle(sr, util.getButtonColor(), 600, 442.5f, 600, 75, 16); // l4
-            util.renderRoundedRectangle(sr, util.getButtonColor(), 600, 342.5f, 600, 75, 16); // l5
+            buttons[0] = util.renderRoundedRectangle(sr, util.getButtonColor(), 600, 742.5f, 600, 75, 16); // l1
+            buttons[1] = util.renderRoundedRectangle(sr, util.getButtonColor(), 600, 642.5f, 600, 75, 16); // l2
+            buttons[2] = util.renderRoundedRectangle(sr, util.getButtonColor(), 600, 542.5f, 600, 75, 16); // l3
+            buttons[3] = util.renderRoundedRectangle(sr, util.getButtonColor(), 600, 442.5f, 600, 75, 16); // l4
+            buttons[4] = util.renderRoundedRectangle(sr, util.getButtonColor(), 600, 342.5f, 600, 75, 16); // l5
 
-            util.renderRoundedRectangle(sr, util.getButtonColor(), 1320, 742.5f, 600, 75, 16); // r1
+            buttons[5] = util.renderRoundedRectangle(sr, util.getButtonColor(), 1320, 742.5f, 600, 75, 16); // r1
             barrierShapesButton = util.renderRoundedRectangle(sr, util.getButtonColor(), 1320, 642.5f, 600, 75, 16); // r2
             clearBarrierButton = util.renderRoundedRectangle(sr, util.getButtonColor(), 1320, 542.5f, 600, 75, 16); // r3
             showFlowlinesButton = util.renderRoundedRectangle(sr, util.getButtonColor(), 1320, 442.5f, 600, 75, 16); // r4
@@ -82,6 +83,11 @@ public class SettingsMenu implements Menu {
             } else {
                 renderOnlySelectedZPlaneButton = util.renderRoundedRectangle(sr, Color.BLACK, 1320, 242.5f, 600, 75, 16); // r6
             }
+            buttons[6] = barrierShapesButton;
+            buttons[7] = clearBarrierButton;
+            buttons[8] = showFlowlinesButton;
+            buttons[9] = renderUIButton;
+            buttons[10] =  renderOnlySelectedZPlaneButton;
 
             resolutionButtons[0] = util.renderRoundedTriangle(sr, Color.WHITE, 865, 742.5f, 12, 90);
             resolutionButtons[1] = util.renderRoundedTriangle(sr, Color.WHITE, resolutionTextX-40, 742.5f, 12, 270);
@@ -107,6 +113,8 @@ public class SettingsMenu implements Menu {
             } else {
                 util.renderRoundedTriangle(sr, Color.WHITE, 1585, 642.5f, 12, 180);
             }
+
+            util.renderLockedSettings(sr, buttons);
         sr.end();
 
         batch.begin();
@@ -179,30 +187,31 @@ public class SettingsMenu implements Menu {
 
     @Override
     public String checkIfButtonsClicked() {
-        if (util.isButtonClicked(resolutionButtons[0])) {settings.cycleResolutionOptions(1);}
-        if (util.isButtonClicked(resolutionButtons[1])) {settings.cycleResolutionOptions(-1);}
+        // lockedSettings: resolution, flowspeed, viscosity, plot, brushSize, solver, barrierShapes, clearBarriers, showFlowLines, renderUI, renderSelectedZPlane
+        if (!settings.getLockedSettingAt(0) && util.isButtonClicked(resolutionButtons[0])) {settings.cycleResolutionOptions(1);}
+        if (!settings.getLockedSettingAt(0) && util.isButtonClicked(resolutionButtons[1])) {settings.cycleResolutionOptions(-1);}
 
-        if (util.isButtonClicked(solverButtons[0])) {settings.setSolver(settings.cycleOptions(1, settings.getSolver(), settings.getSolverValues()));}
-        if (util.isButtonClicked(solverButtons[1])) {settings.setSolver(settings.cycleOptions(-1, settings.getSolver(), settings.getSolverValues()));}
+        if (!settings.getLockedSettingAt(5) && util.isButtonClicked(solverButtons[0])) {settings.setSolver(settings.cycleOptions(1, settings.getSolver(), settings.getSolverValues()));}
+        if (!settings.getLockedSettingAt(5) && util.isButtonClicked(solverButtons[1])) {settings.setSolver(settings.cycleOptions(-1, settings.getSolver(), settings.getSolverValues()));}
 
-        if (util.isButtonClicked(flowSpeedButtons[0]) && settings.getFlowSpeed() < 0.120) {settings.setFlowSpeed(settings.getFlowSpeed()+0.005f); settings.setFlowSpeed(Math.round(settings.getFlowSpeed()*1000)/1000f);}
-        if (util.isButtonClicked(flowSpeedButtons[1]) && settings.getFlowSpeed() > 0.025) {settings.setFlowSpeed(settings.getFlowSpeed()-0.005f); settings.setFlowSpeed(Math.round(settings.getFlowSpeed()*1000)/1000f);}
+        if (!settings.getLockedSettingAt(1) && util.isButtonClicked(flowSpeedButtons[0]) && settings.getFlowSpeed() < 0.120) {settings.setFlowSpeed(settings.getFlowSpeed()+0.005f); settings.setFlowSpeed(Math.round(settings.getFlowSpeed()*1000)/1000f);}
+        if (!settings.getLockedSettingAt(1) && util.isButtonClicked(flowSpeedButtons[1]) && settings.getFlowSpeed() > 0.025) {settings.setFlowSpeed(settings.getFlowSpeed()-0.005f); settings.setFlowSpeed(Math.round(settings.getFlowSpeed()*1000)/1000f);}
 
-        if (util.isButtonClicked(viscosityButtons[0]) && settings.getViscosity() < 0.200) {settings.setViscosity(settings.getViscosity()+0.005f); settings.setViscosity(Math.round(settings.getViscosity()*1000)/1000f);}
-        if (util.isButtonClicked(viscosityButtons[1]) && settings.getViscosity() > 0.005) {settings.setViscosity(settings.getViscosity()-0.005f); settings.setViscosity(Math.round(settings.getViscosity()*1000)/1000f);}
+        if (!settings.getLockedSettingAt(2) && util.isButtonClicked(viscosityButtons[0]) && settings.getViscosity() < 0.200) {settings.setViscosity(settings.getViscosity()+0.005f); settings.setViscosity(Math.round(settings.getViscosity()*1000)/1000f);}
+        if (!settings.getLockedSettingAt(2) && util.isButtonClicked(viscosityButtons[1]) && settings.getViscosity() > 0.005) {settings.setViscosity(settings.getViscosity()-0.005f); settings.setViscosity(Math.round(settings.getViscosity()*1000)/1000f);}
 
-        if (util.isButtonClicked(plotButtons[0])) {settings.setPlot(settings.cycleOptions(1, settings.getPlot(), settings.getPlotValues()));}
-        if (util.isButtonClicked(plotButtons[1])) {settings.setPlot(settings.cycleOptions(-1, settings.getPlot(), settings.getPlotValues()));}
+        if (!settings.getLockedSettingAt(3) && util.isButtonClicked(plotButtons[0])) {settings.setPlot(settings.cycleOptions(1, settings.getPlot(), settings.getPlotValues()));}
+        if (!settings.getLockedSettingAt(3) && util.isButtonClicked(plotButtons[1])) {settings.setPlot(settings.cycleOptions(-1, settings.getPlot(), settings.getPlotValues()));}
 
-        if (util.isButtonClicked(brushSizeButtons[0]) && settings.getBrushSize() < 10) {settings.setBrushSize(settings.getBrushSize()+1);}
-        if (util.isButtonClicked(brushSizeButtons[1]) && settings.getBrushSize() > 1) {settings.setBrushSize(settings.getBrushSize()-1);}
+        if (!settings.getLockedSettingAt(4) && util.isButtonClicked(brushSizeButtons[0]) && settings.getBrushSize() < 10) {settings.setBrushSize(settings.getBrushSize()+1);}
+        if (!settings.getLockedSettingAt(4) && util.isButtonClicked(brushSizeButtons[1]) && settings.getBrushSize() > 1) {settings.setBrushSize(settings.getBrushSize()-1);}
 
         if (!renderDropdown) {
-            if (util.isButtonClicked(clearBarrierButton)) {return "remove all barriers";}
-            if (util.isButtonClicked(showFlowlinesButton)) {settings.setShowFlowLines(!settings.getShowFlowLines());}
-            if (util.isButtonClicked(renderUIButton)) {settings.setRenderUI(!settings.getRenderUI());}
+            if (!settings.getLockedSettingAt(7) && util.isButtonClicked(clearBarrierButton)) {return "remove all barriers";}
+            if (!settings.getLockedSettingAt(8) && util.isButtonClicked(showFlowlinesButton)) {settings.setShowFlowLines(!settings.getShowFlowLines());}
+            if (!settings.getLockedSettingAt(9) && util.isButtonClicked(renderUIButton)) {settings.setRenderUI(!settings.getRenderUI());}
             if (settings.getSolver().equals("3D LBM")) {
-                if (util.isButtonClicked(renderOnlySelectedZPlaneButton)) {settings.setRenderOnlySelectedZPlane(!settings.getRenderOnlySelectedZPlane());}
+                if (!settings.getLockedSettingAt(10) && util.isButtonClicked(renderOnlySelectedZPlaneButton)) {settings.setRenderOnlySelectedZPlane(!settings.getRenderOnlySelectedZPlane());}
             }
         }
 
@@ -216,7 +225,7 @@ public class SettingsMenu implements Menu {
                 }
             }
         }
-        if (util.isButtonClicked(barrierShapesButton)) {renderDropdown = !renderDropdown;}
+        if (!settings.getLockedSettingAt(6) && util.isButtonClicked(barrierShapesButton)) {renderDropdown = !renderDropdown;}
 
         if (util.isButtonClicked(backButton)) {
             settings.setPlaceBarriers(false);

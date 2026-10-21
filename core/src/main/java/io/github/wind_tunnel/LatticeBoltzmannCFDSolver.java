@@ -559,11 +559,21 @@ public class LatticeBoltzmannCFDSolver {
 
     public void addBarrier(int x, int y, int z) {
         if (!isBarrier(x, y, z)) {
-            barriers[x][y][z] = true;
+            if (settings.getLoadedLevel()) {
+                if (settings.getAvailableBarriers() > 0) {
+                    settings.setAvailableBarriers(settings.getAvailableBarriers()-1);
+                    barriers[x][y][z] = true;
+                }
+            } else {
+                barriers[x][y][z] = true;
+            }
         }
     }
 
     public void removeBarrier(int x, int y, int z) {
+        if (settings.getLoadedLevel()) {
+            settings.setAvailableBarriers(settings.getAvailableBarriers()+1);
+        }
         barriers[x][y][z] = false;
         initialiseCell(x, y, z);
     }
@@ -593,6 +603,21 @@ public class LatticeBoltzmannCFDSolver {
 
     public boolean isBarrier(int x, int y, int z) {
         return barriers[x][y][z];
+    }
+
+    public Vector3[] placeBarriers(Vector3 from, Vector3 to) {
+        Vector3[] fixedBarriers = new Vector3[(int) ((Math.max(from.x, to.x)-Math.min(from.x, to.x)+1) * (Math.max(from.y, to.y)-Math.min(from.y, to.y)+1) * (Math.max(from.z, to.z)-Math.min(from.z, to.z)+1))];
+        int pointer = 0;
+        for (float x=Math.min(from.x, to.x); x<=Math.max(from.x, to.x); x++) {
+            for (float y=Math.min(from.y, to.y); y<=Math.max(from.y, to.y); y++) {
+                for (float z=Math.min(from.z, to.z); z<=Math.max(from.z, to.z); z++) {
+                    addBarrier((int) x, (int) y, (int) z);
+                    fixedBarriers[pointer] = new Vector3(x, y, z);
+                    pointer += 1;
+                }
+            }
+        }
+        return fixedBarriers;
     }
 }
 

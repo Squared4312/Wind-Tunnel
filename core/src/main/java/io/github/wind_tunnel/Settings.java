@@ -1,6 +1,7 @@
 package io.github.wind_tunnel;
 
 import com.badlogic.gdx.math.Vector3;
+import java.util.Arrays;
 
 public class Settings {
 
@@ -28,6 +29,14 @@ public class Settings {
 
     private int selectedZPlane;
     private Vector3 intersectionPoint;
+
+    private boolean loadedLevel = false;
+    private Integer levelNumber = 1;
+    private Integer totalLevels = 5;
+    private boolean[] lockedSettings = new boolean[11]; // resolution, flowspeed, viscosity, plot, brushSize, solver, barrierShapes, clearBarriers, showFlowLines, renderUI, renderSelectedZPlane
+    private Vector3[] fixedBarriers;
+    private int availableBarriers = 0; // number of barriers left to use
+    private int maxBarriers = 0; // total number of barriers allowed
 
     private static Settings instance;
 
@@ -126,6 +135,28 @@ public class Settings {
             selectedZPlane = (int) (resolution.z-1);
         }
     }
+
+    public boolean getLoadedLevel() {return this.loadedLevel;}
+    public void setLoadedLevel(boolean loadedLevel) {this.loadedLevel = loadedLevel;}
+
+    public int getMaxBarriers() {return this.maxBarriers;}
+    public void setMaxBarriers(int maxBarriers) {this.maxBarriers = maxBarriers;}
+
+    public int getAvailableBarriers() {return this.availableBarriers;}
+    public void setAvailableBarriers(int availableBarriers) {this.availableBarriers = availableBarriers;}
+
+    public void resetLockedSettings() {Arrays.fill(this.lockedSettings, false);}
+    public boolean getLockedSettingAt(int index) {return this.lockedSettings[index];}
+    public void setLockedSettingAt(int index, boolean locked) {this.lockedSettings[index] = locked;}
+
+    public Vector3[] getFixedBarriers() {return this.fixedBarriers;}
+    public void setFixedBarriers(Vector3[] fixedBarriers) {this.fixedBarriers = fixedBarriers;}
+
+    public Integer getTotalLevels() {return this.totalLevels;}
+    public void setTotalLevels(Integer totalLevels) {this.totalLevels = totalLevels;}
+
+    public Integer getLevelNumber() {return this.levelNumber;}
+    public void setLevelNumber(Integer levelNumber) {this.levelNumber = levelNumber;}
 
     public Vector3 getIntersectionPoint() {return this.intersectionPoint;}
     public void setIntersectionPoint(Vector3 intersectionPoint) {this.intersectionPoint = intersectionPoint;}
