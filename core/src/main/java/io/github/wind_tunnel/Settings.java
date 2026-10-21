@@ -34,9 +34,10 @@ public class Settings {
     private Integer levelNumber = 1;
     private Integer totalLevels = 5;
     private boolean[] lockedSettings = new boolean[11]; // resolution, flowspeed, viscosity, plot, brushSize, solver, barrierShapes, clearBarriers, showFlowLines, renderUI, renderSelectedZPlane
-    private Vector3[] fixedBarriers;
+    private boolean[][][] fixedBarriers;
     private int availableBarriers = 0; // number of barriers left to use
     private int maxBarriers = 0; // total number of barriers allowed
+    private float levelScore = 0;
 
     private static Settings instance;
 
@@ -68,6 +69,8 @@ public class Settings {
         this.origin = new Vector3(0, 0, 0);
         this.selectedZPlane = 0;
         this.intersectionPoint = new Vector3(0, 0, 0);
+
+        this.fixedBarriers = new boolean[(int) this.resolution.x][(int) this.resolution.y][(int) this.resolution.z];
     }
 
     public String cycleOptions(int change, String currentValue, String[] possibleValues) {
@@ -136,6 +139,9 @@ public class Settings {
         }
     }
 
+    public float getLevelScore() {return this.levelScore;}
+    public void setLevelScore(float levelScore) {this.levelScore = levelScore;}
+
     public boolean getLoadedLevel() {return this.loadedLevel;}
     public void setLoadedLevel(boolean loadedLevel) {this.loadedLevel = loadedLevel;}
 
@@ -149,8 +155,10 @@ public class Settings {
     public boolean getLockedSettingAt(int index) {return this.lockedSettings[index];}
     public void setLockedSettingAt(int index, boolean locked) {this.lockedSettings[index] = locked;}
 
-    public Vector3[] getFixedBarriers() {return this.fixedBarriers;}
-    public void setFixedBarriers(Vector3[] fixedBarriers) {this.fixedBarriers = fixedBarriers;}
+    public void addFixedBarrier(int x, int y, int z) {this.fixedBarriers[x][y][z] = true;}
+    public void removeFixedBarrier(int x, int y, int z) {this.fixedBarriers[x][y][z] = false;}
+    public boolean getFixedBarrierAt(int x, int y, int z) {return this.fixedBarriers[x][y][z];}
+    public void setFixedBarriers(boolean[][][] fixedBarriers) {this.fixedBarriers = fixedBarriers;}
 
     public Integer getTotalLevels() {return this.totalLevels;}
     public void setTotalLevels(Integer totalLevels) {this.totalLevels = totalLevels;}

@@ -62,6 +62,9 @@ public class LevelsMenu implements Menu {
                     pauseButton = util.renderRoundedRectangle(sr, util.getPauseButtonColor(), 835, 62.5f, 200, 75, 16);
                 }
                 stepButton = util.renderRoundedRectangle(sr, util.getStepButtonColor(), 1085, 62.5f, 200, 75, 16);
+
+                util.renderRoundedRectangle(sr, util.getButtonColor(), 685, 1022.5f, 125, 75, 16); // barriers
+                util.renderRoundedRectangle(sr, util.getButtonColor(), 1235, 1022.5f, 125, 75, 16); // score
             }
         sr.end();
 
@@ -70,7 +73,7 @@ public class LevelsMenu implements Menu {
                 util.renderText(batch, "level " + settings.getLevelNumber(), Color.WHITE, util.getScreenDimensions().x/2, 1022.5f, 36, "centre");
 
                 if (!settings.getSimulationRunning()) {
-                    util.renderText(batch, "run" + settings.getAvailableBarriers(), Color.WHITE, 857.5f, 62.5f, 36, "centre");
+                    util.renderText(batch, "run", Color.WHITE, 857.5f, 62.5f, 36, "centre");
                 } else {
                     util.renderText(batch, "pause", Color.WHITE, 852.5f, 62.5f, 36, "centre");
                     util.renderIcon(batch, pauseIcon, 770, 62.5f);
@@ -78,6 +81,9 @@ public class LevelsMenu implements Menu {
                 util.renderText(batch, "step", Color.WHITE, 1110, 62.5f, 36, "centre");
                 util.renderIcon(batch, stepIcon, 1035, 62.5f);
                 util.renderText(batch, "(" + (int) settings.getIntersectionPoint().x + ", " + (int) settings.getIntersectionPoint().y + ", " + (int) settings.getIntersectionPoint().z + ")", Color.WHITE, 57.5f, 57.5f, 36, "left");
+
+                util.renderText(batch, settings.getAvailableBarriers() + "/" + settings.getMaxBarriers(), Color.WHITE, 685, 1022.5f, 36, "centre"); // barriers
+                util.renderText(batch, settings.getLevelScore() + "%", Color.WHITE, 1235, 1022.5f, 36, "centre"); // score
             }
 
             util.renderIcon(batch, backIcon, 57.5f, 1022.5f);

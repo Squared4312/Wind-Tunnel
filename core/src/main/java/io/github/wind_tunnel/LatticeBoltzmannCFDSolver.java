@@ -440,7 +440,8 @@ public class LatticeBoltzmannCFDSolver {
                     } else if (isBarrier(x, y, z)) {
                     } else if (!(x == 0 || y == 0 || z == 0 || x == settings.getResolution().x-1 || y == settings.getResolution().y-1 || z == settings.getResolution().z-1)) {continue;}
 
-                    if (isBarrier(x, y, z)) {sr.setColor(Color.WHITE);}
+                    if (settings.getFixedBarrierAt(x, y, z)) {sr.setColor(Color.BLACK);}
+                    else if (isBarrier(x, y, z)) {sr.setColor(Color.WHITE);}
                     else {sr.setColor(colours.get(calculateColourIndex(x, y, z)));} // calculates colour based on plotMode
                     if (settings.getSolver().equals("2D LBM")) {
                         sr.rect(x*cellDimensions, y*cellDimensions, cellDimensions, cellDimensions);
@@ -517,7 +518,7 @@ public class LatticeBoltzmannCFDSolver {
                 }
                 if (draw) {
                     addBarrier(cellX, cellY, z);
-                } else if (isBarrier(cellX, cellY, z)) {
+                } else if (isBarrier(cellX, cellY, z) && !settings.getFixedBarrierAt(cellX, cellY, z)) {
                     removeBarrier(cellX, cellY, z);
                 }
             }
@@ -572,18 +573,24 @@ public class LatticeBoltzmannCFDSolver {
 
     public void removeBarrier(int x, int y, int z) {
         if (settings.getLoadedLevel()) {
-            settings.setAvailableBarriers(settings.getAvailableBarriers()+1);
+            if (!settings.getFixedBarrierAt(x, y, z)) {
+                settings.setAvailableBarriers(settings.getAvailableBarriers()+1);
+                barriers[x][y][z] = false;
+                initialiseCell(x, y, z);
+            }
+        } else {
+            barriers[x][y][z] = false;
+            initialiseCell(x, y, z);
         }
-        barriers[x][y][z] = false;
-        initialiseCell(x, y, z);
     }
 
     public void removeAllBarriers() {
         for (int x=0; x<settings.getResolution().x; x++) {
             for (int y=0; y<settings.getResolution().y; y++) {
                 for (int z=0; z<settings.getResolution().z; z++) {
-                    barriers[x][y][z] = false;
-                    initialiseCell(x, y, z);
+                    if (isBarrier(x, y, z)) {
+                        removeBarrier(x, y, z);
+                    }
                 }
             }
         }
@@ -603,21 +610,6 @@ public class LatticeBoltzmannCFDSolver {
 
     public boolean isBarrier(int x, int y, int z) {
         return barriers[x][y][z];
-    }
-
-    public Vector3[] placeBarriers(Vector3 from, Vector3 to) {
-        Vector3[] fixedBarriers = new Vector3[(int) ((Math.max(from.x, to.x)-Math.min(from.x, to.x)+1) * (Math.max(from.y, to.y)-Math.min(from.y, to.y)+1) * (Math.max(from.z, to.z)-Math.min(from.z, to.z)+1))];
-        int pointer = 0;
-        for (float x=Math.min(from.x, to.x); x<=Math.max(from.x, to.x); x++) {
-            for (float y=Math.min(from.y, to.y); y<=Math.max(from.y, to.y); y++) {
-                for (float z=Math.min(from.z, to.z); z<=Math.max(from.z, to.z); z++) {
-                    addBarrier((int) x, (int) y, (int) z);
-                    fixedBarriers[pointer] = new Vector3(x, y, z);
-                    pointer += 1;
-                }
-            }
-        }
-        return fixedBarriers;
     }
 }
 

@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Vector3;
 public class Levels {
     private Settings settings;
     private LatticeBoltzmannCFDSolver cfdSolver;
+    private ShapeDrawer shapeDrawer;
 
     private int levelNumber;
 
@@ -13,22 +14,23 @@ public class Levels {
     public Levels() {
         settings = Settings.getInstance();
         cfdSolver = LatticeBoltzmannCFDSolver.getInstance();
+        shapeDrawer = new ShapeDrawer();
     }
 
     public void loadSelectedLevel() {
         /*
         level ideas:
-        1 - vertical medium-sized line
-        2 - airfoil
-        3 - circle
-        4 - penis
-        5 - stick man
-        6 - apple
-        7 - smiley face (verity)
-        8 - octane/car
-        9 - pizza slice
-        10 - "hello world" as text
-        11 - troll face
+        vertical medium-sized line
+        airfoil
+        circle
+        stick man
+        apple
+        pizza slice
+        smiley face (verity)
+        "hello world" as text
+        octane/car
+        troll face
+        penis
         */
 
         levelNumber = settings.getLevelNumber();
@@ -42,8 +44,8 @@ public class Levels {
 
         if (levelNumber == 1) {
             settings.setSolver("2D LBM");
-            settings.setFlowSpeed(0.1f);
-            settings.setViscosity(0.02f);
+            settings.setFlowSpeed(0.100f);
+            settings.setViscosity(0.020f);
             settings.setLockedSettingAt(0, true);
             settings.setLockedSettingAt(5, true);
             settings.setLockedSettingAt(1, true);
@@ -64,9 +66,11 @@ public class Levels {
             settings.setMaxBarriers(70);
         }
 
-        settings.setLoadedLevel(false);
+        settings.setFixedBarriers(new boolean[(int) settings.getResolution().x][(int) settings.getResolution().y][(int) settings.getResolution().z]);
+
+        settings.setLoadedLevel(false); // don't count the fixed barriers as part of the available barriers
         if (levelNumber == 1) {
-            settings.setFixedBarriers(cfdSolver.placeBarriers(new Vector3(50, 30, 0), new Vector3(50, 42, 0)));
+            shapeDrawer.drawLine(new Vector3(50, 30, 0), new Vector3(50, 42, 0), true);
         } else if (levelNumber == 2) {
             // airfoil
         }
