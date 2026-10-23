@@ -203,7 +203,7 @@ public class SettingsMenu implements Menu {
         if (!settings.getLockedSettingAt(3) && util.isButtonClicked(plotButtons[0])) {settings.setPlot(settings.cycleOptions(1, settings.getPlot(), settings.getPlotValues()));}
         if (!settings.getLockedSettingAt(3) && util.isButtonClicked(plotButtons[1])) {settings.setPlot(settings.cycleOptions(-1, settings.getPlot(), settings.getPlotValues()));}
 
-        if (!settings.getLockedSettingAt(4) && util.isButtonClicked(brushSizeButtons[0]) && settings.getBrushSize() < 10) {settings.setBrushSize(settings.getBrushSize()+1);}
+        if (!settings.getLockedSettingAt(4) && util.isButtonClicked(brushSizeButtons[0]) && settings.getBrushSize() < 50) {settings.setBrushSize(settings.getBrushSize()+1);}
         if (!settings.getLockedSettingAt(4) && util.isButtonClicked(brushSizeButtons[1]) && settings.getBrushSize() > 1) {settings.setBrushSize(settings.getBrushSize()-1);}
 
         if (!renderDropdown) {

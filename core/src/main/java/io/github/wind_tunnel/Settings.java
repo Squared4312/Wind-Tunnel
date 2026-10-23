@@ -32,12 +32,12 @@ public class Settings {
 
     private boolean loadedLevel = false;
     private Integer levelNumber = 1;
-    private Integer totalLevels = 5;
     private boolean[] lockedSettings = new boolean[11]; // resolution, flowspeed, viscosity, plot, brushSize, solver, barrierShapes, clearBarriers, showFlowLines, renderUI, renderSelectedZPlane
     private boolean[][][] fixedBarriers;
     private int availableBarriers = 0; // number of barriers left to use
     private int maxBarriers = 0; // total number of barriers allowed
     private float levelScore = 0;
+    private String[] levelNames = {"line", "circle", "airfoil", "pizza slice", "apple", "car" ,"stick man", ":)", "hello world", "troll face", "penis"};
 
     private static Settings instance;
 
@@ -61,7 +61,7 @@ public class Settings {
         this.showFlowLines = false;
         this.renderUI = true;
         this.renderOnlySelectedZPlane = false;
-        this.brushSize = 1;
+        this.brushSize = 4;
 
         this.rotationAngles = new Vector3(0, 0, 0);
         this.cameraDistance = 8;
@@ -113,14 +113,18 @@ public class Settings {
         if (change == 1) {
             if (index == resolutionValues.length-1) {
                 this.resolution = new Vector3(resolutionValues[0][0], resolutionValues[0][1], resolutionValues[0][1]);
+                this.brushSize = 1;
             } else {
                 this.resolution = new Vector3(resolutionValues[index+1][0], resolutionValues[index+1][1], resolutionValues[index+1][1]);
+                this.brushSize *= 2;
             }
         } else if (change == -1) {
             if (index == 0) {
                 this.resolution = new Vector3(resolutionValues[resolutionValues.length-1][0], resolutionValues[resolutionValues.length-1][1], resolutionValues[resolutionValues.length-1][1]);
+                this.brushSize = 32;
             } else {
                 this.resolution = new Vector3(resolutionValues[index-1][0], resolutionValues[index-1][1], resolutionValues[index-1][1]);
+                this.brushSize /= 2;
             }
         }
     }
@@ -138,6 +142,10 @@ public class Settings {
             selectedZPlane = (int) (resolution.z-1);
         }
     }
+
+    public String getLevelNameAt(int index) {return this.levelNames[index];}
+    public String[] getLevelNames() {return this.levelNames;}
+    public void setLevelNames(String[] levelNames) {this.levelNames = levelNames;}
 
     public float getLevelScore() {return this.levelScore;}
     public void setLevelScore(float levelScore) {this.levelScore = levelScore;}
@@ -159,9 +167,6 @@ public class Settings {
     public void removeFixedBarrier(int x, int y, int z) {this.fixedBarriers[x][y][z] = false;}
     public boolean getFixedBarrierAt(int x, int y, int z) {return this.fixedBarriers[x][y][z];}
     public void setFixedBarriers(boolean[][][] fixedBarriers) {this.fixedBarriers = fixedBarriers;}
-
-    public Integer getTotalLevels() {return this.totalLevels;}
-    public void setTotalLevels(Integer totalLevels) {this.totalLevels = totalLevels;}
 
     public Integer getLevelNumber() {return this.levelNumber;}
     public void setLevelNumber(Integer levelNumber) {this.levelNumber = levelNumber;}

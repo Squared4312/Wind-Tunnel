@@ -25,6 +25,9 @@ public class LevelsMenu implements Menu {
     private Texture pauseIcon;
     private Texture stepIcon;
 
+    private float barriersTextX = 0;
+    private float scoreTextX = 0;
+
     public LevelsMenu() {
         this.util = new MenuUtil();
         this.cfdSolver = LatticeBoltzmannCFDSolver.getInstance();
@@ -63,14 +66,14 @@ public class LevelsMenu implements Menu {
                 }
                 stepButton = util.renderRoundedRectangle(sr, util.getStepButtonColor(), 1085, 62.5f, 200, 75, 16);
 
-                util.renderRoundedRectangle(sr, util.getButtonColor(), 685, 1022.5f, 125, 75, 16); // barriers
-                util.renderRoundedRectangle(sr, util.getButtonColor(), 1235, 1022.5f, 125, 75, 16); // score
+                util.renderRoundedRectangle(sr, util.getButtonColor(), barriersTextX-22.5f+(685-barriersTextX+42.5f)/2, 1022.5f, 685-barriersTextX+42.5f, 75, 16); // barriers
+                util.renderRoundedRectangle(sr, util.getButtonColor(), 1215+(scoreTextX-1192.5f)/2, 1022.5f, scoreTextX-1192.5f, 75, 16); // score
             }
         sr.end();
 
         batch.begin();
             if (settings.getRenderUI()) {
-                util.renderText(batch, "level " + settings.getLevelNumber(), Color.WHITE, util.getScreenDimensions().x/2, 1022.5f, 36, "centre");
+                util.renderText(batch, settings.getLevelNameAt(settings.getLevelNumber()-1), Color.WHITE, util.getScreenDimensions().x/2, 1022.5f, 36, "centre");
 
                 if (!settings.getSimulationRunning()) {
                     util.renderText(batch, "run", Color.WHITE, 857.5f, 62.5f, 36, "centre");
@@ -82,8 +85,8 @@ public class LevelsMenu implements Menu {
                 util.renderIcon(batch, stepIcon, 1035, 62.5f);
                 util.renderText(batch, "(" + (int) settings.getIntersectionPoint().x + ", " + (int) settings.getIntersectionPoint().y + ", " + (int) settings.getIntersectionPoint().z + ")", Color.WHITE, 57.5f, 57.5f, 36, "left");
 
-                util.renderText(batch, settings.getAvailableBarriers() + "/" + settings.getMaxBarriers(), Color.WHITE, 685, 1022.5f, 36, "centre"); // barriers
-                util.renderText(batch, settings.getLevelScore() + "%", Color.WHITE, 1235, 1022.5f, 36, "centre"); // score
+                barriersTextX = util.renderText(batch, settings.getAvailableBarriers() + "/" + settings.getMaxBarriers(), Color.WHITE, 685, 1022.5f, 36, "right"); // barriers
+                scoreTextX = util.renderText(batch, settings.getLevelScore() + "%", Color.WHITE, 1235, 1022.5f, 36, "left"); // score
             }
 
             util.renderIcon(batch, backIcon, 57.5f, 1022.5f);
@@ -134,14 +137,14 @@ public class LevelsMenu implements Menu {
 
     public void changeLevelNumber(int change) {
         if (change == 1) {
-            if (settings.getLevelNumber().equals(settings.getTotalLevels())) {
+            if (settings.getLevelNumber().equals(settings.getLevelNames().length)) {
                 settings.setLevelNumber(1);
             } else {
                 settings.setLevelNumber(settings.getLevelNumber()+1);
             }
         } else if (change == -1) {
             if (settings.getLevelNumber() == 1) {
-                settings.setLevelNumber(settings.getTotalLevels());
+                settings.setLevelNumber(settings.getLevelNames().length);
             } else {
                 settings.setLevelNumber(settings.getLevelNumber()-1);
             }

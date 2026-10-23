@@ -440,7 +440,7 @@ public class LatticeBoltzmannCFDSolver {
                     } else if (isBarrier(x, y, z)) {
                     } else if (!(x == 0 || y == 0 || z == 0 || x == settings.getResolution().x-1 || y == settings.getResolution().y-1 || z == settings.getResolution().z-1)) {continue;}
 
-                    if (settings.getFixedBarrierAt(x, y, z)) {sr.setColor(Color.BLACK);}
+                    if (settings.getLoadedLevel() && settings.getFixedBarrierAt(x, y, z)) {sr.setColor(Color.BLACK);}
                     else if (isBarrier(x, y, z)) {sr.setColor(Color.WHITE);}
                     else {sr.setColor(colours.get(calculateColourIndex(x, y, z)));} // calculates colour based on plotMode
                     if (settings.getSolver().equals("2D LBM")) {
@@ -518,7 +518,7 @@ public class LatticeBoltzmannCFDSolver {
                 }
                 if (draw) {
                     addBarrier(cellX, cellY, z);
-                } else if (isBarrier(cellX, cellY, z) && !settings.getFixedBarrierAt(cellX, cellY, z)) {
+                } else if (isBarrier(cellX, cellY, z)) {
                     removeBarrier(cellX, cellY, z);
                 }
             }
