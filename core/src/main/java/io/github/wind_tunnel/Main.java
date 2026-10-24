@@ -82,6 +82,10 @@ public class Main extends ApplicationAdapter {
             nextMenu = "settings";
         }
 
+        if (nextMenu.equals("main")) {
+            settings.resetLockedSettings();
+        }
+
         if (nextMenu.equals("quit")) {
             Gdx.app.exit();
         } else if (!nextMenu.equals(menu)) {
