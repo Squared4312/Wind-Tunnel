@@ -24,12 +24,14 @@ public class ShapeDrawer {
 
     public void loadBitmap(String path, boolean fixedBarrier) {
         FileHandle handle = Gdx.files.internal("levels/" + path + ".bmp");
-        Pixmap pixmap = new Pixmap(handle);
+        Pixmap image = new Pixmap(handle);
 
-        for (int x=0; x<pixmap.getWidth(); x++) {
-            for (int y=0; y<pixmap.getHeight(); y++) {
-                int colour = pixmap.getPixel(x, pixmap.getHeight()-y);
-                if (colour == 0x000000FF) {
+        if (image.getWidth() > settings.getResolution().x || image.getHeight() > settings.getResolution().y) {return;}
+
+        for (int x=0; x<image.getWidth(); x++) {
+            for (int y=0; y<image.getHeight(); y++) {
+                int colour = image.getPixel(x, image.getHeight()-y);
+                if (colour == 0x000000FF) { // black
                     cfdSolver.addBarrier(x, y, 0);
                     if (fixedBarrier) {settings.addFixedBarrier(x, y, 0);}
                 }

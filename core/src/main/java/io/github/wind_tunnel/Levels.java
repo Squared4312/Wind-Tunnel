@@ -30,68 +30,65 @@ public class Levels {
         } else if (levelNumber == 5) {
             settings.setResolution(new Vector3(settings.getResolutionValues()[2][0], settings.getResolutionValues()[2][1], 1)); // 128x72x1
         } else if (levelNumber == 6) {
-            settings.setResolution(new Vector3(settings.getResolutionValues()[4][0], settings.getResolutionValues()[4][1], 1)); // 512x128x1
+            settings.setResolution(new Vector3(settings.getResolutionValues()[4][0], settings.getResolutionValues()[4][1], 1)); // 512x288x1
+        } else if (levelNumber == 7) {
+            settings.setResolution(new Vector3(settings.getResolutionValues()[2][0], settings.getResolutionValues()[2][1], 1)); // 128x72x1
+        } else if (levelNumber == 8) {
+            settings.setResolution(new Vector3(settings.getResolutionValues()[2][0], settings.getResolutionValues()[2][1], 1)); // 128x72x1
+        } else if (levelNumber == 9) {
+            settings.setResolution(new Vector3(settings.getResolutionValues()[4][0], settings.getResolutionValues()[4][1], 1)); // 512x288x1
+        } else if (levelNumber == 10) {
+            settings.setResolution(new Vector3(settings.getResolutionValues()[4][0], settings.getResolutionValues()[4][1], 1)); // 512x288x1
+        } else if (levelNumber == 11) {
+            settings.setResolution(new Vector3(settings.getResolutionValues()[4][0], settings.getResolutionValues()[4][1], 1)); // 512x288x1
         }
         cfdSolver.initialiseFluid();
         settings.resetLockedSettings();
 
-        if (levelNumber == 1) {
+        if (levelNumber >= 1 && levelNumber <= 11) {
             settings.setSolver("2D LBM");
-            settings.setFlowSpeed(0.100f);
-            settings.setViscosity(0.020f);
+            settings.setFlowSpeed(0.125f);
+            settings.setViscosity(0.015f);
             settings.setLockedSettingAt(0, true);
             settings.setLockedSettingAt(5, true);
             settings.setLockedSettingAt(1, true);
             settings.setLockedSettingAt(2, true);
             settings.setLockedSettingAt(6, true);
+        }
+
+        if (levelNumber == 1) {
             settings.setAvailableBarriers(100);
             settings.setMaxBarriers(100);
         } else if (levelNumber == 2) {
-            settings.setSolver("2D LBM");
-            settings.setFlowSpeed(0.125f);
-            settings.setViscosity(0.015f);
-            settings.setLockedSettingAt(0, true);
-            settings.setLockedSettingAt(5, true);
-            settings.setLockedSettingAt(1, true);
-            settings.setLockedSettingAt(2, true);
-            settings.setLockedSettingAt(6, true);
             settings.setAvailableBarriers(100);
             settings.setMaxBarriers(100);
         } else if (levelNumber == 3) {
-
+            settings.setAvailableBarriers(100);
+            settings.setMaxBarriers(100);
         } else if (levelNumber == 4) {
-            settings.setSolver("2D LBM");
-            settings.setFlowSpeed(0.125f);
-            settings.setViscosity(0.015f);
-            settings.setLockedSettingAt(0, true);
-            settings.setLockedSettingAt(5, true);
-            settings.setLockedSettingAt(1, true);
-            settings.setLockedSettingAt(2, true);
-            settings.setLockedSettingAt(6, true);
             settings.setAvailableBarriers(100);
             settings.setMaxBarriers(100);
         } else if (levelNumber == 5) {
-            settings.setSolver("2D LBM");
-            settings.setFlowSpeed(0.125f);
-            settings.setViscosity(0.015f);
-            settings.setLockedSettingAt(0, true);
-            settings.setLockedSettingAt(5, true);
-            settings.setLockedSettingAt(1, true);
-            settings.setLockedSettingAt(2, true);
-            settings.setLockedSettingAt(6, true);
             settings.setAvailableBarriers(100);
             settings.setMaxBarriers(100);
         } else if (levelNumber == 6) {
-            settings.setSolver("2D LBM");
-            settings.setFlowSpeed(0.125f);
-            settings.setViscosity(0.015f);
-            settings.setLockedSettingAt(0, true);
-            settings.setLockedSettingAt(5, true);
-            settings.setLockedSettingAt(1, true);
-            settings.setLockedSettingAt(2, true);
-            settings.setLockedSettingAt(6, true);
+            settings.setAvailableBarriers(200);
+            settings.setMaxBarriers(200);
+        } else if (levelNumber == 7) {
             settings.setAvailableBarriers(100);
             settings.setMaxBarriers(100);
+        } else if (levelNumber == 8) {
+            settings.setAvailableBarriers(100);
+            settings.setMaxBarriers(100);
+        } else if (levelNumber == 9) {
+            settings.setAvailableBarriers(200);
+            settings.setMaxBarriers(200);
+        } else if (levelNumber == 10) {
+            settings.setAvailableBarriers(200);
+            settings.setMaxBarriers(200);
+        } else if (levelNumber == 11) {
+            settings.setAvailableBarriers(200);
+            settings.setMaxBarriers(200);
         }
 
         settings.setFixedBarriers(new boolean[(int) settings.getResolution().x][(int) settings.getResolution().y][(int) settings.getResolution().z]);
@@ -115,13 +112,23 @@ public class Levels {
         } else if (levelNumber == 2) {
             shapeDrawer.circle(48, 36, 0, 8, false, true);
         } else if (levelNumber == 3) {
-            //shapeDrawer.airfoil();
+            shapeDrawer.loadBitmap("airfoil", true);
         } else if (levelNumber == 4) {
             shapeDrawer.loadBitmap("pizza_slice", true);
         } else if (levelNumber == 5) {
             shapeDrawer.loadBitmap("apple", true);
         } else if (levelNumber == 6) {
             shapeDrawer.loadBitmap("f1_car", true);
+        } else if (levelNumber == 7) {
+            shapeDrawer.loadBitmap("stickman", true);
+        } else if (levelNumber == 8) {
+            shapeDrawer.loadBitmap("nerd_face", true);
+        } else if (levelNumber == 9) {
+            shapeDrawer.loadBitmap("hello_world", true);
+        } else if (levelNumber == 10) {
+            shapeDrawer.loadBitmap("trollface", true);
+        } else if (levelNumber == 11) {
+            shapeDrawer.loadBitmap("penis", true);
         }
         settings.setLoadedLevel(true);
     }
