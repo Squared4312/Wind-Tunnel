@@ -117,8 +117,6 @@ public class SettingsMenu implements Menu {
             } else {
                 util.renderRoundedTriangle(sr, Color.WHITE, 1585, 642.5f, 12, 180);
             }
-
-            util.renderLockedSettings(sr, buttons);
         sr.end();
 
         batch.begin();
@@ -188,6 +186,10 @@ public class SettingsMenu implements Menu {
                 }
             }
         batch.end();
+
+        sr.begin(ShapeRenderer.ShapeType.Filled);
+            util.renderLockedSettings(sr, buttons);
+        sr.end();
     }
 
     @Override

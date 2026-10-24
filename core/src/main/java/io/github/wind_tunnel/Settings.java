@@ -37,7 +37,7 @@ public class Settings {
     private int availableBarriers = 0; // number of barriers left to use
     private int maxBarriers = 0; // total number of barriers allowed
     private float levelScore = 0;
-    private String[] levelNames = {"line", "circle", "airfoil", "pizza slice", "apple", "car" ,"stick man", ":)", "hello world", "troll face"};
+    private String[] levelNames = {"line", "circle", "airfoil", "pizza slice", "apple", "car" ,"stick man", ":)", "hello world", "troll face", "cube"};
 
     private static Settings instance;
 

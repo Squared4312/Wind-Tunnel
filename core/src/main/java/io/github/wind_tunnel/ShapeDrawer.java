@@ -122,9 +122,11 @@ public class ShapeDrawer {
         }
 
         while (true) {
-            if (check.x >= 0 && check.x < settings.getResolution().x && check.y >= 0 && check.y < settings.getResolution().y && check.z >= 0 && check.z < settings.getResolution().z) {
+            if (check.x > 0 && check.x < settings.getResolution().x-1 && check.y > 0 && check.y < settings.getResolution().y-1 && check.z > 0 && check.z < settings.getResolution().z-1) {
                 cfdSolver.addBarrier((int) check.x, (int) check.y, (int) check.z);
                 if (fixedBarrier) {settings.addFixedBarrier((int) check.x, (int) check.y, (int) check.z);}
+            } else { // Vector3 check is outside simulation area
+                break;
             }
 
             // move along the axis that has the shortest ray length
