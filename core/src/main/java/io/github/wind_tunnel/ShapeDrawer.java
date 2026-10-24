@@ -24,6 +24,7 @@ public class ShapeDrawer {
 
     public void loadBitmap(String path, boolean fixedBarrier) {
         FileHandle handle = Gdx.files.internal("levels/" + path + ".bmp");
+        if (!handle.exists()) {return;}
         Pixmap image = new Pixmap(handle);
 
         if (image.getWidth() > settings.getResolution().x || image.getHeight() > settings.getResolution().y) {return;}
