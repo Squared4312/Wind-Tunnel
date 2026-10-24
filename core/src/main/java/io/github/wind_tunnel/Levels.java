@@ -6,8 +6,10 @@ public class Levels {
     private Settings settings;
     private LatticeBoltzmannCFDSolver cfdSolver;
     private ShapeDrawer shapeDrawer;
+    private ImportFile importFile;
 
     private int levelNumber;
+    private String folder = "assets/levels/";
 
     // lockedSettings: resolution, flowspeed, viscosity, plot, brushSize, solver, barrierShapes, clearBarriers, showFlowLines, renderUI, renderSelectedZPlane
 
@@ -15,6 +17,7 @@ public class Levels {
         settings = Settings.getInstance();
         cfdSolver = LatticeBoltzmannCFDSolver.getInstance();
         shapeDrawer = new ShapeDrawer();
+        importFile = new ImportFile();
     }
 
     public void loadSelectedLevel() {
@@ -45,7 +48,7 @@ public class Levels {
         cfdSolver.initialiseFluid();
         settings.resetLockedSettings();
 
-        if (levelNumber >= 1 && levelNumber <= 11) {
+        if (levelNumber >= 1 && levelNumber <= 10) {
             settings.setSolver("2D LBM");
             settings.setFlowSpeed(0.125f);
             settings.setViscosity(0.015f);
@@ -86,9 +89,6 @@ public class Levels {
         } else if (levelNumber == 10) {
             settings.setAvailableBarriers(200);
             settings.setMaxBarriers(200);
-        } else if (levelNumber == 11) {
-            settings.setAvailableBarriers(200);
-            settings.setMaxBarriers(200);
         }
 
         settings.setFixedBarriers(new boolean[(int) settings.getResolution().x][(int) settings.getResolution().y][(int) settings.getResolution().z]);
@@ -104,7 +104,6 @@ public class Levels {
         8: smiley face (verity)
         9: "hello world" as text
         10: troll face
-        11: penis
         */
         settings.setLoadedLevel(false); // don't count the fixed barriers as part of the available barriers
         if (levelNumber == 1) {
@@ -112,23 +111,21 @@ public class Levels {
         } else if (levelNumber == 2) {
             shapeDrawer.circle(48, 36, 0, 8, false, true);
         } else if (levelNumber == 3) {
-            shapeDrawer.loadBitmap("airfoil", true);
+            importFile.loadBitmap(folder, "airfoil", true);
         } else if (levelNumber == 4) {
-            shapeDrawer.loadBitmap("pizza_slice", true);
+            importFile.loadBitmap(folder, "pizza_slice", true);
         } else if (levelNumber == 5) {
-            shapeDrawer.loadBitmap("apple", true);
+            importFile.loadBitmap(folder, "apple", true);
         } else if (levelNumber == 6) {
-            shapeDrawer.loadBitmap("f1_car", true);
+            importFile.loadBitmap(folder, "f1_car", true);
         } else if (levelNumber == 7) {
-            shapeDrawer.loadBitmap("stickman", true);
+            importFile.loadBitmap(folder, "stickman", true);
         } else if (levelNumber == 8) {
-            shapeDrawer.loadBitmap("nerd_face", true);
+            importFile.loadBitmap(folder, "nerd_face", true);
         } else if (levelNumber == 9) {
-            shapeDrawer.loadBitmap("hello_world", true);
+            importFile.loadBitmap(folder, "hello_world", true);
         } else if (levelNumber == 10) {
-            shapeDrawer.loadBitmap("trollface", true);
-        } else if (levelNumber == 11) {
-            shapeDrawer.loadBitmap("penis", true);
+            importFile.loadBitmap(folder, "trollface", true);
         }
         settings.setLoadedLevel(true);
     }

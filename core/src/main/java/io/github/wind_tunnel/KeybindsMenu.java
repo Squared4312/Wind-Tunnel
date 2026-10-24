@@ -7,7 +7,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 
-public class KeybindsMenu implements Menu{
+public class KeybindsMenu implements Menu {
     private Settings settings;
     private MenuUtil util;
     private Keybinds keybinds;

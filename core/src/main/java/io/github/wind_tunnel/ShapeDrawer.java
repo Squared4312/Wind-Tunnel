@@ -1,8 +1,5 @@
 package io.github.wind_tunnel;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.math.Vector3;
 
 public class ShapeDrawer {
@@ -20,24 +17,6 @@ public class ShapeDrawer {
     public ShapeDrawer() {
         settings = Settings.getInstance();
         cfdSolver = LatticeBoltzmannCFDSolver.getInstance();
-    }
-
-    public void loadBitmap(String path, boolean fixedBarrier) {
-        FileHandle handle = Gdx.files.internal("levels/" + path + ".bmp");
-        if (!handle.exists()) {return;}
-        Pixmap image = new Pixmap(handle);
-
-        if (image.getWidth() > settings.getResolution().x || image.getHeight() > settings.getResolution().y) {return;}
-
-        for (int x=0; x<image.getWidth(); x++) {
-            for (int y=0; y<image.getHeight(); y++) {
-                int colour = image.getPixel(x, image.getHeight()-y);
-                if (colour == 0x000000FF) { // black
-                    cfdSolver.addBarrier(x, y, 0);
-                    if (fixedBarrier) {settings.addFixedBarrier(x, y, 0);}
-                }
-            }
-        }
     }
 
     public void fill(Vector3 from, Vector3 to, boolean fixedBarrier) {

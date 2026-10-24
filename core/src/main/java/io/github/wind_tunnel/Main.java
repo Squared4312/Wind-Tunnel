@@ -26,6 +26,7 @@ public class Main extends ApplicationAdapter {
     private LevelsMenu levelsMenu;
     private FreeplayMenu freeplayMenu;
     private KeybindsMenu keybindsMenu;
+    private ImportFileMenu importFileMenu;
 
     private LatticeBoltzmannCFDSolver cfdSolver;
 
@@ -47,6 +48,8 @@ public class Main extends ApplicationAdapter {
         levelsMenu = new LevelsMenu();
         freeplayMenu = new FreeplayMenu();
         keybindsMenu = new KeybindsMenu();
+        importFileMenu = new ImportFileMenu();
+
 
         cfdSolver = LatticeBoltzmannCFDSolver.getInstance();
     }
@@ -70,6 +73,8 @@ public class Main extends ApplicationAdapter {
             nextMenu = freeplayMenu.checkIfButtonsClicked();
         } else if (menu.equals("keybinds")) {
             nextMenu = keybindsMenu.checkIfButtonsClicked();
+        } else if (menu.equals("import file")) {
+            nextMenu = importFileMenu.checkIfButtonsClicked();
         }
 
         if (nextMenu.equals("remove all barriers")) {
@@ -117,6 +122,8 @@ public class Main extends ApplicationAdapter {
             freeplayMenu.render(sr, batch);
         } else if (menu.equals("keybinds")) {
             keybindsMenu.render(sr, batch);
+        } else if (menu.equals("import file")) {
+            importFileMenu.render(sr, batch);
         }
     }
 
