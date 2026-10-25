@@ -40,7 +40,7 @@ public class LatticeBoltzmannCFDSolver {
     private Vector3 rotatedPoint = new Vector3();
     private Vector2 screenPos;
     private Vector2 mouse = new Vector2();
-    private Vector3 cellPosition = new Vector3();
+    private Vector3 cellPosition;
 
     private float four9ths = 4/9f;
     private float one9th = 1/9f;
@@ -466,6 +466,7 @@ public class LatticeBoltzmannCFDSolver {
                 settings.setPlaceBarriers(true);
             }
         }
+        cellPosition = new Vector3();
         if (settings.getSolver().equals("2D LBM")) {
             cellPosition.x = Math.round(((mouse.x-(cellDimensions/2))/1920)*settings.getResolution().x);
             cellPosition.y = Math.round(((mouse.y-(cellDimensions/2))/1080)*settings.getResolution().y);
@@ -517,7 +518,7 @@ public class LatticeBoltzmannCFDSolver {
                     continue;
                 }
                 if (draw) {
-                    addBarrier(cellX, cellY, z);
+                    addBarrier(cellX, cellY, z, false);
                 } else if (isBarrier(cellX, cellY, z)) {
                     removeBarrier(cellX, cellY, z);
                 }
@@ -558,15 +559,21 @@ public class LatticeBoltzmannCFDSolver {
         return (int) index;
     }
 
-    public void addBarrier(int x, int y, int z) {
-        if (!isBarrier(x, y, z)) {
-            if (settings.getLoadedLevel()) {
-                if (settings.getAvailableBarriers() > 0) {
-                    settings.setAvailableBarriers(settings.getAvailableBarriers()-1);
+    public void addBarrier(int x, int y, int z, boolean fixed) {
+        if (x > 0 && x < settings.getResolution().x-1 && y > 0 && y < settings.getResolution().y-1) { // in simulation area
+            if (settings.getSolver().equals("3D LBM") && (z <= 0 || z >= settings.getResolution().z-1)) { // 3D and outside
+                return;
+            }
+            if (!isBarrier(x, y, z)) {
+                if (settings.getLoadedLevel()) {
+                    if (settings.getAvailableBarriers() > 0) {
+                        settings.setAvailableBarriers(settings.getAvailableBarriers()-1);
+                        barriers[x][y][z] = true;
+                    }
+                } else {
                     barriers[x][y][z] = true;
                 }
-            } else {
-                barriers[x][y][z] = true;
+                if (fixed) {settings.addFixedBarrier(x, y, z);}
             }
         }
     }

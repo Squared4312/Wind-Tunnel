@@ -23,54 +23,25 @@ public class ShapeDrawer {
         for (float x=Math.min(from.x, to.x); x<=Math.max(from.x, to.x); x++) {
             for (float y=Math.min(from.y, to.y); y<=Math.max(from.y, to.y); y++) {
                 for (float z=Math.min(from.z, to.z); z<=Math.max(from.z, to.z); z++) {
-                    cfdSolver.addBarrier((int) x, (int) y, (int) z);
-                    if (fixedBarrier) {settings.addFixedBarrier((int) x, (int) y, (int) z);}
+                    cfdSolver.addBarrier((int) x, (int) y, (int) z, fixedBarrier);
                 }
             }
         }
     }
 
-    public void rectangle(Vector3 frontTopLeft, Vector3 backBottomRight, boolean fixedBarrier) {
-        float x1 = frontTopLeft.x;
-        float y1 = frontTopLeft.y;
-        float z1 = frontTopLeft.z;
-        float x2 = backBottomRight.x;
-        float y2 = backBottomRight.y;
-        float z2 = backBottomRight.z;
-
-        // front face
-        line(new Vector3(x1, y1, z1), new Vector3(x2, y1, z1), fixedBarrier); // front top
-        line(new Vector3(x1, y2, z1), new Vector3(x2, y2, z1), fixedBarrier); // front bottom
-        line(new Vector3(x1, y1, z1), new Vector3(x1, y2, z1), fixedBarrier); // front left
-        line(new Vector3(x2, y1, z1), new Vector3(x2, y2, z1), fixedBarrier); // front right
-
-        // back face
-        line(new Vector3(x1, y1, z2), new Vector3(x2, y1, z2), fixedBarrier); // back top
-        line(new Vector3(x1, y2, z2), new Vector3(x2, y2, z2), fixedBarrier); // back bottom
-        line(new Vector3(x1, y1, z2), new Vector3(x1, y2, z2), fixedBarrier); // back left
-        line(new Vector3(x2, y1, z2), new Vector3(x2, y2, z2), fixedBarrier); // back right
-
-        // connecting edges
-        line(new Vector3(x1, y1, z1), new Vector3(x1, y1, z2), fixedBarrier); // top left
-        line(new Vector3(x2, y1, z1), new Vector3(x2, y1, z2), fixedBarrier); // top right
-        line(new Vector3(x1, y2, z1), new Vector3(x1, y2, z2), fixedBarrier); // bottom left
-        line(new Vector3(x2, y2, z1), new Vector3(x2, y2, z2), fixedBarrier); // bottom right
-    }
-
     public void line(Vector3 from, Vector3 to, boolean fixedBarrier) {
 
         // centre both from and to so that it raycasts from the centre of the cell
-        from.x += 0.5f;
-        from.y += 0.5f;
-        to.x += 0.5f;
-        to.y += 0.5f;
+        from = new Vector3(from).add(0.5f, 0.5f, 0.5f);
+        to = new Vector3(to).add(0.5f, 0.5f, 0.5f);
 
         // draw a line using the DDA algorithm
         rayDirection = new Vector3(to.x-from.x, to.y-from.y, to.z-from.z);
         rayDirectionLength = Math.sqrt(rayDirection.x*rayDirection.x + rayDirection.y*rayDirection.y + rayDirection.z*rayDirection.z);
 
         if (rayDirectionLength == 0) {
-            return; // from equals to, no direction to cast
+            cfdSolver.addBarrier((int) from.x, (int) from.y, (int) from.z, fixedBarrier);
+            return; // from equals to, no direction to cast, so just place 1 barrier
         }
         rayDirection.x = (float) (rayDirection.x/rayDirectionLength);
         rayDirection.y = (float) (rayDirection.y/rayDirectionLength);
@@ -121,13 +92,10 @@ public class ShapeDrawer {
             rayLength.z = (check.z-from.z+1)*rayUnitStep.z;
         }
 
-        while (true) {
-            if (check.x > 0 && check.x < settings.getResolution().x-1 && check.y > 0 && check.y < settings.getResolution().y-1 && check.z > 0 && check.z < settings.getResolution().z-1) {
-                cfdSolver.addBarrier((int) check.x, (int) check.y, (int) check.z);
-                if (fixedBarrier) {settings.addFixedBarrier((int) check.x, (int) check.y, (int) check.z);}
-            } else { // Vector3 check is outside simulation area
-                break;
-            }
+        // prevents indefinite iteration by finding the number of barriers apart from and to are in each axis
+        int maxSteps = Math.abs((int) (Math.floor(to.x)-check.x)) + Math.abs((int) (Math.floor(to.y)-check.y)) + Math.abs((int) (Math.floor(to.z)-check.z));
+        for (int steps=0; steps<=maxSteps; steps++) {
+            cfdSolver.addBarrier((int) check.x, (int) check.y, (int) check.z, fixedBarrier);
 
             // move along the axis that has the shortest ray length
             if (rayLength.x < rayLength.y && rayLength.x < rayLength.z) {
@@ -139,12 +107,6 @@ public class ShapeDrawer {
             } else {
                 check.z += step.z;
                 rayLength.z += rayUnitStep.z;
-            }
-
-            if ((int) check.x == (int) to.x && (int) check.y == (int) to.y && (int) check.z == (int) to.z) { // check equals endpoint, so add endpoint and exit
-                cfdSolver.addBarrier((int) check.x, (int) check.y, (int) check.z);
-                if (fixedBarrier) {settings.addFixedBarrier((int) check.x, (int) check.y, (int) check.z);}
-                break;
             }
         }
     }
@@ -167,8 +129,7 @@ public class ShapeDrawer {
                 if (cellX <= 0 || cellX >= settings.getResolution().x-1 || cellY <= 0 || cellY >= settings.getResolution().y-1) {
                     continue;
                 }
-                cfdSolver.addBarrier(cellX, cellY, z);
-                if (fixedBarrier) {settings.addFixedBarrier(cellX, cellY, z);}
+                cfdSolver.addBarrier(cellX, cellY, z, fixedBarrier);
             }
         }
     }
@@ -190,12 +151,11 @@ public class ShapeDrawer {
             point.z = z;
 
             // point outside simulation area
-            if (point.x <= 0 || point.x >= settings.getResolution().x-1 || point.y <= 0 || point.z >= settings.getResolution().y-1) {
+            if (point.x <= 0 || point.x >= settings.getResolution().x-1 || point.y <= 0 || point.y >= settings.getResolution().y-1) {
                 continue;
             }
 
-            cfdSolver.addBarrier((int) point.x, (int) point.y, z);
-            if (fixedBarrier) {settings.addFixedBarrier((int) point.x, (int) point.y, z);}
+            cfdSolver.addBarrier((int) point.x, (int) point.y, z, fixedBarrier);
         }
     }
 }

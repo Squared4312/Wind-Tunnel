@@ -21,6 +21,7 @@ public class Levels {
     }
 
     public void loadSelectedLevel() {
+        settings.reset();
         levelNumber = settings.getLevelNumber();
         if (levelNumber == 1) {
             settings.setResolution(new Vector3(settings.getResolutionValues()[2][0], settings.getResolutionValues()[2][1], 1)); // 128x72x1
@@ -141,7 +142,7 @@ public class Levels {
         } else if (levelNumber == 10) {
             fileImporter.loadBitmap(levelsFolder + "trollface.bmp", true);
         } else if (levelNumber == 11) {
-            fileImporter.loadOBJModel("assets/models/cube.obj", false);
+            fileImporter.loadOBJModel("assets/models/icosphere.obj", false);
         }
         settings.setLoadedLevel(true);
     }
