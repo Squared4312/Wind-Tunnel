@@ -16,7 +16,7 @@ public class InputHandler extends InputAdapter {
             if (amountY == 0) {
                 return false;
             }
-            settings.moveSelectedZPlane((int) amountY);
+            settings.moveSelectedZPlane((int) -amountY);
             return true;
         }
         return false;
