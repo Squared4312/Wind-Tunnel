@@ -48,6 +48,11 @@ public class Levels {
         }
         cfdSolver.initialiseFluid();
         settings.resetLockedSettings();
+        settings.changeBrushSizeAndCameraDistance();
+
+        settings.setLoadedLevel(false);
+        cfdSolver.removeAllBarriers();
+        settings.setLoadedLevel(true);
 
         if (levelNumber >= 1 && levelNumber <= 10) {
             settings.setSolver("2D LBM");

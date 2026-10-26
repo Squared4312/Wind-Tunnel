@@ -19,7 +19,7 @@ public class LatticeBoltzmannCFDSolver {
     - create a bounce function - 100% - done
     - research how to get an intersection point between the selected plane and the mouse ray - 100% - done
     - find how to use the scroll wheel to select a plane in 3D - 100% - done
-    - find out how to keep barriers when going back to settings (2D -> 3D or change in resolution) - 0%
+    - find out how to keep barriers when going back to settings (2D -> 3D or change in resolution) - 100% - done
      */
 
     private Settings settings;
@@ -36,6 +36,7 @@ public class LatticeBoltzmannCFDSolver {
     };
     private boolean[][][] barriers;
     private int neighbours;
+    private boolean[][][] storedBarriers;
 
     private Vector3 rotatedPoint = new Vector3();
     private Vector2 screenPos;
@@ -95,7 +96,7 @@ public class LatticeBoltzmannCFDSolver {
         }
         this.densities = new float[(int) settings.getResolution().x][(int) settings.getResolution().y][(int) settings.getResolution().z][neighbours];
         this.cellAverageVelocities = new float[(int) settings.getResolution().x][(int) settings.getResolution().y][(int) settings.getResolution().z][3];
-        this.barriers = new boolean[(int) settings.getResolution().x][(int) settings.getResolution().y][(int) settings.getResolution().z];
+        this.barriers = scaleBarriersUsingResolution();
 
         v = settings.getFlowSpeed();
         one15vv = 1-1.5f*v*v;
@@ -524,6 +525,58 @@ public class LatticeBoltzmannCFDSolver {
                 }
             }
         }
+    }
+
+    public boolean[][][] scaleBarriersUsingResolution() {
+        boolean[][][] newBarriers = new boolean[(int) settings.getResolution().x][(int) settings.getResolution().y][(int) settings.getResolution().z];
+
+        if (barriers == null) {
+            return newBarriers;
+        }
+        if (!settings.getSolver().equals(settings.getOldSolver())) {
+            return newBarriers;
+        }
+
+        storedBarriers = barriers;
+
+        if (settings.getResolution().equals(settings.getOldResolution())) {
+            return barriers; // no change in resolution
+        }
+        Vector3 scale;
+
+        if (settings.getResolution().x > settings.getOldResolution().x) {
+            scale = new Vector3(settings.getResolution().x/settings.getOldResolution().x, settings.getResolution().y/settings.getOldResolution().y, settings.getResolution().z/settings.getOldResolution().z);
+            for (int x=0; x<settings.getResolution().x; x++) {
+                for (int y=0; y<settings.getResolution().y; y++) {
+                    for (int z=0; z<settings.getResolution().z; z++) {
+                        newBarriers[x][y][z] = storedBarriers[(int) (x/scale.x)][(int) (y/scale.y)][(int) (z/scale.z)];
+                    }
+                }
+            }
+        } else {
+            scale = new Vector3(settings.getOldResolution().x/settings.getResolution().x, settings.getOldResolution().y/settings.getResolution().y, settings.getOldResolution().z/settings.getResolution().z);
+            for (int x=0; x<settings.getResolution().x; x++) {
+                for (int y=0; y<settings.getResolution().y; y++) {
+                    for (int z=0; z<settings.getResolution().z; z++) {
+                        int barrierCount = 0;
+                        for (int dx=0; dx<scale.x; dx++) {
+                            for (int dy=0; dy<scale.y; dy++) {
+                                for (int dz=0; dz<scale.z; dz++) {
+                                    if (storedBarriers[(int) ((x*scale.x)+dx)][(int) ((y*scale.y)+dy)][(int) ((z*scale.z)+dz)]) {
+                                        barrierCount += 1;
+                                    }
+                                }
+                            }
+                        }
+                        if (barrierCount*2 >= scale.x*scale.y*scale.z) { // more than half the cells are barriers
+                            newBarriers[x][y][z] = true;
+                        }
+                    }
+                }
+            }
+        }
+        settings.setOldResolution(new Vector3(settings.getResolution()));
+        return newBarriers;
     }
 
     public ArrayList<Color> calculateColours(int numOfColours) {

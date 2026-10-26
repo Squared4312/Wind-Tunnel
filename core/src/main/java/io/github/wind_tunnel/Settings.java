@@ -39,6 +39,9 @@ public class Settings {
     private float levelScore = 0;
     private String[] levelNames = {"line", "circle", "airfoil", "pizza slice", "apple", "car" ,"stick man", ":)", "hello world", "troll face", "cube"};
 
+    private Vector3 oldResolution;
+    private String oldSolver;
+
     private static Settings instance;
 
     public static Settings getInstance() {
@@ -64,13 +67,15 @@ public class Settings {
         this.brushSize = 4;
 
         this.rotationAngles = new Vector3(0, 0, 0);
-        this.cameraDistance = 8;
+        this.cameraDistance = 100;
         this.fov = 95;
         this.origin = new Vector3(0, 0, 0);
         this.selectedZPlane = 0;
         this.intersectionPoint = new Vector3(0, 0, 0);
 
         this.fixedBarriers = new boolean[(int) this.resolution.x][(int) this.resolution.y][(int) this.resolution.z];
+        this.oldResolution = this.resolution;
+        this.oldSolver = this.solver;
     }
 
     public String cycleOptions(int change, String currentValue, String[] possibleValues) {
@@ -113,20 +118,29 @@ public class Settings {
         if (change == 1) {
             if (index == resolutionValues.length-1) {
                 this.resolution = new Vector3(resolutionValues[0][0], resolutionValues[0][1], resolutionValues[0][1]);
-                this.brushSize = 1;
             } else {
                 this.resolution = new Vector3(resolutionValues[index+1][0], resolutionValues[index+1][1], resolutionValues[index+1][1]);
-                this.brushSize *= 2;
             }
         } else if (change == -1) {
             if (index == 0) {
                 this.resolution = new Vector3(resolutionValues[resolutionValues.length-1][0], resolutionValues[resolutionValues.length-1][1], resolutionValues[resolutionValues.length-1][1]);
-                this.brushSize = 32;
             } else {
                 this.resolution = new Vector3(resolutionValues[index-1][0], resolutionValues[index-1][1], resolutionValues[index-1][1]);
-                this.brushSize /= 2;
             }
         }
+        changeBrushSizeAndCameraDistance();
+    }
+
+    public void changeBrushSizeAndCameraDistance() {
+        int index = 0;
+        for (int count=0; count<resolutionValues.length; count++) {
+            if (resolutionValues[count][0] == this.resolution.x && resolutionValues[count][1] == this.resolution.y) {
+                index = count;
+                break;
+            }
+        }
+        this.brushSize = (int) Math.pow(2, index); // 2^index -> 1, 2, 4, 8, 16, 32
+        this.cameraDistance =  25*(int) Math.pow(2, index); // 25* 2^index -> 25, 50, 100, 200, 400, 800
     }
 
     public Vector3 getOrigin() {return this.origin;}
@@ -142,6 +156,12 @@ public class Settings {
             selectedZPlane = (int) (resolution.z-1);
         }
     }
+
+    public String getOldSolver() {return this.oldSolver;}
+    public void setOldSolver(String oldSolver) {this.oldSolver = oldSolver;}
+
+    public Vector3 getOldResolution() {return this.oldResolution;}
+    public void setOldResolution(Vector3 oldResolution) {this.oldResolution = oldResolution;}
 
     public String getLevelNameAt(int index) {return this.levelNames[index];}
     public String[] getLevelNames() {return this.levelNames;}

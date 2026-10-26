@@ -13,9 +13,6 @@ public class InputHandler extends InputAdapter {
     @Override
     public boolean scrolled(float amountX, float amountY) {
         if (settings.getSolver().equals("3D LBM")) {
-            if (amountY == 0) {
-                return false;
-            }
             settings.moveSelectedZPlane((int) -amountY);
             return true;
         }

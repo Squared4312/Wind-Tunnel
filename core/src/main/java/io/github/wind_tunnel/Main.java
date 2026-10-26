@@ -81,9 +81,12 @@ public class Main extends ApplicationAdapter {
             cfdSolver.removeAllBarriers();
             nextMenu = "settings";
         }
-
         if (nextMenu.equals("main")) {
             settings.resetLockedSettings();
+        }
+        if ((menu.equals("levels") || menu.equals("freeplay")) && nextMenu.equals("settings")) {
+            settings.setOldResolution(settings.getResolution());
+            settings.setOldSolver(settings.getSolver());
         }
 
         if (nextMenu.equals("quit")) {
