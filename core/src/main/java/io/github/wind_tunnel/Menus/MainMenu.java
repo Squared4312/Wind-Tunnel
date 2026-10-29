@@ -1,10 +1,13 @@
-package io.github.wind_tunnel;
+package io.github.wind_tunnel.Menus;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
+import io.github.wind_tunnel.Menu;
+import io.github.wind_tunnel.MenuUtil;
+import io.github.wind_tunnel.Settings;
 
 public class MainMenu implements Menu {
     private Settings settings;

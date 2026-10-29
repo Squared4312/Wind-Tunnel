@@ -106,12 +106,18 @@ public class MenuUtil {
 
     public void renderLockedSettings(ShapeRenderer sr, Rectangle[] buttons) {
         // lockedSettings: resolution, flowspeed, viscosity, plot, brushSize, solver, barrierShapes, clearBarriers, showFlowLines, renderUI, renderSelectedZPlane
-        for (int index=0; index<buttons.length; index++) {
+        sr.setColor(Color.RED);
+        for (int index=0; index<buttons.length-1; index++) {
             if (settings.getLockedSettingAt(index)) {
-                sr.setColor(Color.RED);
                 sr.rectLine(buttons[index].x, buttons[index].y, buttons[index].x+buttons[index].width, buttons[index].y+buttons[index].height, 4); // bl -> tr
                 sr.rectLine(buttons[index].x, buttons[index].y+buttons[index].height, buttons[index].x+buttons[index].width, buttons[index].y, 4); // tl -> br
             }
+        }
+        int index = 11;
+        if (settings.getLockedSettingAt(index)) { // importFileMenu
+            sr.rectLine(buttons[index].x, buttons[index].y, buttons[index].x+buttons[index].width, buttons[index].y+buttons[index].height, 4); // bl -> tr
+            sr.rectLine(buttons[index].x, buttons[index].y+buttons[index].height, buttons[index].x+buttons[index].width, buttons[index].y, 4); // tl -> br
+
         }
     }
 

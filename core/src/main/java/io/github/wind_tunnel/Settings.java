@@ -32,7 +32,7 @@ public class Settings {
 
     private boolean loadedLevel = false;
     private Integer levelNumber = 1;
-    private boolean[] lockedSettings = new boolean[11]; // resolution, flowspeed, viscosity, plot, brushSize, solver, barrierShapes, clearBarriers, showFlowLines, renderUI, renderSelectedZPlane
+    private boolean[] lockedSettings = new boolean[12]; // resolution, flowspeed, viscosity, plot, brushSize, solver, barrierShapes, clearBarriers, showFlowLines, renderUI, renderSelectedZPlane, importFileMenu
     private boolean[][][] fixedBarriers;
     private int availableBarriers = 0; // number of barriers left to use
     private int maxBarriers = 0; // total number of barriers allowed

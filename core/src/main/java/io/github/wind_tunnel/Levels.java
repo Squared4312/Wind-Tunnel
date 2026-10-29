@@ -9,7 +9,7 @@ public class Levels {
     private ImportFile fileImporter;
 
     private int levelNumber;
-    private String levelsFolder = "assets/levels/";
+    private String levelsFolder;
 
     // lockedSettings: resolution, flowspeed, viscosity, plot, brushSize, solver, barrierShapes, clearBarriers, showFlowLines, renderUI, renderSelectedZPlane
 
@@ -18,6 +18,7 @@ public class Levels {
         cfdSolver = LatticeBoltzmannCFDSolver.getInstance();
         shapeDrawer = new ShapeDrawer();
         fileImporter = new ImportFile();
+        levelsFolder = fileImporter.getLevelsFolder();
     }
 
     public void loadSelectedLevel() {
@@ -56,23 +57,17 @@ public class Levels {
 
         if (levelNumber >= 1 && levelNumber <= 10) {
             settings.setSolver("2D LBM");
-            settings.setFlowSpeed(0.100f);
-            settings.setViscosity(0.015f);
-            settings.setLockedSettingAt(0, true);
-            settings.setLockedSettingAt(5, true);
-            settings.setLockedSettingAt(1, true);
-            settings.setLockedSettingAt(2, true);
-            settings.setLockedSettingAt(6, true);
         } else if (levelNumber >= 11 && levelNumber <= 20) {
             settings.setSolver("3D LBM");
-            settings.setFlowSpeed(0.100f);
-            settings.setViscosity(0.015f);
-            settings.setLockedSettingAt(0, true);
-            settings.setLockedSettingAt(5, true);
-            settings.setLockedSettingAt(1, true);
-            settings.setLockedSettingAt(2, true);
-            settings.setLockedSettingAt(6, true);
         }
+        settings.setFlowSpeed(0.100f);
+        settings.setViscosity(0.015f);
+        settings.setLockedSettingAt(0, true);
+        settings.setLockedSettingAt(5, true);
+        settings.setLockedSettingAt(1, true);
+        settings.setLockedSettingAt(2, true);
+        settings.setLockedSettingAt(6, true);
+        settings.setLockedSettingAt(11, true);
 
         if (levelNumber == 1) {
             settings.setAvailableBarriers(100);

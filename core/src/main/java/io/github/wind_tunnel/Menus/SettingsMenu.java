@@ -1,4 +1,4 @@
-package io.github.wind_tunnel;
+package io.github.wind_tunnel.Menus;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
@@ -6,6 +6,10 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
+import io.github.wind_tunnel.Menu;
+import io.github.wind_tunnel.MenuUtil;
+import io.github.wind_tunnel.Settings;
+
 import java.text.DecimalFormat;
 
 public class SettingsMenu implements Menu {
@@ -32,7 +36,7 @@ public class SettingsMenu implements Menu {
     private String[] barrierShapeValues = {"short line", "long line", "diagonal", "shallow diagonal", "small circle", "large circle", "line with spoiler", "circle with spoiler", "right angle", "wedge", "airfoil"};
     private Rectangle[] barrierShapesDropdownButtons = new Rectangle[barrierShapeValues.length];
 
-    private Rectangle[] buttons = new Rectangle[11];
+    private Rectangle[] buttons = new Rectangle[12];
     private Rectangle clearBarrierButton;
     private Rectangle showFlowlinesButton;
     private Rectangle renderUIButton;
@@ -92,6 +96,7 @@ public class SettingsMenu implements Menu {
             buttons[8] = showFlowlinesButton;
             buttons[9] = renderUIButton;
             buttons[10] =  renderOnlySelectedZPlaneButton;
+            buttons[11] = importFileButton;
 
             resolutionButtons[0] = util.renderRoundedTriangle(sr, Color.WHITE, 865, 742.5f, 12, 90);
             resolutionButtons[1] = util.renderRoundedTriangle(sr, Color.WHITE, resolutionTextX-40, 742.5f, 12, 270);
@@ -241,7 +246,7 @@ public class SettingsMenu implements Menu {
         if (util.isButtonClicked(keybindsButton)) {
             return "keybindsMenu";
         }
-        if (util.isButtonClicked(importFileButton)) {
+        if (!settings.getLockedSettingAt(11) && util.isButtonClicked(importFileButton)) {
             return "importFileMenu";
         }
         return "settingsMenu";

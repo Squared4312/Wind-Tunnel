@@ -13,7 +13,7 @@ public class ImportFile {
     private ShapeDrawer shapeDrawer;
 
     private String modelsFolder = "assets/models/";
-    private String[] fileNames;
+    private String levelsFolder = "assets/levels/";
 
     public ImportFile() {
         settings = Settings.getInstance();
@@ -21,12 +21,35 @@ public class ImportFile {
         shapeDrawer = new ShapeDrawer();
     }
 
+    public boolean importFile(String filePath) {
+        if (getFileExtension(filePath).equals("bmp")) {
+            for (int[] resolution : settings.getResolutionValues()) {
+                if (getModelResolution(filePath).x <= resolution[0] && getModelResolution(filePath).y <= resolution[1]) {
+                    cfdSolver.removeAllBarriers();
+                    settings.setSolver(settings.getSolverValues()[0]);
+                    settings.setResolution(new Vector3(resolution[0], resolution[1], 1));
+                    cfdSolver.initialiseFluid();
+                    loadBitmap(filePath, false);
+                    return true;
+                }
+            }
+        } else if (getFileExtension(filePath).equals("obj")) {
+            cfdSolver.removeAllBarriers();
+            settings.setResolution(new Vector3(settings.getResolutionValues()[2][0], settings.getResolutionValues()[2][1], settings.getResolutionValues()[2][1]));
+            settings.setSolver(settings.getSolverValues()[1]);
+            cfdSolver.initialiseFluid();
+            loadOBJModel(filePath, false);
+            return true;
+        }
+        return false;
+    }
+
     public void loadBitmap(String filePath, boolean fixedBarrier) {
         FileHandle file = Gdx.files.internal(filePath);
         if (!file.exists()) {return;}
 
         Pixmap image = new Pixmap(file);
-        if (image.getWidth() > settings.getResolution().x || image.getHeight() > settings.getResolution().y) {return;} // too big
+        if (image.getWidth() > settings.getResolution().x || image.getHeight() > settings.getResolution().y || settings.getResolution().z != 1) {return;} // too big
 
         for (int x=0; x<image.getWidth(); x++) {
             for (int y=0; y<image.getHeight(); y++) {
@@ -59,29 +82,9 @@ public class ImportFile {
         forward axis = y
         up axis = z
         */
-        FileHandle file = Gdx.files.internal(filePath);
-        if (!file.exists()) {return;}
 
-        String[] contents = file.readString().split("\\r?\\n"); // split at every new line
-        ArrayList<Vector3> vertices = new ArrayList<>();
-        ArrayList<int[]> faces = new ArrayList<>();
-
-        String[] lineList;
-        for (String line : contents) {
-            if (line.isEmpty()) {continue;}
-
-            lineList = line.split("\\s+");
-            if (line.startsWith("v ")) {
-                vertices.add(new Vector3(Float.parseFloat(lineList[1]), Float.parseFloat(lineList[2]), Float.parseFloat(lineList[3])));
-            } else if (line.startsWith("f ")) {
-                int[] face = new int[lineList.length-1];
-                for (int count=1; count<lineList.length; count++) {
-                    face[count-1] = Integer.parseInt(lineList[count])-1;
-                }
-                faces.add(face);
-            }
-        }
-        if (vertices.isEmpty()) {return;}
+        ArrayList<Vector3> vertices = getVerticesFromOBJModel(filePath);
+        ArrayList<int[]> faces = getFacesFromOBJModel(filePath);
 
         // draw lines (using shapeDrawer.line()) from each vertex to its neighbour according to the faces from the loaded .obj
 
@@ -120,45 +123,92 @@ public class ImportFile {
         }
     }
 
-    public int getNumberOfFiles() {
-        return Gdx.files.internal(modelsFolder).list().length;
-    }
+    public ArrayList<Vector3> getVerticesFromOBJModel(String filePath) {
+        FileHandle file = Gdx.files.internal(filePath);
+        if (!file.exists()) {return null;}
 
-    public String[] getAllFileNames() {
-        FileHandle[] files = Gdx.files.internal(modelsFolder).list();
-        fileNames = new String[files.length];
-        for (int count=0; count<files.length; count++) {
-            fileNames[count] = files[count].name();
+        String[] contents = file.readString().split("\\r?\\n"); // split at every new line
+        ArrayList<Vector3> vertices = new ArrayList<>();
+
+        String[] lineList;
+        for (String line : contents) {
+            if (line.isEmpty()) {continue;}
+
+            lineList = line.split("\\s+");
+            if (line.startsWith("v ")) {
+                vertices.add(new Vector3(Float.parseFloat(lineList[1]), Float.parseFloat(lineList[2]), Float.parseFloat(lineList[3])));
+            }
         }
-        return fileNames;
+        if (vertices.isEmpty()) {return null;}
+
+        return vertices;
     }
 
-    public String getFileNameAt(int index) {
-        FileHandle[] files = Gdx.files.internal(modelsFolder).list();
-        return files[index].name();
+    public ArrayList<int[]> getFacesFromOBJModel(String filePath) {
+        FileHandle file = Gdx.files.internal(filePath);
+        if (!file.exists()) {return null;}
+
+        String[] contents = file.readString().split("\\r?\\n"); // split at every new line
+        ArrayList<int[]> faces = new ArrayList<>();
+
+        String[] lineList;
+        for (String line : contents) {
+            if (line.isEmpty()) {continue;}
+
+            lineList = line.split("\\s+");
+            if (line.startsWith("f ")) {
+                int[] face = new int[lineList.length-1];
+                for (int count=1; count<lineList.length; count++) {
+                    face[count-1] = Integer.parseInt(lineList[count])-1;
+                }
+                faces.add(face);
+            }
+        }
+        if (faces.isEmpty()) {return null;}
+
+        return faces;
     }
 
-    public String getFilePathAt(int index) {
-        FileHandle[] files = Gdx.files.internal(modelsFolder).list();
-        return files[index].path();
+    public String[] getAllFilePaths() {
+        FileHandle[] modelFiles = Gdx.files.internal(modelsFolder).list();
+        FileHandle[] levelFiles = Gdx.files.internal(levelsFolder).list();
+        String[] filePaths = new String[modelFiles.length+levelFiles.length];
+        for (int count=0; count<modelFiles.length; count++) {
+            filePaths[count] = modelFiles[count].path();
+        }
+        for (int count=modelFiles.length; count<modelFiles.length+levelFiles.length; count++) {
+            filePaths[count] = levelFiles[count-modelFiles.length].path();
+        }
+        return filePaths;
     }
 
-    public String getFileExtensionAt(int index) {
-        FileHandle[] files = Gdx.files.internal(modelsFolder).list();
-        return files[index].extension();
+    public String getFileNameAndExtension(String filePath) {
+        return Gdx.files.internal(filePath).name();
+    }
+
+    public String getFullFilePath(String filePath) {
+        return Gdx.files.internal(filePath).path();
+    }
+
+    public String getFileExtension(String filePath) {
+        return Gdx.files.internal(filePath).extension();
+    }
+
+    public int getNumberOfFiles(String folder) {
+        return Gdx.files.internal(folder).list().length;
     }
 
     public String getModelType(String filePath) {
-        if (getModelResolution(filePath).z == 0) {
+        if (getFileExtension(filePath).equals("bmp")) {
             return "2D";
-        } else if (getModelResolution(filePath).z > 0) {
+        } else if (getFileExtension(filePath).equals("obj")) {
             return "3D";
         }
         return null;
     }
 
     public Integer getModelBarriers(String filePath) {
-        FileHandle file = Gdx.files.internal(modelsFolder + filePath);
+        FileHandle file = Gdx.files.internal(filePath);
         if (!file.exists()) {return null;}
 
         int barriers = 0;
@@ -174,15 +224,13 @@ public class ImportFile {
             }
             image.dispose();
             return barriers;
-        } else if (file.extension().equals("obj")) { // 3D
-            System.out.println("3D file");
-            return barriers;
         }
+
         return null;
     }
 
     public Vector3 getModelResolution(String filePath) {
-        FileHandle file = Gdx.files.internal(modelsFolder + filePath);
+        FileHandle file = Gdx.files.internal(filePath);
         if (!file.exists()) {return new Vector3(0, 0, 0);}
 
         if (file.extension().equals("bmp")) { // 2D file
@@ -195,4 +243,5 @@ public class ImportFile {
     }
 
     public String getModelsFolder() {return this.modelsFolder;}
+    public String getLevelsFolder() {return this.levelsFolder;}
 }

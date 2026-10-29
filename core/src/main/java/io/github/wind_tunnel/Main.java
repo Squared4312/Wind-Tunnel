@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
+import io.github.wind_tunnel.Menus.*;
 
 public class Main extends ApplicationAdapter {
     private ShapeRenderer sr;
@@ -81,7 +82,13 @@ public class Main extends ApplicationAdapter {
             cfdSolver.removeAllBarriers();
             nextMenu = "settingsMenu";
         }
+        if (nextMenu.equals("importSuccess")) {
+            menuHistory.pop();
+            menu = "settingsMenu";
+            nextMenu = "back";
+        }
         if (nextMenu.equals("mainMenu")) {
+            settings.setLoadedLevel(false);
             settings.resetLockedSettings();
             cfdSolver.removeAllBarriers();
         }
@@ -103,7 +110,7 @@ public class Main extends ApplicationAdapter {
                     settings.setLoadedLevel(true);
                 }
             }
-            if ("back".equals(nextMenu)) {
+            if (nextMenu.equals("back")) {
                 if (!menuHistory.isEmpty()) {
                     String previousMenu = menuHistory.pop();
                     if (menu.equals("settingsMenu") && previousMenu.equals("freeplayMenu")) {

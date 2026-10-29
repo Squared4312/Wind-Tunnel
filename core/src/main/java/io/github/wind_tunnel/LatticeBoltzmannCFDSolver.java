@@ -97,6 +97,7 @@ public class LatticeBoltzmannCFDSolver {
         this.densities = new float[(int) settings.getResolution().x][(int) settings.getResolution().y][(int) settings.getResolution().z][neighbours];
         this.cellAverageVelocities = new float[(int) settings.getResolution().x][(int) settings.getResolution().y][(int) settings.getResolution().z][3];
         this.barriers = scaleBarriersUsingResolution();
+        settings.changeBrushSizeAndCameraDistance();
 
         v = settings.getFlowSpeed();
         one15vv = 1-1.5f*v*v;
