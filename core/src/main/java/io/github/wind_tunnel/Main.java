@@ -13,7 +13,7 @@ public class Main extends ApplicationAdapter {
 
     private Vector2 screenDimensions;
 
-    private String menu = "main";
+    private String menu = "mainMenu";
     private String nextMenu;
     private Stack menuHistory = new Stack(10);
     private Settings settings;
@@ -61,30 +61,31 @@ public class Main extends ApplicationAdapter {
 
         keybinds.checkForKeyPresses();
 
-        if (menu.equals("main")) {
+        if (menu.equals("mainMenu")) {
             nextMenu = mainMenu.checkIfButtonsClicked();
-        } else if (menu.equals("about")) {
+        } else if (menu.equals("aboutMenu")) {
             nextMenu = aboutMenu.checkIfButtonsClicked();
-        } else if (menu.equals("settings")) {
+        } else if (menu.equals("settingsMenu")) {
             nextMenu = settingsMenu.checkIfButtonsClicked();
-        } else if (menu.equals("levels")) {
+        } else if (menu.equals("levelsMenu")) {
             nextMenu = levelsMenu.checkIfButtonsClicked();
-        } else if (menu.equals("freeplay")) {
+        } else if (menu.equals("freeplayMenu")) {
             nextMenu = freeplayMenu.checkIfButtonsClicked();
-        } else if (menu.equals("keybinds")) {
+        } else if (menu.equals("keybindsMenu")) {
             nextMenu = keybindsMenu.checkIfButtonsClicked();
-        } else if (menu.equals("import file")) {
+        } else if (menu.equals("importFileMenu")) {
             nextMenu = importFileMenu.checkIfButtonsClicked();
         }
 
         if (nextMenu.equals("remove all barriers")) {
             cfdSolver.removeAllBarriers();
-            nextMenu = "settings";
+            nextMenu = "settingsMenu";
         }
-        if (nextMenu.equals("main")) {
+        if (nextMenu.equals("mainMenu")) {
             settings.resetLockedSettings();
+            cfdSolver.removeAllBarriers();
         }
-        if ((menu.equals("levels") || menu.equals("freeplay")) && nextMenu.equals("settings")) {
+        if ((menu.equals("levelsMenu") || menu.equals("freeplayMenu")) && nextMenu.equals("settingsMenu")) {
             settings.setOldResolution(settings.getResolution());
             settings.setOldSolver(settings.getSolver());
         }
@@ -92,12 +93,12 @@ public class Main extends ApplicationAdapter {
         if (nextMenu.equals("quit")) {
             Gdx.app.exit();
         } else if (!nextMenu.equals(menu)) {
-            if (menu.equals("main") && (nextMenu.equals("levels") || nextMenu.equals("freeplay"))) {
-                if (nextMenu.equals("levels")) {cfdSolver.removeAllBarriers();}
+            if (menu.equals("mainMenu") && (nextMenu.equals("levelsMenu") || nextMenu.equals("freeplayMenu"))) {
+                if (nextMenu.equals("levelsMenu")) {cfdSolver.removeAllBarriers();}
                 else {settings.setLoadedLevel(false);}
                 cfdSolver.initialiseFluid();
                 settings.setSimulationRunning(false);
-                if (nextMenu.equals("levels")) {
+                if (nextMenu.equals("levelsMenu")) {
                     levels.loadSelectedLevel();
                     settings.setLoadedLevel(true);
                 }
@@ -105,11 +106,11 @@ public class Main extends ApplicationAdapter {
             if ("back".equals(nextMenu)) {
                 if (!menuHistory.isEmpty()) {
                     String previousMenu = menuHistory.pop();
-                    if (menu.equals("settings") && previousMenu.equals("freeplay")) {
+                    if (menu.equals("settingsMenu") && previousMenu.equals("freeplayMenu")) {
                         cfdSolver.initialiseFluid();
                     }
                     menu = previousMenu;
-                    if (menu.equals("levels")) {levels.loadSelectedLevel();}
+                    if (menu.equals("levelsMenu")) {levels.loadSelectedLevel();}
                 }
             } else {
                 menuHistory.push(menu);
@@ -117,19 +118,19 @@ public class Main extends ApplicationAdapter {
             }
         }
 
-        if (menu.equals("main")) {
+        if (menu.equals("mainMenu")) {
             mainMenu.render(sr, batch);
-        } else if (menu.equals("about")) {
+        } else if (menu.equals("aboutMenu")) {
             aboutMenu.render(sr, batch);
-        } else if (menu.equals("settings")) {
+        } else if (menu.equals("settingsMenu")) {
             settingsMenu.render(sr, batch);
-        } else if (menu.equals("levels")) {
+        } else if (menu.equals("levelsMenu")) {
             levelsMenu.render(sr, batch);
-        } else if (menu.equals("freeplay")) {
+        } else if (menu.equals("freeplayMenu")) {
             freeplayMenu.render(sr, batch);
-        } else if (menu.equals("keybinds")) {
+        } else if (menu.equals("keybindsMenu")) {
             keybindsMenu.render(sr, batch);
-        } else if (menu.equals("import file")) {
+        } else if (menu.equals("importFileMenu")) {
             importFileMenu.render(sr, batch);
         }
     }

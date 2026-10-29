@@ -99,6 +99,6 @@ public class ImportFileMenu implements Menu {
             settings.setPlaceBarriers(false);
             return "back";
         }
-        return "import file";
+        return "importFileMenu";
     }
 }

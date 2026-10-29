@@ -101,9 +101,9 @@ public class FreeplayMenu implements Menu {
         }
         if (util.isButtonClicked(settingsButton)) {
             settings.setPlaceBarriers(false);
-            return "settings";
+            return "settingsMenu";
         }
-        return "freeplay";
+        return "freeplayMenu";
     }
 
     public LatticeBoltzmannCFDSolver getCfdSolver() {return cfdSolver;}

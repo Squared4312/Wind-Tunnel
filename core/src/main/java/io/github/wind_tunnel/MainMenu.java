@@ -52,16 +52,16 @@ public class MainMenu implements Menu {
     @Override
     public String checkIfButtonsClicked() {
         if (util.isButtonClicked(quitButton)) {return "quit";}
-        if (util.isButtonClicked(settingsButton)) {return "settings";}
+        if (util.isButtonClicked(settingsButton)) {return "settingsMenu";}
         if (util.isButtonClicked(levelsButton)) {
             settings.setPlaceBarriers(false);
-            return "levels";
+            return "levelsMenu";
         }
         if (util.isButtonClicked(freeplayButton)) {
             settings.setPlaceBarriers(false);
-            return "freeplay";
+            return "freeplayMenu";
         }
-        if (util.isButtonClicked(aboutButton)) {return "about";}
-        return "main";
+        if (util.isButtonClicked(aboutButton)) {return "aboutMenu";}
+        return "mainMenu";
     }
 }

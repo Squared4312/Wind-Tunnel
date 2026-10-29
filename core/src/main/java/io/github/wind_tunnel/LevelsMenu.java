@@ -130,9 +130,9 @@ public class LevelsMenu implements Menu {
         }
         if (util.isButtonClicked(settingsButton)) {
             settings.setPlaceBarriers(false);
-            return "settings";
+            return "settingsMenu";
         }
-        return "levels";
+        return "levelsMenu";
     }
 
     public void changeLevelNumber(int change) {

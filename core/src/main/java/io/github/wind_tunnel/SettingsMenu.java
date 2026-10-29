@@ -239,11 +239,11 @@ public class SettingsMenu implements Menu {
             return "back";
         }
         if (util.isButtonClicked(keybindsButton)) {
-            return "keybinds";
+            return "keybindsMenu";
         }
         if (util.isButtonClicked(importFileButton)) {
-            return "import file";
+            return "importFileMenu";
         }
-        return "settings";
+        return "settingsMenu";
     }
 }

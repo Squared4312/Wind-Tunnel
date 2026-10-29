@@ -49,7 +49,7 @@ public class AboutMenu implements Menu {
     @Override
     public String checkIfButtonsClicked() {
         if (util.isButtonClicked(backButton)) {return "back";}
-        if (util.isButtonClicked(aboutButton)) {return "about";}
-        return "about";
+        if (util.isButtonClicked(aboutButton)) {return "aboutMenu";}
+        return "aboutMenu";
     }
 }
