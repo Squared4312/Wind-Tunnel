@@ -6,16 +6,17 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
-import io.github.wind_tunnel.Menu;
-import io.github.wind_tunnel.MenuUtil;
-import io.github.wind_tunnel.Settings;
-
+import io.github.wind_tunnel.*;
 import java.text.DecimalFormat;
 
 public class SettingsMenu implements Menu {
     private Settings settings;
     private MenuUtil util;
+    private LatticeBoltzmannCFDSolver cfdSolver;
     private DecimalFormat decimalFormat;
+
+    private Menu keybindsMenu;
+    private Menu importFileMenu;
 
     private Rectangle backButton;
     private Rectangle keybindsButton;
@@ -52,9 +53,13 @@ public class SettingsMenu implements Menu {
 
     private String resolutionZValue;
 
-    public SettingsMenu() {
+    public SettingsMenu(Menu keybindsMenu, Menu importFileMenu) {
         this.util = new MenuUtil();
         this.settings = Settings.getInstance();
+        this.cfdSolver = LatticeBoltzmannCFDSolver.getInstance();
+
+        this.keybindsMenu = keybindsMenu;
+        this.importFileMenu = importFileMenu;
 
         this.decimalFormat = new DecimalFormat("0.000");
 
@@ -196,7 +201,7 @@ public class SettingsMenu implements Menu {
     }
 
     @Override
-    public String checkIfButtonsClicked() {
+    public void checkIfButtonsClicked(MenuNavigator navigator) {
         // lockedSettings: resolution, flowspeed, viscosity, plot, brushSize, solver, barrierShapes, clearBarriers, showFlowLines, renderUI, renderSelectedZPlane
         if (!settings.getLockedSettingAt(0) && util.isButtonClicked(resolutionButtons[0])) {settings.cycleResolutionOptions(1);}
         if (!settings.getLockedSettingAt(0) && util.isButtonClicked(resolutionButtons[1])) {settings.cycleResolutionOptions(-1);}
@@ -217,7 +222,7 @@ public class SettingsMenu implements Menu {
         if (!settings.getLockedSettingAt(4) && util.isButtonClicked(brushSizeButtons[1]) && settings.getBrushSize() > 1) {settings.setBrushSize(settings.getBrushSize()-1);}
 
         if (!renderDropdown) {
-            if (!settings.getLockedSettingAt(7) && util.isButtonClicked(clearBarrierButton)) {return "remove all barriers";}
+            if (!settings.getLockedSettingAt(7) && util.isButtonClicked(clearBarrierButton)) {cfdSolver.removeAllBarriers(); return;}
             if (!settings.getLockedSettingAt(8) && util.isButtonClicked(showFlowlinesButton)) {settings.setShowFlowLines(!settings.getShowFlowLines());}
             if (!settings.getLockedSettingAt(9) && util.isButtonClicked(renderUIButton)) {settings.setRenderUI(!settings.getRenderUI());}
             if (settings.getSolver().equals("3D LBM")) {
@@ -238,15 +243,13 @@ public class SettingsMenu implements Menu {
         if (!settings.getLockedSettingAt(6) && util.isButtonClicked(barrierShapesButton)) {renderDropdown = !renderDropdown;}
 
         if (util.isButtonClicked(backButton)) {
-            settings.setPlaceBarriers(false);
-            return "back";
+            navigator.back();
         }
         if (util.isButtonClicked(keybindsButton)) {
-            return "keybindsMenu";
+            navigator.open(keybindsMenu);
         }
         if (!settings.getLockedSettingAt(11) && util.isButtonClicked(importFileButton)) {
-            return "importFileMenu";
+            navigator.open(importFileMenu);
         }
-        return "settingsMenu";
     }
 }

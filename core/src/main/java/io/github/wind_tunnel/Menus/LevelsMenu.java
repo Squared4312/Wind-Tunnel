@@ -13,6 +13,8 @@ public class LevelsMenu implements Menu {
     private LatticeBoltzmannCFDSolver cfdSolver;
     private Levels levels;
 
+    private Menu settingsMenu;
+
     private Rectangle backButton;
     private Rectangle settingsButton;
 
@@ -29,11 +31,13 @@ public class LevelsMenu implements Menu {
     private float barriersTextX = 0;
     private float scoreTextX = 0;
 
-    public LevelsMenu() {
+    public LevelsMenu(Menu settingsMenu) {
         this.util = new MenuUtil();
         this.cfdSolver = LatticeBoltzmannCFDSolver.getInstance();
         this.settings = Settings.getInstance();
         this.levels = new Levels();
+
+        this.settingsMenu = settingsMenu;
 
         this.backIcon = util.loadIcon("back");
         this.settingsIcon = util.loadIcon("settings");
@@ -96,7 +100,7 @@ public class LevelsMenu implements Menu {
     }
 
     @Override
-    public String checkIfButtonsClicked() {
+    public void checkIfButtonsClicked(MenuNavigator navigator) {
         if (settings.getRenderUI()) {
             if (util.isButtonClicked(levelsButton[0])) {
                 settings.setPlaceBarriers(false);
@@ -126,14 +130,31 @@ public class LevelsMenu implements Menu {
         }
 
         if (util.isButtonClicked(backButton)) {
-            settings.setPlaceBarriers(false);
-            return "back";
+            navigator.back();
         }
         if (util.isButtonClicked(settingsButton)) {
-            settings.setPlaceBarriers(false);
-            return "settingsMenu";
+            navigator.open(settingsMenu);
         }
-        return "levelsMenu";
+    }
+
+    @Override
+    public void onEnter() {
+        cfdSolver.removeAllBarriers();
+        cfdSolver.initialiseFluid();
+        settings.setSimulationRunning(false);
+        levels.loadSelectedLevel();
+        settings.setLoadedLevel(true);
+    }
+
+    @Override
+    public void onPause() {
+        settings.setOldResolution(settings.getResolution());
+        settings.setOldSolver(settings.getSolver());
+    }
+
+    @Override
+    public void onResume() {
+        levels.loadSelectedLevel();
     }
 
     public void changeLevelNumber(int change) {

@@ -5,15 +5,14 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
-import io.github.wind_tunnel.LatticeBoltzmannCFDSolver;
-import io.github.wind_tunnel.Menu;
-import io.github.wind_tunnel.MenuUtil;
-import io.github.wind_tunnel.Settings;
+import io.github.wind_tunnel.*;
 
 public class FreeplayMenu implements Menu {
     private MenuUtil util;
     private LatticeBoltzmannCFDSolver cfdSolver;
     private Settings settings;
+
+    private Menu settingsMenu;
 
     private Rectangle backButton;
     private Rectangle settingsButton;
@@ -27,10 +26,12 @@ public class FreeplayMenu implements Menu {
     private Texture pauseIcon;
     private Texture stepIcon;
 
-    public FreeplayMenu() {
+    public FreeplayMenu(Menu settingsMenu) {
         this.util = new MenuUtil();
         this.cfdSolver = LatticeBoltzmannCFDSolver.getInstance();
         this.settings = Settings.getInstance();
+
+        this.settingsMenu = settingsMenu;
 
         this.backIcon = util.loadIcon("back");
         this.settingsIcon = util.loadIcon("settings");
@@ -81,7 +82,7 @@ public class FreeplayMenu implements Menu {
     }
 
     @Override
-    public String checkIfButtonsClicked() {
+    public void checkIfButtonsClicked(MenuNavigator navigator) {
         if (settings.getRenderUI()) {
             if (!settings.getSimulationRunning() && util.isButtonClicked(runButton)) {
                 settings.setSimulationRunning(true);
@@ -100,14 +101,29 @@ public class FreeplayMenu implements Menu {
         }
 
         if (util.isButtonClicked(backButton)) {
-            settings.setPlaceBarriers(false);
-            return "back";
+            navigator.back();
         }
         if (util.isButtonClicked(settingsButton)) {
-            settings.setPlaceBarriers(false);
-            return "settingsMenu";
+            navigator.open(settingsMenu);
         }
-        return "freeplayMenu";
+    }
+
+    @Override
+    public void onEnter() {
+        settings.setLoadedLevel(false);
+        cfdSolver.initialiseFluid();
+        settings.setSimulationRunning(false);
+    }
+
+    @Override
+    public void onPause() {
+        settings.setOldResolution(settings.getResolution());
+        settings.setOldSolver(settings.getSolver());
+    }
+
+    @Override
+    public void onResume() {
+        cfdSolver.initialiseFluid();
     }
 
     public LatticeBoltzmannCFDSolver getCfdSolver() {return cfdSolver;}

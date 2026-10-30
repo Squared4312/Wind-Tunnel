@@ -6,13 +6,9 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
-import io.github.wind_tunnel.Keybinds;
-import io.github.wind_tunnel.Menu;
-import io.github.wind_tunnel.MenuUtil;
-import io.github.wind_tunnel.Settings;
+import io.github.wind_tunnel.*;
 
 public class KeybindsMenu implements Menu {
-    private Settings settings;
     private MenuUtil util;
     private Keybinds keybinds;
 
@@ -23,7 +19,6 @@ public class KeybindsMenu implements Menu {
 
     public KeybindsMenu() {
         this.util = new MenuUtil();
-        this.settings = Settings.getInstance();
         this.keybinds = Keybinds.getInstance();
 
         this.backIcon = util.loadIcon("back");
@@ -84,11 +79,9 @@ public class KeybindsMenu implements Menu {
     }
 
     @Override
-    public String checkIfButtonsClicked() {
+    public void checkIfButtonsClicked(MenuNavigator navigator) {
         if (util.isButtonClicked(backButton)) {
-            settings.setPlaceBarriers(false);
-            return "back";
+            navigator.back();
         }
-        return "keybindsMenu";
     }
 }

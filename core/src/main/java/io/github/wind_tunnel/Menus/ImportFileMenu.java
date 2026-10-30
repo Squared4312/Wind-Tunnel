@@ -5,13 +5,9 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
-import io.github.wind_tunnel.ImportFile;
-import io.github.wind_tunnel.Menu;
-import io.github.wind_tunnel.MenuUtil;
-import io.github.wind_tunnel.Settings;
+import io.github.wind_tunnel.*;
 
 public class ImportFileMenu implements Menu {
-    private Settings settings;
     private MenuUtil util;
     private ImportFile fileImporter;
 
@@ -25,6 +21,7 @@ public class ImportFileMenu implements Menu {
     private String[] filePaths;
     private Rectangle[] fileButtons;
     private String selectedFile = null;
+    private String[] selectedFileData = new String[0];
 
     private int pageNumber = 1;
     private int totalPages;
@@ -33,7 +30,6 @@ public class ImportFileMenu implements Menu {
 
     public ImportFileMenu() {
         this.util = new MenuUtil();
-        this.settings = Settings.getInstance();
         this.fileImporter = new ImportFile();
 
         this.backIcon = util.loadIcon("back");
@@ -62,7 +58,6 @@ public class ImportFileMenu implements Menu {
         batch.begin();
             util.renderText(batch, "import a file", Color.WHITE, util.getScreenDimensions().x/2, 953, 96, "centre");
 
-            filePaths = fileImporter.getAllFilePaths();
             fileButtons = new Rectangle[filePaths.length];
 
             if (filePaths.length == 0) {
@@ -81,21 +76,14 @@ public class ImportFileMenu implements Menu {
                 util.renderText(batch, "no file selected", Color.WHITE, 1320, 542.5f, 36, "centre");
             } else {
                 util.renderText(batch, fileImporter.getFileNameAndExtension(selectedFile), Color.WHITE, 1320, 742.5f, 36, "centre");
-                if (fileImporter.getModelType(selectedFile).equals("2D")) {
-                    util.renderText(batch, "resolution: " + (int) fileImporter.getModelResolution(selectedFile).x + "x" + (int) fileImporter.getModelResolution(selectedFile).y, Color.WHITE, 1320, 667.5f, 36, "centre");
-                    util.renderText(batch, "type: " + fileImporter.getModelType(selectedFile), Color.WHITE, 1320, 617.5f, 36, "centre");
-                    util.renderText(batch, "barriers: " + fileImporter.getModelBarriers(selectedFile), Color.WHITE, 1320, 567.5f, 36, "centre");
-                } else if (fileImporter.getModelType(selectedFile).equals("3D")) {
-                    util.renderText(batch, "type: " + fileImporter.getModelType(selectedFile), Color.WHITE, 1320, 667.5f, 36, "centre");
-                    util.renderText(batch, "vertices: " + fileImporter.getVerticesFromOBJModel(selectedFile).size(), Color.WHITE, 1320, 617.5f, 36, "centre");
-                    util.renderText(batch, "faces: " + fileImporter.getFacesFromOBJModel(selectedFile).size(), Color.WHITE, 1320, 567.5f, 36, "centre");
+                for (int count=0; count<selectedFileData.length; count++) {
+                    util.renderText(batch, selectedFileData[count], Color.WHITE, 1320, 667.5f-(50*count), 36, "centre");
                 }
             }
 
             util.renderText(batch, "import", Color.WHITE, 1163.75f, 242.5f, 36, "centre"); // import
             util.renderText(batch, "cancel", Color.WHITE, 1476.25f, 242.5f, 36, "centre"); // cancel
 
-            totalPages = ((fileImporter.getNumberOfFiles(fileImporter.getModelsFolder())+fileImporter.getNumberOfFiles(fileImporter.getLevelsFolder()))/9)+1;
             util.renderText(batch, "page " + pageNumber + "/" + totalPages, Color.WHITE, 600, 242.5f, 36, "centre"); // pages
 
             util.renderIcon(batch, backIcon, 57.5f, 1022.5f);
@@ -104,10 +92,11 @@ public class ImportFileMenu implements Menu {
     }
 
     @Override
-    public String checkIfButtonsClicked() {
+    public void checkIfButtonsClicked(MenuNavigator navigator) {
         if (selectedFile != null && util.isButtonClicked(importButton)) {
-            if (fileImporter.importFile(selectedFile)) {
-                return "importSuccess";
+            if (fileImporter.importFile(selectedFile)) { // skips the setting menu to go back to either freeplay or mainMenu
+                navigator.back();
+                navigator.back();
             }
         }
         if (util.isButtonClicked(cancelButton)) {
@@ -116,7 +105,7 @@ public class ImportFileMenu implements Menu {
 
         for (int count=0; count<filePaths.length; count++) {
             if (Math.floorDiv(count, modelsPerPage) == pageNumber-1 && util.isButtonClicked(fileButtons[count])) {
-                selectedFile = filePaths[count];
+                selectFile(filePaths[count]);
                 break;
             }
         }
@@ -125,9 +114,32 @@ public class ImportFileMenu implements Menu {
         if (util.isButtonClicked(pageArrows[1]) && pageNumber < totalPages) {pageNumber += 1;}
 
         if (util.isButtonClicked(backButton)) {
-            settings.setPlaceBarriers(false);
-            return "back";
+            navigator.back();
         }
-        return "importFileMenu";
+    }
+
+    @Override
+    public void onEnter() {
+        filePaths = fileImporter.getAllFilePaths();
+        totalPages = Math.max(1, (filePaths.length+modelsPerPage-1)/modelsPerPage);
+    }
+
+    public void selectFile(String filePath) {
+        // get all the data about the selectedFile when it's selected, not every frame
+        selectedFile = filePath;
+
+        if (fileImporter.getModelType(selectedFile).equals("2D")) {
+            selectedFileData = new String[]{
+                "resolution: " + (int) fileImporter.getModelResolution(selectedFile).x + "x" + (int) fileImporter.getModelResolution(selectedFile).y,
+                "type: " + fileImporter.getModelType(selectedFile),
+                "barriers: " + fileImporter.getModelBarriers(selectedFile)
+            };
+        } else if (fileImporter.getModelType(selectedFile).equals("3D")) {
+            selectedFileData = new String[]{
+                "type: " + fileImporter.getModelType(selectedFile),
+                "vertices: " + fileImporter.getVerticesFromOBJModel(selectedFile).size(),
+                "faces: " + fileImporter.getFacesFromOBJModel(selectedFile).size()
+            };
+        }
     }
 }

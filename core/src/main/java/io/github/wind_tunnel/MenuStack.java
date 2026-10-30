@@ -1,34 +1,29 @@
 package io.github.wind_tunnel;
 
-public class Stack {
-    private String[] stack;
+public class MenuStack {
+    private Menu[] stack;
     private int pointer = 0;
 
-    public Stack(int length) {
-        stack = new String[length];
+    public MenuStack(int length) {
+        stack = new Menu[length];
     }
 
-    public void push(String menuName) {
+    public void push(Menu menuName) {
         if (pointer >= stack.length) {return;}
         stack[pointer] = menuName;
         pointer += 1;
     }
 
-    public String pop() {
+    public Menu pop() {
         if (pointer <= 0) {return null;}
         pointer -= 1;
         return stack[pointer];
     }
 
-    public String peek() {
+    public Menu peek() {
         if (pointer <= 0) {return null;}
         return stack[pointer-1];
     }
 
     public boolean isEmpty() {return (pointer == 0);}
-
-    public void reset() {
-        stack[0] = "main";
-        pointer = 1;
-    }
 }
