@@ -18,7 +18,6 @@ public class SettingsMenu implements Menu {
     private DecimalFormat decimalFormat;
 
     private Rectangle backButton;
-    private Rectangle settingsButton;
     private Rectangle keybindsButton;
     private Rectangle importFileButton;
 
@@ -71,7 +70,6 @@ public class SettingsMenu implements Menu {
     public void render(ShapeRenderer sr, SpriteBatch batch) {
         sr.begin(ShapeRenderer.ShapeType.Filled);
             backButton = util.getHitbox(57.5f, 1022.5f, 75, 75);
-            settingsButton = util.getHitbox(1862.5f, 57.5f, 75, 75);
             keybindsButton = util.getHitbox(57.5f, 57.5f, 75, 75);
             importFileButton = util.getHitbox(57.5f, 152.5f, 75, 75);
 

@@ -12,7 +12,6 @@ public class AboutMenu implements Menu {
     private MenuUtil util;
 
     private Rectangle backButton;
-    private Rectangle aboutButton;
 
     private Texture backIcon;
     private Texture aboutIcon;
@@ -28,7 +27,6 @@ public class AboutMenu implements Menu {
     public void render(ShapeRenderer sr, SpriteBatch batch) {
         sr.begin(ShapeRenderer.ShapeType.Filled);
             backButton = util.getHitbox(57.5f, 1022.5f, 75, 75);
-            aboutButton = util.getHitbox(57.5f, 57.5f, 75, 75);
         sr.end();
 
         batch.begin();
@@ -50,8 +48,9 @@ public class AboutMenu implements Menu {
 
     @Override
     public String checkIfButtonsClicked() {
-        if (util.isButtonClicked(backButton)) {return "back";}
-        if (util.isButtonClicked(aboutButton)) {return "aboutMenu";}
+        if (util.isButtonClicked(backButton)) {
+            return "back";
+        }
         return "aboutMenu";
     }
 }

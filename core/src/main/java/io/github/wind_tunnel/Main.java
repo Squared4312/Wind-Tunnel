@@ -12,8 +12,6 @@ public class Main extends ApplicationAdapter {
     private ShapeRenderer sr;
     private SpriteBatch batch;
 
-    private Vector2 screenDimensions;
-
     private String menu = "mainMenu";
     private String nextMenu;
     private Stack menuHistory = new Stack(10);
@@ -34,7 +32,6 @@ public class Main extends ApplicationAdapter {
     @Override
     public void create() {
         Gdx.input.setInputProcessor(new InputHandler());
-        screenDimensions = new Vector2(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
         sr = new ShapeRenderer();
         batch = new SpriteBatch();
@@ -50,7 +47,6 @@ public class Main extends ApplicationAdapter {
         freeplayMenu = new FreeplayMenu();
         keybindsMenu = new KeybindsMenu();
         importFileMenu = new ImportFileMenu();
-
 
         cfdSolver = LatticeBoltzmannCFDSolver.getInstance();
     }
@@ -87,10 +83,10 @@ public class Main extends ApplicationAdapter {
             menu = "settingsMenu";
             nextMenu = "back";
         }
-        if (nextMenu.equals("mainMenu")) {
+        if (menu.equals("levelsMenu") && nextMenu.equals("back")) {
             settings.setLoadedLevel(false);
-            settings.resetLockedSettings();
             cfdSolver.removeAllBarriers();
+            settings.resetLockedSettings();
         }
         if ((menu.equals("levelsMenu") || menu.equals("freeplayMenu")) && nextMenu.equals("settingsMenu")) {
             settings.setOldResolution(settings.getResolution());

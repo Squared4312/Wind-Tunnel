@@ -17,7 +17,6 @@ public class KeybindsMenu implements Menu {
     private Keybinds keybinds;
 
     private Rectangle backButton;
-    private Rectangle keybindsButton;
 
     private Texture backIcon;
     private Texture keybindsIcon;
@@ -35,7 +34,6 @@ public class KeybindsMenu implements Menu {
     public void render(ShapeRenderer sr, SpriteBatch batch) {
         sr.begin(ShapeRenderer.ShapeType.Filled);
             backButton = util.getHitbox(57.5f, 1022.5f, 75, 75);
-            keybindsButton = util.getHitbox(57.5f, 57.5f, 75, 75);
 
             util.renderRoundedRectangle(sr, util.getButtonColor(), 600, 742.5f, 600, 75, 16); // l1
             util.renderRoundedRectangle(sr, util.getButtonColor(), 600, 642.5f, 600, 75, 16); // l2

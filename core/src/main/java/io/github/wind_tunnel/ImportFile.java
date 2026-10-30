@@ -86,6 +86,8 @@ public class ImportFile {
         ArrayList<Vector3> vertices = getVerticesFromOBJModel(filePath);
         ArrayList<int[]> faces = getFacesFromOBJModel(filePath);
 
+        if (vertices == null || faces == null) {return;}
+
         // draw lines (using shapeDrawer.line()) from each vertex to its neighbour according to the faces from the loaded .obj
 
         // bounding box of the model, where min is the front-bottom-left corner and max is the back-top-right corner
@@ -101,7 +103,7 @@ public class ImportFile {
         }
 
         Vector3 centre = new Vector3((min.x+max.x)/2, (min.y+max.y)/2, (min.z+max.z)/2); // centre of the bounding box
-        float size = Math.max(max.x-min.x, Math.max(max.y-min.y, max.z-min.z)); // finds the longest side as if it fits everything does
+        float size = Math.max(max.x-min.x, Math.max(max.y-min.y, max.z-min.z)); // finds the longest side, as if it fits, everything does
         if (size == 0) {return;}
 
         // scale the model so that it takes up half the height
@@ -173,10 +175,10 @@ public class ImportFile {
         FileHandle[] modelFiles = Gdx.files.internal(modelsFolder).list();
         FileHandle[] levelFiles = Gdx.files.internal(levelsFolder).list();
         String[] filePaths = new String[modelFiles.length+levelFiles.length];
-        for (int count=0; count<modelFiles.length; count++) {
+        for (int count=0; count<modelFiles.length; count++) { // model files
             filePaths[count] = modelFiles[count].path();
         }
-        for (int count=modelFiles.length; count<modelFiles.length+levelFiles.length; count++) {
+        for (int count=modelFiles.length; count<modelFiles.length+levelFiles.length; count++) { // level files
             filePaths[count] = levelFiles[count-modelFiles.length].path();
         }
         return filePaths;
