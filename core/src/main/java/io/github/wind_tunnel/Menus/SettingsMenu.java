@@ -164,7 +164,10 @@ public class SettingsMenu implements Menu {
             plotTextX = util.renderText(batch, settings.getPlot(), Color.WHITE, 825, 442.5f, 36, TextAlignment.RIGHT); // l4 value
             brushSizeTextX = util.renderText(batch, "" + settings.getBrushSize(), Color.WHITE, 825, 342.5f, 36, TextAlignment.RIGHT); // l5 value
 
-            solverTextX = util.renderText(batch, settings.getSolver().name(), Color.WHITE, 1545, 742.5f, 36, TextAlignment.RIGHT); // r1 value
+            String solverName = "uh oh, no solver";
+            if (settings.getSolver().equals(Solver.twoD)) {solverName = "2D LBM";}
+            else if (settings.getSolver().equals(Solver.threeD)) {solverName = "3D LBM";}
+            solverTextX = util.renderText(batch, solverName, Color.WHITE, 1545, 742.5f, 36, TextAlignment.RIGHT); // r1 value
 
             if (renderDropdown) {
                 for (int count=0; count<barrierShapeValues.length; count++) {
