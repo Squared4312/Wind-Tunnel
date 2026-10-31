@@ -2,11 +2,12 @@ package io.github.wind_tunnel;
 
 import com.badlogic.gdx.math.Vector3;
 import java.util.Arrays;
+import io.github.wind_tunnel.ENums.Solver;
 
 public class Settings {
 
     private Vector3 resolution;
-    private String solver;
+    private Solver solver;
     private float flowSpeed;
     private float viscosity;
     private String plot;
@@ -17,7 +18,6 @@ public class Settings {
 
     private String[] plotValues = {"speed", "x velocity", "y velocity", "density", "curl"};
     private int[][] resolutionValues = {{32, 18}, {64, 36}, {128, 72}, {256, 144}, {512, 288}, {1024, 576}}; // keep the 16:9 aspect ratio
-    private String[] solverValues = {"2D LBM", "3D LBM"};
 
     private boolean simulationRunning = false;
     private boolean placeBarriers = false;
@@ -39,8 +39,7 @@ public class Settings {
     private float levelScore = 0;
     private String[] levelNames = {"line", "circle", "airfoil", "pizza slice", "apple", "car" ,"stick man", ":)", "hello world", "troll face", "cube"};
 
-    private Vector3 oldResolution;
-    private String oldSolver;
+    private Solver oldSolver;
 
     private static Settings instance;
 
@@ -57,7 +56,7 @@ public class Settings {
 
     public void reset() {
         this.resolution = new Vector3(this.resolutionValues[2][0], this.resolutionValues[2][1], 1);
-        this.solver = this.solverValues[0];
+        this.solver = Solver.twoD;
         this.flowSpeed = 0.100f;
         this.viscosity = 0.020f;
         this.plot = this.plotValues[1];
@@ -74,17 +73,20 @@ public class Settings {
         this.intersectionPoint = new Vector3(0, 0, 0);
 
         this.fixedBarriers = new boolean[(int) this.resolution.x][(int) this.resolution.y][(int) this.resolution.z];
-        this.oldResolution = this.resolution;
         this.oldSolver = this.solver;
     }
 
-    public String cycleOptions(int change, String currentValue, String[] possibleValues) {
-        if (currentValue.equals("2D LBM")) {
-            resolution.z = resolution.y;
-        } else if (currentValue.equals("3D LBM")) {
+    public void changeSolver() {
+        if (solver.equals(Solver.threeD)) {
+            solver = Solver.twoD;
             resolution.z = 1;
+        } else if (solver.equals(Solver.twoD)) {
+            solver = Solver.threeD;
+            resolution.z = resolution.y;
         }
+    }
 
+    public String cycleOptions(int change, String currentValue, String[] possibleValues) {
         int index = 0;
         for (int count=0; count<possibleValues.length; count++) {
             if (possibleValues[count].equals(currentValue)) {
@@ -157,11 +159,8 @@ public class Settings {
         }
     }
 
-    public String getOldSolver() {return this.oldSolver;}
-    public void setOldSolver(String oldSolver) {this.oldSolver = oldSolver;}
-
-    public Vector3 getOldResolution() {return this.oldResolution;}
-    public void setOldResolution(Vector3 oldResolution) {this.oldResolution = oldResolution;}
+    public Solver getOldSolver() {return this.oldSolver;}
+    public void setOldSolver(Solver oldSolver) {this.oldSolver = oldSolver;}
 
     public String getLevelNameAt(int index) {return this.levelNames[index];}
     public String[] getLevelNames() {return this.levelNames;}
@@ -224,8 +223,8 @@ public class Settings {
     public boolean getSimulationRunning() {return this.simulationRunning;}
     public void setSimulationRunning(boolean simulationRunning) {this.simulationRunning = simulationRunning;}
 
-    public String getSolver() {return this.solver;}
-    public void setSolver(String solver) {this.solver = solver;}
+    public Solver getSolver() {return this.solver;}
+    public void setSolver(Solver solver) {this.solver = solver;}
 
     public Vector3 getResolution() {return this.resolution;}
     public void setResolution(Vector3 resolution) {this.resolution = resolution;}
@@ -247,9 +246,6 @@ public class Settings {
 
     public int[][] getResolutionValues() {return this.resolutionValues;}
     public void setResolutionValues(int[][] resolutionValues) {this.resolutionValues = resolutionValues;}
-
-    public String[] getSolverValues() {return this.solverValues;}
-    public void setSolverValues(String[] solverValues) {this.solverValues = solverValues;}
 
     public boolean getPlaceBarriers() {return this.placeBarriers;}
     public void setPlaceBarriers(boolean placeBarriers) {this.placeBarriers = placeBarriers;}

@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import io.github.wind_tunnel.ENums.TextAlignment;
 
 public class MenuUtil {
     private Settings settings;
@@ -87,17 +88,17 @@ public class MenuUtil {
         batch.draw(icon, x, y);
     }
 
-    public float renderText(SpriteBatch batch, String text, Color color, float x, float y, float size, String alignment) {
+    public float renderText(SpriteBatch batch, String text, Color color, float x, float y, float size, TextAlignment alignment) {
         font.setColor(color);
         font.getData().setScale(size/256);
         layout.setText(font, text);
-        if (alignment.equals("centre")) {
+        if (alignment.equals(TextAlignment.CENTRE)) {
             font.draw(batch, text, x-layout.width/2, y+layout.height/2);
             return x;
-        } else if (alignment.equals("left")) {
+        } else if (alignment.equals(TextAlignment.LEFT)) {
             font.draw(batch, text, x, y+layout.height/2);
             return x+layout.width;
-        } else if (alignment.equals("right")) {
+        } else if (alignment.equals(TextAlignment.RIGHT)) {
             font.draw(batch, text, x-layout.width, y+layout.height/2);
             return x-layout.width;
         }

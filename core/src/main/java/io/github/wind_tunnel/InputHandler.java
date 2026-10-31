@@ -1,6 +1,7 @@
 package io.github.wind_tunnel;
 
 import com.badlogic.gdx.InputAdapter;
+import io.github.wind_tunnel.ENums.Solver;
 
 public class InputHandler extends InputAdapter {
 
@@ -12,7 +13,7 @@ public class InputHandler extends InputAdapter {
 
     @Override
     public boolean scrolled(float amountX, float amountY) {
-        if (settings.getSolver().equals("3D LBM")) {
+        if (settings.getSolver().equals(Solver.threeD)) {
             settings.moveSelectedZPlane((int) -amountY);
             return true;
         }

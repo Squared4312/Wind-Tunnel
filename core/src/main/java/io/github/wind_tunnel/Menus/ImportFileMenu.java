@@ -5,7 +5,11 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector3;
 import io.github.wind_tunnel.*;
+import java.util.ArrayList;
+import io.github.wind_tunnel.ENums.TextAlignment;
+import io.github.wind_tunnel.ENums.Solver;
 
 public class ImportFileMenu implements Menu {
     private MenuUtil util;
@@ -56,35 +60,35 @@ public class ImportFileMenu implements Menu {
         sr.end();
 
         batch.begin();
-            util.renderText(batch, "import a file", Color.WHITE, util.getScreenDimensions().x/2, 953, 96, "centre");
+            util.renderText(batch, "import a file", Color.WHITE, util.getScreenDimensions().x/2, 953, 96, TextAlignment.CENTRE);
 
             fileButtons = new Rectangle[filePaths.length];
 
             if (filePaths.length == 0) {
-                util.renderText(batch, "no files found in", Color.WHITE, 600, 517.5f, 36, "centre");
-                util.renderText(batch, fileImporter.getModelsFolder(), Color.WHITE, 600, 467.5f, 36, "centre");
+                util.renderText(batch, "no files found in", Color.WHITE, 600, 517.5f, 36, TextAlignment.CENTRE);
+                util.renderText(batch, fileImporter.getModelsFolder(), Color.WHITE, 600, 467.5f, 36, TextAlignment.CENTRE);
             } else {
                 for (int count=0; count<filePaths.length; count++) {
                     if (Math.floorDiv(count, modelsPerPage) == pageNumber-1) {
-                        util.renderText(batch, fileImporter.getFileNameAndExtension(filePaths[count]), Color.WHITE, 320, 742.5f-(50*(count-(Math.floorDiv(count, modelsPerPage)*modelsPerPage))), 36, "left");
+                        util.renderText(batch, fileImporter.getFileNameAndExtension(filePaths[count]), Color.WHITE, 320, 742.5f-(50*(count-(Math.floorDiv(count, modelsPerPage)*modelsPerPage))), 36, TextAlignment.LEFT);
                     }
                     fileButtons[count] = new Rectangle(300, 742.5f-(50*(count-(Math.floorDiv(count, modelsPerPage)*modelsPerPage)))-25, 600, 50);
                 }
             }
 
             if (selectedFile == null) {
-                util.renderText(batch, "no file selected", Color.WHITE, 1320, 542.5f, 36, "centre");
+                util.renderText(batch, "no file selected", Color.WHITE, 1320, 542.5f, 36, TextAlignment.CENTRE);
             } else {
-                util.renderText(batch, fileImporter.getFileNameAndExtension(selectedFile), Color.WHITE, 1320, 742.5f, 36, "centre");
+                util.renderText(batch, fileImporter.getFileNameAndExtension(selectedFile), Color.WHITE, 1320, 742.5f, 36, TextAlignment.CENTRE);
                 for (int count=0; count<selectedFileData.length; count++) {
-                    util.renderText(batch, selectedFileData[count], Color.WHITE, 1320, 667.5f-(50*count), 36, "centre");
+                    util.renderText(batch, selectedFileData[count], Color.WHITE, 1320, 667.5f-(50*count), 36, TextAlignment.CENTRE);
                 }
             }
 
-            util.renderText(batch, "import", Color.WHITE, 1163.75f, 242.5f, 36, "centre"); // import
-            util.renderText(batch, "cancel", Color.WHITE, 1476.25f, 242.5f, 36, "centre"); // cancel
+            util.renderText(batch, "import", Color.WHITE, 1163.75f, 242.5f, 36, TextAlignment.CENTRE); // import
+            util.renderText(batch, "cancel", Color.WHITE, 1476.25f, 242.5f, 36, TextAlignment.CENTRE); // cancel
 
-            util.renderText(batch, "page " + pageNumber + "/" + totalPages, Color.WHITE, 600, 242.5f, 36, "centre"); // pages
+            util.renderText(batch, "page " + pageNumber + "/" + totalPages, Color.WHITE, 600, 242.5f, 36, TextAlignment.CENTRE); // pages
 
             util.renderIcon(batch, backIcon, 57.5f, 1022.5f);
             util.renderIcon(batch, importFileIcon, 57.5f, 57.5f);
@@ -127,19 +131,30 @@ public class ImportFileMenu implements Menu {
     public void selectFile(String filePath) {
         // get all the data about the selectedFile when it's selected, not every frame
         selectedFile = filePath;
+        Solver modelType = fileImporter.getModelType(selectedFile);
 
-        if (fileImporter.getModelType(selectedFile).equals("2D")) {
+        if (modelType.equals(Solver.twoD)) {
             selectedFileData = new String[]{
                 "resolution: " + (int) fileImporter.getModelResolution(selectedFile).x + "x" + (int) fileImporter.getModelResolution(selectedFile).y,
-                "type: " + fileImporter.getModelType(selectedFile),
+                "type: " + modelType,
                 "barriers: " + fileImporter.getModelBarriers(selectedFile)
             };
-        } else if (fileImporter.getModelType(selectedFile).equals("3D")) {
-            selectedFileData = new String[]{
-                "type: " + fileImporter.getModelType(selectedFile),
-                "vertices: " + fileImporter.getVerticesFromOBJModel(selectedFile).size(),
-                "faces: " + fileImporter.getFacesFromOBJModel(selectedFile).size()
-            };
+        } else if (modelType.equals(Solver.threeD)) {
+            ArrayList<Vector3> vertices = fileImporter.getVerticesFromOBJModel(filePath);
+            ArrayList<int[]> faces = fileImporter.getFacesFromOBJModel(filePath);
+
+            if (vertices == null || faces == null) {
+                selectedFileData = new String[]{
+                    "type: " + modelType,
+                    "file can't be read"
+                };
+            } else {
+                selectedFileData = new String[]{
+                    "type: " + modelType,
+                    "vertices: " + vertices.size(),
+                    "faces: " + faces.size()
+                };
+            }
         }
     }
 }

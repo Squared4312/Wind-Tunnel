@@ -2,6 +2,7 @@ package io.github.wind_tunnel;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import io.github.wind_tunnel.ENums.Solver;
 
 public class Keybinds {
 
@@ -31,7 +32,7 @@ public class Keybinds {
     }
 
     public void checkForKeyPresses() {
-        if (settings.getSolver().equals("3D LBM")) {
+        if (settings.getSolver().equals(Solver.threeD)) {
             if (Gdx.input.isKeyPressed(binds[0])) {
                 settings.setRotationAnglesX((float) (settings.getRotationAnglesX()-(Math.PI/180)));
             }

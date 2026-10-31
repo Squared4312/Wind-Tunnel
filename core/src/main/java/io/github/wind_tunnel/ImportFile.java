@@ -5,6 +5,7 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.math.Vector3;
 import java.util.ArrayList;
+import io.github.wind_tunnel.ENums.Solver;
 
 public class ImportFile {
 
@@ -14,6 +15,7 @@ public class ImportFile {
 
     private String modelsFolder = "assets/models/";
     private String levelsFolder = "assets/levels/";
+    private String presetBarrierFolder = "assets/presets/";
 
     public ImportFile() {
         settings = Settings.getInstance();
@@ -26,7 +28,7 @@ public class ImportFile {
             for (int[] resolution : settings.getResolutionValues()) {
                 if (getModelResolution(filePath).x <= resolution[0] && getModelResolution(filePath).y <= resolution[1]) {
                     cfdSolver.removeAllBarriers();
-                    settings.setSolver(settings.getSolverValues()[0]);
+                    settings.setSolver(Solver.twoD);
                     settings.setResolution(new Vector3(resolution[0], resolution[1], 1));
                     cfdSolver.initialiseFluid();
                     loadBitmap(filePath, false);
@@ -34,9 +36,10 @@ public class ImportFile {
                 }
             }
         } else if (getFileExtension(filePath).equals("obj")) {
+            if (getVerticesFromOBJModel(filePath) == null || getFacesFromOBJModel(filePath) == null) {return false;}
             cfdSolver.removeAllBarriers();
             settings.setResolution(new Vector3(settings.getResolutionValues()[2][0], settings.getResolutionValues()[2][1], settings.getResolutionValues()[2][1]));
-            settings.setSolver(settings.getSolverValues()[1]);
+            settings.setSolver(Solver.threeD);
             cfdSolver.initialiseFluid();
             loadOBJModel(filePath, false);
             return true;
@@ -49,7 +52,10 @@ public class ImportFile {
         if (!file.exists()) {return;}
 
         Pixmap image = new Pixmap(file);
-        if (image.getWidth() > settings.getResolution().x || image.getHeight() > settings.getResolution().y || settings.getResolution().z != 1) {return;} // too big
+        if (image.getWidth() > settings.getResolution().x || image.getHeight() > settings.getResolution().y || settings.getResolution().z != 1) { // too big
+            image.dispose();
+            return;
+        }
 
         for (int x=0; x<image.getWidth(); x++) {
             for (int y=0; y<image.getHeight(); y++) {
@@ -59,6 +65,7 @@ public class ImportFile {
                 }
             }
         }
+        image.dispose();
     }
 
     public void loadOBJModel(String filePath, boolean fixedBarrier) {
@@ -138,6 +145,7 @@ public class ImportFile {
 
             lineList = line.split("\\s+");
             if (line.startsWith("v ")) {
+                if (lineList.length < 4) {continue;} //  vertex needs x y z
                 vertices.add(new Vector3(Float.parseFloat(lineList[1]), Float.parseFloat(lineList[2]), Float.parseFloat(lineList[3])));
             }
         }
@@ -152,21 +160,39 @@ public class ImportFile {
 
         String[] contents = file.readString().split("\\r?\\n"); // split at every new line
         ArrayList<int[]> faces = new ArrayList<>();
+        int vertexCount = 0;
 
         String[] lineList;
         for (String line : contents) {
             if (line.isEmpty()) {continue;}
 
             lineList = line.split("\\s+");
-            if (line.startsWith("f ")) {
+            if (line.startsWith("v ")) {
+                vertexCount += 1;
+            } else if (line.startsWith("f ")) {
+                if (lineList.length != 4) {return null;} // must be f 1 2 3 to draw triangles
                 int[] face = new int[lineList.length-1];
+                int index;
                 for (int count=1; count<lineList.length; count++) {
-                    face[count-1] = Integer.parseInt(lineList[count])-1;
+                    index = Integer.parseInt(lineList[count].split("/")[0]);
+                    if (index < 0) {
+                        face[count-1] = vertexCount+index;
+                    } else {
+                        face[count-1] = index-1;
+                    }
                 }
                 faces.add(face);
             }
         }
         if (faces.isEmpty()) {return null;}
+
+        for (int[] face : faces) {
+            for (int index : face) {
+                if (index < 0 || index >= vertexCount) { // vertex index is out of range
+                    return null;
+                }
+            }
+        }
 
         return faces;
     }
@@ -200,11 +226,11 @@ public class ImportFile {
         return Gdx.files.internal(folder).list().length;
     }
 
-    public String getModelType(String filePath) {
+    public Solver getModelType(String filePath) {
         if (getFileExtension(filePath).equals("bmp")) {
-            return "2D";
+            return Solver.twoD;
         } else if (getFileExtension(filePath).equals("obj")) {
-            return "3D";
+            return Solver.threeD;
         }
         return null;
     }
@@ -246,4 +272,5 @@ public class ImportFile {
 
     public String getModelsFolder() {return this.modelsFolder;}
     public String getLevelsFolder() {return this.levelsFolder;}
+    public String getPresetBarrierFolder() {return this.presetBarrierFolder;}
 }

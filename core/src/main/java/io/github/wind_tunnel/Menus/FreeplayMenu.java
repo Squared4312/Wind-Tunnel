@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import io.github.wind_tunnel.*;
+import io.github.wind_tunnel.ENums.TextAlignment;
 
 public class FreeplayMenu implements Menu {
     private MenuUtil util;
@@ -66,14 +67,14 @@ public class FreeplayMenu implements Menu {
         batch.begin();
             if (settings.getRenderUI()) {
                 if (!settings.getSimulationRunning()) {
-                    util.renderText(batch, "run", Color.WHITE, 857.5f, 62.5f, 36, "centre");
+                    util.renderText(batch, "run", Color.WHITE, 857.5f, 62.5f, 36, TextAlignment.CENTRE);
                 } else {
-                    util.renderText(batch, "pause", Color.WHITE, 852.5f, 62.5f, 36, "centre");
+                    util.renderText(batch, "pause", Color.WHITE, 852.5f, 62.5f, 36, TextAlignment.CENTRE);
                     util.renderIcon(batch, pauseIcon, 770, 62.5f);
                 }
-                util.renderText(batch, "step", Color.WHITE, 1110, 62.5f, 36, "centre");
+                util.renderText(batch, "step", Color.WHITE, 1110, 62.5f, 36, TextAlignment.CENTRE);
                 util.renderIcon(batch, stepIcon, 1035, 62.5f);
-                util.renderText(batch, "(" + (int) settings.getIntersectionPoint().x + ", " + (int) settings.getIntersectionPoint().y + ", " + (int) settings.getIntersectionPoint().z + ")", Color.WHITE, 57.5f, 57.5f, 36, "left");
+                util.renderText(batch, "(" + (int) settings.getIntersectionPoint().x + ", " + (int) settings.getIntersectionPoint().y + ", " + (int) settings.getIntersectionPoint().z + ")", Color.WHITE, 57.5f, 57.5f, 36, TextAlignment.LEFT);
             }
 
             util.renderIcon(batch, backIcon, 57.5f, 1022.5f);
@@ -117,7 +118,6 @@ public class FreeplayMenu implements Menu {
 
     @Override
     public void onPause() {
-        settings.setOldResolution(settings.getResolution());
         settings.setOldSolver(settings.getSolver());
     }
 

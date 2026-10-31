@@ -1,6 +1,7 @@
 package io.github.wind_tunnel;
 
 import com.badlogic.gdx.math.Vector3;
+import io.github.wind_tunnel.ENums.Solver;
 
 public class Levels {
     private Settings settings;
@@ -47,6 +48,13 @@ public class Levels {
         } else if (levelNumber == 11) {
             settings.setResolution(new Vector3(settings.getResolutionValues()[2][0], settings.getResolutionValues()[2][1], settings.getResolutionValues()[2][1])); // 128x72x72
         }
+
+        if (levelNumber >= 1 && levelNumber <= 10) {
+            settings.setSolver(Solver.twoD);
+        } else if (levelNumber >= 11 && levelNumber <= 20) {
+            settings.setSolver(Solver.threeD);
+        }
+
         cfdSolver.initialiseFluid();
         settings.resetLockedSettings();
         settings.changeBrushSizeAndCameraDistance();
@@ -55,11 +63,6 @@ public class Levels {
         cfdSolver.removeAllBarriers();
         settings.setLoadedLevel(true);
 
-        if (levelNumber >= 1 && levelNumber <= 10) {
-            settings.setSolver("2D LBM");
-        } else if (levelNumber >= 11 && levelNumber <= 20) {
-            settings.setSolver("3D LBM");
-        }
         settings.setFlowSpeed(0.100f);
         settings.setViscosity(0.015f);
         settings.setLockedSettingAt(0, true);
@@ -142,7 +145,7 @@ public class Levels {
         } else if (levelNumber == 10) {
             fileImporter.loadBitmap(levelsFolder + "trollface.bmp", true);
         } else if (levelNumber == 11) {
-            fileImporter.loadOBJModel("assets/models/icosphere.obj", false);
+            fileImporter.loadOBJModel(levelsFolder + "cube.obj", false);
         }
         settings.setLoadedLevel(true);
     }

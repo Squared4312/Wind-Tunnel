@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import io.github.wind_tunnel.*;
+import io.github.wind_tunnel.ENums.TextAlignment;
 
 public class MainMenu implements Menu {
     private Settings settings;
@@ -53,9 +54,9 @@ public class MainMenu implements Menu {
         sr.end();
 
         batch.begin();
-            util.renderText(batch, "wind tunnel", Color.WHITE, util.getScreenDimensions().x/2, 880, 128, "centre");
-            util.renderText(batch, "levels", Color.WHITE, util.getScreenDimensions().x/2, 580, 64, "centre");
-            util.renderText(batch, "freeplay", Color.WHITE, util.getScreenDimensions().x/2, 380, 64, "centre");
+            util.renderText(batch, "wind tunnel", Color.WHITE, util.getScreenDimensions().x/2, 880, 128, TextAlignment.CENTRE);
+            util.renderText(batch, "levels", Color.WHITE, util.getScreenDimensions().x/2, 580, 64, TextAlignment.CENTRE);
+            util.renderText(batch, "freeplay", Color.WHITE, util.getScreenDimensions().x/2, 380, 64, TextAlignment.CENTRE);
             util.renderIcon(batch, quitIcon, 1862.5f, 1022.5f);
             util.renderIcon(batch, settingsIcon, 1862.5f, 57.5f);
             util.renderIcon(batch, aboutIcon, 57.5f, 57.5f);

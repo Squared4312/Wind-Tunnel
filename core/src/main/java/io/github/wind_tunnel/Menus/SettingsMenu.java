@@ -8,12 +8,15 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import io.github.wind_tunnel.*;
 import java.text.DecimalFormat;
+import io.github.wind_tunnel.ENums.TextAlignment;
+import io.github.wind_tunnel.ENums.Solver;
 
 public class SettingsMenu implements Menu {
     private Settings settings;
     private MenuUtil util;
     private LatticeBoltzmannCFDSolver cfdSolver;
     private DecimalFormat decimalFormat;
+    private ImportFile fileImporter;
 
     private Menu keybindsMenu;
     private Menu importFileMenu;
@@ -57,6 +60,7 @@ public class SettingsMenu implements Menu {
         this.util = new MenuUtil();
         this.settings = Settings.getInstance();
         this.cfdSolver = LatticeBoltzmannCFDSolver.getInstance();
+        this.fileImporter = new ImportFile();
 
         this.keybindsMenu = keybindsMenu;
         this.importFileMenu = importFileMenu;
@@ -89,7 +93,7 @@ public class SettingsMenu implements Menu {
             clearBarrierButton = util.renderRoundedRectangle(sr, util.getButtonColor(), 1320, 542.5f, 600, 75, 16); // r3
             showFlowlinesButton = util.renderRoundedRectangle(sr, util.getButtonColor(), 1320, 442.5f, 600, 75, 16); // r4
             renderUIButton = util.renderRoundedRectangle(sr, util.getButtonColor(), 1320, 342.5f, 600, 75, 16); // r5
-            if (settings.getSolver().equals("3D LBM")) {
+            if (settings.getSolver().equals(Solver.threeD)) {
                 renderOnlySelectedZPlaneButton = util.renderRoundedRectangle(sr, util.getButtonColor(), 1320, 242.5f, 600, 75, 16); // r6
             } else {
                 renderOnlySelectedZPlaneButton = util.renderRoundedRectangle(sr, Color.BLACK, 1320, 242.5f, 600, 75, 16); // r6
@@ -128,43 +132,43 @@ public class SettingsMenu implements Menu {
         sr.end();
 
         batch.begin();
-            util.renderText(batch, "settings", Color.WHITE, util.getScreenDimensions().x/2, 953, 96, "centre");
+            util.renderText(batch, "settings", Color.WHITE, util.getScreenDimensions().x/2, 953, 96, TextAlignment.CENTRE);
 
-            util.renderText(batch, "resolution", Color.WHITE, 320, 742.5f, 36, "left"); // l1
-            util.renderText(batch, "flow speed", Color.WHITE, 320, 642.5f, 36, "left"); // l2
-            util.renderText(batch, "viscosity", Color.WHITE, 320, 542.5f, 36, "left"); // l3
-            util.renderText(batch, "plot", Color.WHITE, 320, 442.5f, 36, "left"); // l4
-            util.renderText(batch, "brush size", Color.WHITE, 320, 342.5f, 36, "left"); // l5
+            util.renderText(batch, "resolution", Color.WHITE, 320, 742.5f, 36, TextAlignment.LEFT); // l1
+            util.renderText(batch, "flow speed", Color.WHITE, 320, 642.5f, 36, TextAlignment.LEFT); // l2
+            util.renderText(batch, "viscosity", Color.WHITE, 320, 542.5f, 36, TextAlignment.LEFT); // l3
+            util.renderText(batch, "plot", Color.WHITE, 320, 442.5f, 36, TextAlignment.LEFT); // l4
+            util.renderText(batch, "brush size", Color.WHITE, 320, 342.5f, 36, TextAlignment.LEFT); // l5
 
-            util.renderText(batch, "solver", Color.WHITE, 1040, 742.5f, 36, "left"); // r1
-            util.renderText(batch, "barrier shapes", Color.WHITE, 1040, 642.5f, 36, "left"); // r2
+            util.renderText(batch, "solver", Color.WHITE, 1040, 742.5f, 36, TextAlignment.LEFT); // r1
+            util.renderText(batch, "barrier shapes", Color.WHITE, 1040, 642.5f, 36, TextAlignment.LEFT); // r2
             if (!renderDropdown) {
-                util.renderText(batch, "clear barriers", Color.WHITE, 1040, 542.5f, 36, "left"); // r3
-                util.renderText(batch, "show flowlines", Color.WHITE, 1040, 442.5f, 36, "left"); // r4
-                util.renderText(batch, "render ui", Color.WHITE, 1040, 342.5f, 36, "left"); // r5
-                if (settings.getSolver().equals("3D LBM")) {
-                    util.renderText(batch, "only render selected plane", Color.WHITE, 1040, 242.5f, 36, "left"); // r6
+                util.renderText(batch, "clear barriers", Color.WHITE, 1040, 542.5f, 36, TextAlignment.LEFT); // r3
+                util.renderText(batch, "show flowlines", Color.WHITE, 1040, 442.5f, 36, TextAlignment.LEFT); // r4
+                util.renderText(batch, "render ui", Color.WHITE, 1040, 342.5f, 36, TextAlignment.LEFT); // r5
+                if (settings.getSolver().equals(Solver.threeD)) {
+                    util.renderText(batch, "only render selected plane", Color.WHITE, 1040, 242.5f, 36, TextAlignment.LEFT); // r6
                 }
             }
 
-            if (settings.getSolver().equals("2D LBM")) {
+            if (settings.getSolver().equals(Solver.twoD)) {
                 resolutionZValue = "";
                 settings.setResolution(new Vector3(settings.getResolution().x, settings.getResolution().y, 1));
             } else {
                 resolutionZValue = "x" + (int) settings.getResolution().z;
             }
 
-            resolutionTextX = util.renderText(batch, (int) settings.getResolution().x + "x" + (int) settings.getResolution().y + resolutionZValue, Color.WHITE, 825, 742.5f, 36, "right"); // l1 value
-            util.renderText(batch, decimalFormat.format(settings.getFlowSpeed()), Color.WHITE, 765, 642.5f, 36, "centre"); // l2 value
-            util.renderText(batch, decimalFormat.format(settings.getViscosity()), Color.WHITE, 765, 542.5f, 36, "centre"); // l3 value
-            plotTextX = util.renderText(batch, settings.getPlot(), Color.WHITE, 825, 442.5f, 36, "right"); // l4 value
-            brushSizeTextX = util.renderText(batch, "" + settings.getBrushSize(), Color.WHITE, 825, 342.5f, 36, "right"); // l5 value
+            resolutionTextX = util.renderText(batch, (int) settings.getResolution().x + "x" + (int) settings.getResolution().y + resolutionZValue, Color.WHITE, 825, 742.5f, 36, TextAlignment.RIGHT); // l1 value
+            util.renderText(batch, decimalFormat.format(settings.getFlowSpeed()), Color.WHITE, 765, 642.5f, 36, TextAlignment.CENTRE); // l2 value
+            util.renderText(batch, decimalFormat.format(settings.getViscosity()), Color.WHITE, 765, 542.5f, 36, TextAlignment.CENTRE); // l3 value
+            plotTextX = util.renderText(batch, settings.getPlot(), Color.WHITE, 825, 442.5f, 36, TextAlignment.RIGHT); // l4 value
+            brushSizeTextX = util.renderText(batch, "" + settings.getBrushSize(), Color.WHITE, 825, 342.5f, 36, TextAlignment.RIGHT); // l5 value
 
-            solverTextX = util.renderText(batch, settings.getSolver(), Color.WHITE, 1545, 742.5f, 36, "right"); // r1 value
+            solverTextX = util.renderText(batch, settings.getSolver().name(), Color.WHITE, 1545, 742.5f, 36, TextAlignment.RIGHT); // r1 value
 
             if (renderDropdown) {
                 for (int count=0; count<barrierShapeValues.length; count++) {
-                    util.renderText(batch, barrierShapeValues[count], Color.WHITE, 1040, 580-(50*count), 36, "left");
+                    util.renderText(batch, barrierShapeValues[count], Color.WHITE, 1040, 580-(50*count), 36, TextAlignment.LEFT);
                     barrierShapesDropdownButtons[count] = new Rectangle(1020, 580-(50*count)-25, 600, 50);
                 }
             }
@@ -185,7 +189,7 @@ public class SettingsMenu implements Menu {
                 } else {
                     util.renderIcon(batch, checkBoxFalse, 1585, 342.5f);
                 }
-                if (settings.getSolver().equals("3D LBM")) {
+                if (settings.getSolver().equals(Solver.threeD)) {
                     if (settings.getRenderOnlySelectedZPlane()) {
                         util.renderIcon(batch, checkBoxTrue, 1585, 242.5f);
                     } else {
@@ -206,8 +210,8 @@ public class SettingsMenu implements Menu {
         if (!settings.getLockedSettingAt(0) && util.isButtonClicked(resolutionButtons[0])) {settings.cycleResolutionOptions(1);}
         if (!settings.getLockedSettingAt(0) && util.isButtonClicked(resolutionButtons[1])) {settings.cycleResolutionOptions(-1);}
 
-        if (!settings.getLockedSettingAt(5) && util.isButtonClicked(solverButtons[0])) {settings.setSolver(settings.cycleOptions(1, settings.getSolver(), settings.getSolverValues()));}
-        if (!settings.getLockedSettingAt(5) && util.isButtonClicked(solverButtons[1])) {settings.setSolver(settings.cycleOptions(-1, settings.getSolver(), settings.getSolverValues()));}
+        if (!settings.getLockedSettingAt(5) && util.isButtonClicked(solverButtons[0])) {settings.changeSolver();}
+        if (!settings.getLockedSettingAt(5) && util.isButtonClicked(solverButtons[1])) {settings.changeSolver();}
 
         if (!settings.getLockedSettingAt(1) && util.isButtonClicked(flowSpeedButtons[0]) && settings.getFlowSpeed() < 0.120) {settings.setFlowSpeed(settings.getFlowSpeed()+0.005f); settings.setFlowSpeed(Math.round(settings.getFlowSpeed()*1000)/1000f);}
         if (!settings.getLockedSettingAt(1) && util.isButtonClicked(flowSpeedButtons[1]) && settings.getFlowSpeed() > 0.025) {settings.setFlowSpeed(settings.getFlowSpeed()-0.005f); settings.setFlowSpeed(Math.round(settings.getFlowSpeed()*1000)/1000f);}
@@ -225,7 +229,7 @@ public class SettingsMenu implements Menu {
             if (!settings.getLockedSettingAt(7) && util.isButtonClicked(clearBarrierButton)) {cfdSolver.removeAllBarriers(); return;}
             if (!settings.getLockedSettingAt(8) && util.isButtonClicked(showFlowlinesButton)) {settings.setShowFlowLines(!settings.getShowFlowLines());}
             if (!settings.getLockedSettingAt(9) && util.isButtonClicked(renderUIButton)) {settings.setRenderUI(!settings.getRenderUI());}
-            if (settings.getSolver().equals("3D LBM")) {
+            if (settings.getSolver().equals(Solver.threeD)) {
                 if (!settings.getLockedSettingAt(10) && util.isButtonClicked(renderOnlySelectedZPlaneButton)) {settings.setRenderOnlySelectedZPlane(!settings.getRenderOnlySelectedZPlane());}
             }
         }
@@ -233,9 +237,10 @@ public class SettingsMenu implements Menu {
         if (renderDropdown) {
             for (int count=0; count<barrierShapeValues.length; count++) {
                 if (util.isButtonClicked(barrierShapesDropdownButtons[count])) {
-                    System.out.println(barrierShapeValues[count]);
                     renderDropdown = false;
-                    // addShapeToCells(barrierShapeValues[count]);
+                    if (fileImporter.importFile(fileImporter.getPresetBarrierFolder()+barrierShapeValues[count])) {
+                        navigator.back();
+                    }
                     break;
                 }
             }
