@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import io.github.wind_tunnel.ENums.Solver;
@@ -73,8 +74,9 @@ public class LatticeBoltzmannCFDSolver {
     private float one36thDensity;
     private float one18thDensity;
 
-    private int numOfColors = 600;
-    private ArrayList<Color> colours = new ArrayList<>();
+    private int numOfColours = 600;
+    private Color[] colours = new Color[numOfColours];
+    float contrast;
 
     private float[][][][] cellAverageVelocities;
 
@@ -91,7 +93,7 @@ public class LatticeBoltzmannCFDSolver {
         this.settings = Settings.getInstance();
         this.renderer = new ThreeDimensionalRenderer();
         initialiseFluid();
-        this.colours = calculateColours(numOfColors);
+        this.colours = calculateColours();
     }
 
     public void initialiseFluid() {
@@ -425,6 +427,7 @@ public class LatticeBoltzmannCFDSolver {
         }
 
         drawBarriers();
+        contrast = 1/(3*settings.getFlowSpeed());
 
         for (int x=0; x<settings.getResolution().x; x++) {
             for (int y=0; y<settings.getResolution().y; y++) {
@@ -437,7 +440,7 @@ public class LatticeBoltzmannCFDSolver {
 
                     if (settings.getLoadedLevel() && settings.getFixedBarrierAt(x, y, z)) {sr.setColor(Color.BLACK);}
                     else if (isBarrier(x, y, z)) {sr.setColor(Color.WHITE);}
-                    else {sr.setColor(colours.get(calculateColourIndex(x, y, z)));} // calculates colour based on plotMode
+                    else {sr.setColor(colours[calculateColourIndex(x, y, z)]);} // calculates colour based on plotMode
                     if (settings.getSolver().equals(Solver.TWO_D)) {
                         sr.rect(x*cellDimensions, y*cellDimensions, cellDimensions, cellDimensions);
                     } else {
@@ -573,36 +576,54 @@ public class LatticeBoltzmannCFDSolver {
         return newBarriers;
     }
 
-    public ArrayList<Color> calculateColours(int numOfColours) {
-        colours = new ArrayList<>();
-        for (int c=0; c<numOfColours; c++) {
-            double h = (2.0/3)*(1 - c*1.0/numOfColours);
-            h += 0.03 * Math.sin(6*Math.PI*h);
-            java.awt.Color awtColour = new java.awt.Color(java.awt.Color.HSBtoRGB((float) h, 1, 1));
-            float r = awtColour.getRed()/255f;
-            float g = awtColour.getGreen()/255f;
-            float b = awtColour.getBlue()/255f;
-            colours.add(new Color(r, g, b, 1f));
+    public Color[] calculateColours() {
+        float[][] keyColours = {
+            {0, 0, 1}, // blue (slowest)
+            {0, 1, 1}, // cyan
+            {0, 1, 0}, // green
+            {1, 1, 0}, // yellow
+            {1, 0, 0}, // red (fastest)
+        };
+        int pointer = 0;
+
+        for (int count=0; count<numOfColours; count++) {
+            double position = (double) count/numOfColours + 0.045*Math.sin(4*Math.PI*count/numOfColours);
+            position = Math.max(0, Math.min(1, position));
+
+            int pair = Math.min((int) (position*4), 3); // which two key colours this position is between
+            double blend = position*4 - pair; // 0 at the first of the two, 1 at the second
+            float[] from = keyColours[pair];
+            float[] to = keyColours[pair+1];
+
+            float r = toEightBit(from[0] + blend*(to[0]-from[0]));
+            float g = toEightBit(from[1] + blend*(to[1]-from[1]));
+            float b = toEightBit(from[2] + blend*(to[2]-from[2]));
+            colours[pointer] = new Color(r, g, b, 1f);
+            pointer += 1;
         }
         return colours;
     }
 
+    private float toEightBit(double amount) {
+        return Math.round(amount*255)/255f;
+    }
+
+
     public int calculateColourIndex(int x, int y, int z) {
         double index = 0;
-        float contrast = 1/(3*settings.getFlowSpeed());
         /*if (settings.getPlot().equals("speed")) {
             index = ;
         } else */if (settings.getPlot().equals("x velocity")) {
-            index = numOfColors*(0.5+(cellAverageVelocities[x][y][z][0]*contrast));
+            index = numOfColours*(0.5+(cellAverageVelocities[x][y][z][0]*contrast));
         } else if (settings.getPlot().equals("y velocity")) {
-            index = numOfColors*(0.5+(cellAverageVelocities[x][y][z][1]*contrast));
+            index = numOfColours*(0.5+(cellAverageVelocities[x][y][z][1]*contrast));
         } /*else if (settings.getPlot().equals("density")) {
             index = ;
         } else if (settings.getPlot().equals("curl")) {
             index = ;
         }*/
         if (index < 0) {index = 0;}
-        if (index >= numOfColors) {index = numOfColors-1;}
+        if (index >= numOfColours) {index = numOfColours-1;}
         return (int) index;
     }
 
