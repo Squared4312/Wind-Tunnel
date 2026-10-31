@@ -1,4 +1,4 @@
-package io.github.wind_tunnel;
+package io.github.wind_tunnel.Menus;
 
 public class MenuStack {
     private Menu[] stack;

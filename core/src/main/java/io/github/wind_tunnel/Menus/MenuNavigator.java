@@ -1,6 +1,7 @@
-package io.github.wind_tunnel;
+package io.github.wind_tunnel.Menus;
 
 import com.badlogic.gdx.Gdx;
+import io.github.wind_tunnel.Settings;
 
 public class MenuNavigator {
     private Settings settings;
