@@ -27,24 +27,29 @@ public class ImportFile {
         if (getFileExtension(filePath).equals("bmp")) {
             for (int[] resolution : settings.getResolutionValues()) {
                 if (getModelResolution(filePath).x <= resolution[0] && getModelResolution(filePath).y <= resolution[1]) {
-                    cfdSolver.removeAllBarriers();
-                    settings.setSolver(Solver.twoD);
-                    settings.setResolution(new Vector3(resolution[0], resolution[1], 1));
-                    cfdSolver.initialiseFluid();
-                    loadBitmap(filePath, false);
-                    return true;
+                    return placeModel(filePath, new Vector3(resolution[0], resolution[1], 1), Solver.TWO_D, false);
                 }
             }
         } else if (getFileExtension(filePath).equals("obj")) {
             if (getVerticesFromOBJModel(filePath) == null || getFacesFromOBJModel(filePath) == null) {return false;}
-            cfdSolver.removeAllBarriers();
-            settings.setResolution(new Vector3(settings.getResolutionValues()[2][0], settings.getResolutionValues()[2][1], settings.getResolutionValues()[2][1]));
-            settings.setSolver(Solver.threeD);
-            cfdSolver.initialiseFluid();
-            loadOBJModel(filePath, false);
-            return true;
+            return placeModel(filePath, new Vector3(settings.getResolutionValues()[2][0], settings.getResolutionValues()[2][1], settings.getResolutionValues()[2][1]), Solver.THREE_D, false);
         }
         return false;
+    }
+
+    public boolean placeModel(String filePath, Vector3 resolution, Solver solver, boolean fixedBarrier) {
+        cfdSolver.removeAllBarriers();
+        settings.setSolver(solver);
+        settings.setResolution(resolution);
+        cfdSolver.initialiseFluid();
+        if (solver.equals(Solver.TWO_D)) {
+            loadBitmap(filePath, fixedBarrier);
+        } else if (solver.equals(Solver.THREE_D)) {
+            loadOBJModel(filePath, fixedBarrier);
+        } else {
+            return false;
+        }
+        return true;
     }
 
     public void loadBitmap(String filePath, boolean fixedBarrier) {
@@ -228,9 +233,9 @@ public class ImportFile {
 
     public Solver getModelType(String filePath) {
         if (getFileExtension(filePath).equals("bmp")) {
-            return Solver.twoD;
+            return Solver.TWO_D;
         } else if (getFileExtension(filePath).equals("obj")) {
-            return Solver.threeD;
+            return Solver.THREE_D;
         }
         return null;
     }

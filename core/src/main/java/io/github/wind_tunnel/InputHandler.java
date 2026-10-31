@@ -13,7 +13,7 @@ public class InputHandler extends InputAdapter {
 
     @Override
     public boolean scrolled(float amountX, float amountY) {
-        if (settings.getSolver().equals(Solver.threeD)) {
+        if (settings.getSolver().equals(Solver.THREE_D)) {
             settings.moveSelectedZPlane((int) -amountY);
             return true;
         }

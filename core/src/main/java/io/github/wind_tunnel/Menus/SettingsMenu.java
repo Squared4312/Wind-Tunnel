@@ -93,7 +93,7 @@ public class SettingsMenu implements Menu {
             clearBarrierButton = util.renderRoundedRectangle(sr, util.getButtonColor(), 1320, 542.5f, 600, 75, 16); // r3
             showFlowlinesButton = util.renderRoundedRectangle(sr, util.getButtonColor(), 1320, 442.5f, 600, 75, 16); // r4
             renderUIButton = util.renderRoundedRectangle(sr, util.getButtonColor(), 1320, 342.5f, 600, 75, 16); // r5
-            if (settings.getSolver().equals(Solver.threeD)) {
+            if (settings.getSolver().equals(Solver.THREE_D)) {
                 renderOnlySelectedZPlaneButton = util.renderRoundedRectangle(sr, util.getButtonColor(), 1320, 242.5f, 600, 75, 16); // r6
             } else {
                 renderOnlySelectedZPlaneButton = util.renderRoundedRectangle(sr, Color.BLACK, 1320, 242.5f, 600, 75, 16); // r6
@@ -146,12 +146,12 @@ public class SettingsMenu implements Menu {
                 util.renderText(batch, "clear barriers", Color.WHITE, 1040, 542.5f, 36, TextAlignment.LEFT); // r3
                 util.renderText(batch, "show flowlines", Color.WHITE, 1040, 442.5f, 36, TextAlignment.LEFT); // r4
                 util.renderText(batch, "render ui", Color.WHITE, 1040, 342.5f, 36, TextAlignment.LEFT); // r5
-                if (settings.getSolver().equals(Solver.threeD)) {
+                if (settings.getSolver().equals(Solver.THREE_D)) {
                     util.renderText(batch, "only render selected plane", Color.WHITE, 1040, 242.5f, 36, TextAlignment.LEFT); // r6
                 }
             }
 
-            if (settings.getSolver().equals(Solver.twoD)) {
+            if (settings.getSolver().equals(Solver.TWO_D)) {
                 resolutionZValue = "";
                 settings.setResolution(new Vector3(settings.getResolution().x, settings.getResolution().y, 1));
             } else {
@@ -165,8 +165,8 @@ public class SettingsMenu implements Menu {
             brushSizeTextX = util.renderText(batch, "" + settings.getBrushSize(), Color.WHITE, 825, 342.5f, 36, TextAlignment.RIGHT); // l5 value
 
             String solverName = "uh oh, no solver";
-            if (settings.getSolver().equals(Solver.twoD)) {solverName = "2D LBM";}
-            else if (settings.getSolver().equals(Solver.threeD)) {solverName = "3D LBM";}
+            if (settings.getSolver().equals(Solver.TWO_D)) {solverName = "2D LBM";}
+            else if (settings.getSolver().equals(Solver.THREE_D)) {solverName = "3D LBM";}
             solverTextX = util.renderText(batch, solverName, Color.WHITE, 1545, 742.5f, 36, TextAlignment.RIGHT); // r1 value
 
             if (renderDropdown) {
@@ -192,7 +192,7 @@ public class SettingsMenu implements Menu {
                 } else {
                     util.renderIcon(batch, checkBoxFalse, 1585, 342.5f);
                 }
-                if (settings.getSolver().equals(Solver.threeD)) {
+                if (settings.getSolver().equals(Solver.THREE_D)) {
                     if (settings.getRenderOnlySelectedZPlane()) {
                         util.renderIcon(batch, checkBoxTrue, 1585, 242.5f);
                     } else {
@@ -232,7 +232,7 @@ public class SettingsMenu implements Menu {
             if (!settings.getLockedSettingAt(7) && util.isButtonClicked(clearBarrierButton)) {cfdSolver.removeAllBarriers(); return;}
             if (!settings.getLockedSettingAt(8) && util.isButtonClicked(showFlowlinesButton)) {settings.setShowFlowLines(!settings.getShowFlowLines());}
             if (!settings.getLockedSettingAt(9) && util.isButtonClicked(renderUIButton)) {settings.setRenderUI(!settings.getRenderUI());}
-            if (settings.getSolver().equals(Solver.threeD)) {
+            if (settings.getSolver().equals(Solver.THREE_D)) {
                 if (!settings.getLockedSettingAt(10) && util.isButtonClicked(renderOnlySelectedZPlaneButton)) {settings.setRenderOnlySelectedZPlane(!settings.getRenderOnlySelectedZPlane());}
             }
         }

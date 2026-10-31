@@ -2,8 +2,8 @@ package io.github.wind_tunnel;
 
 public class ENums {
     public enum Solver {
-        twoD,
-        threeD
+        TWO_D,
+        THREE_D
     }
 
     public enum TextAlignment {

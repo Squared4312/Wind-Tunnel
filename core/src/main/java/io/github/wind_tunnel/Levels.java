@@ -50,9 +50,9 @@ public class Levels {
         }
 
         if (levelNumber >= 1 && levelNumber <= 10) {
-            settings.setSolver(Solver.twoD);
+            settings.setSolver(Solver.TWO_D);
         } else if (levelNumber >= 11 && levelNumber <= 20) {
-            settings.setSolver(Solver.threeD);
+            settings.setSolver(Solver.THREE_D);
         }
 
         cfdSolver.initialiseFluid();

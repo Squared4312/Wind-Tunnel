@@ -56,7 +56,7 @@ public class Settings {
 
     public void reset() {
         this.resolution = new Vector3(this.resolutionValues[2][0], this.resolutionValues[2][1], 1);
-        this.solver = Solver.twoD;
+        this.solver = Solver.TWO_D;
         this.flowSpeed = 0.100f;
         this.viscosity = 0.020f;
         this.plot = this.plotValues[1];
@@ -77,11 +77,11 @@ public class Settings {
     }
 
     public void changeSolver() {
-        if (solver.equals(Solver.threeD)) {
-            solver = Solver.twoD;
+        if (solver.equals(Solver.THREE_D)) {
+            solver = Solver.TWO_D;
             resolution.z = 1;
-        } else if (solver.equals(Solver.twoD)) {
-            solver = Solver.threeD;
+        } else if (solver.equals(Solver.TWO_D)) {
+            solver = Solver.THREE_D;
             resolution.z = resolution.y;
         }
     }

@@ -95,7 +95,7 @@ public class LatticeBoltzmannCFDSolver {
     }
 
     public void initialiseFluid() {
-        if (settings.getSolver().equals(Solver.twoD)) {
+        if (settings.getSolver().equals(Solver.TWO_D)) {
             neighbours = 9;
         } else {
             neighbours = 19;
@@ -122,7 +122,7 @@ public class LatticeBoltzmannCFDSolver {
 
     public void initialiseCell(int x, int y, int z) {
         // this moves the fluid towards an equilibruim/resting state based on the Maxwell-Boltzmann Distribution curve
-        if (settings.getSolver().equals(Solver.twoD)) {
+        if (settings.getSolver().equals(Solver.TWO_D)) {
             densities[x][y][z][0] = four9ths * one15vv;
             densities[x][y][z][1] = one9th * one3v3vv;
             densities[x][y][z][4] = one9th * one_3v3vv;
@@ -162,7 +162,7 @@ public class LatticeBoltzmannCFDSolver {
     }
 
     public void collide() {
-        if (settings.getSolver().equals(Solver.twoD)) {
+        if (settings.getSolver().equals(Solver.TWO_D)) {
             neighbours = 9;
         } else {
             neighbours = 19;
@@ -182,7 +182,7 @@ public class LatticeBoltzmannCFDSolver {
                     cellVelocity.y = densities[x][y][z][2]-densities[x][y][z][3]+densities[x][y][z][5]-densities[x][y][z][6]+densities[x][y][z][7]-densities[x][y][z][8];
 
 
-                    if (settings.getSolver().equals(Solver.threeD)) {
+                    if (settings.getSolver().equals(Solver.THREE_D)) {
                         cellVelocity.x += densities[x][y][z][10]+densities[x][y][z][15]-densities[x][y][z][11]-densities[x][y][z][16];
                         cellVelocity.y += densities[x][y][z][12]+densities[x][y][z][17]-densities[x][y][z][13]-densities[x][y][z][18];
                         cellVelocity.z = densities[x][y][z][14]-densities[x][y][z][9]+densities[x][y][z][15]+densities[x][y][z][16]+densities[x][y][z][17]+densities[x][y][z][18]-densities[x][y][z][10]-densities[x][y][z][11]-densities[x][y][z][12]-densities[x][y][z][13];
@@ -210,7 +210,7 @@ public class LatticeBoltzmannCFDSolver {
                     one18thDensity = one18th*cellDensity;
 
                     // relaxation equations based on the Maxwell-Boltzmann Distribution curve
-                    if (settings.getSolver().equals(Solver.twoD)){
+                    if (settings.getSolver().equals(Solver.TWO_D)){
                         densities[x][y][z][0] += omega*(four9ths*cellDensity * (1-one5vxvxvyvy)-densities[x][y][z][0]);
                         densities[x][y][z][1] += omega*(one9thDensity*(1+vx3 + 4.5f*vxvx - one5vxvxvyvy)-densities[x][y][z][1]);
                         densities[x][y][z][4] += omega*(one9thDensity*(1-vx3 + 4.5f*vxvx - one5vxvxvyvy)-densities[x][y][z][4]);
@@ -236,7 +236,7 @@ public class LatticeBoltzmannCFDSolver {
     public void stream() {
         // move fluid using the LBM optimization Esoteric Pull
 
-        if (settings.getSolver().equals(Solver.twoD)) {
+        if (settings.getSolver().equals(Solver.TWO_D)) {
             for (int x=0; x<settings.getResolution().x-1; x++) {
                 for (int y = (int) (settings.getResolution().y-1); y>0; y--) {
                     densities[x][y][0][7] = densities[x][y-1][0][7]; // 010
@@ -400,7 +400,7 @@ public class LatticeBoltzmannCFDSolver {
                         if (densities[x][y][z][6] > 0) {densities[x+1][y+1][z][2] += densities[x][y][z][6];} // -1-10
                         if (densities[x][y][z][3] > 0) {densities[x-1][y+1][z][5] += densities[x][y][z][3];} // 1-10
 
-                        if (settings.getSolver().equals(Solver.threeD)) {
+                        if (settings.getSolver().equals(Solver.THREE_D)) {
                             if (densities[x][y][z][9] > 0) {densities[x][y][z+1][14] += densities[x][y][z][9];} // 00-1
                             if (densities[x][y][z][10] > 0) {densities[x-1][y][z+1][16] += densities[x][y][z][10];} // 10-1
                             if (densities[x][y][z][11] > 0) {densities[x+1][y][z+1][15] += densities[x][y][z][11];} // -10-1
@@ -420,7 +420,7 @@ public class LatticeBoltzmannCFDSolver {
     }
 
     public void render(ShapeRenderer sr) {
-        if (settings.getSolver().equals(Solver.twoD)) {
+        if (settings.getSolver().equals(Solver.TWO_D)) {
             cellDimensions = 1920/settings.getResolution().x;
         }
 
@@ -438,7 +438,7 @@ public class LatticeBoltzmannCFDSolver {
                     if (settings.getLoadedLevel() && settings.getFixedBarrierAt(x, y, z)) {sr.setColor(Color.BLACK);}
                     else if (isBarrier(x, y, z)) {sr.setColor(Color.WHITE);}
                     else {sr.setColor(colours.get(calculateColourIndex(x, y, z)));} // calculates colour based on plotMode
-                    if (settings.getSolver().equals(Solver.twoD)) {
+                    if (settings.getSolver().equals(Solver.TWO_D)) {
                         sr.rect(x*cellDimensions, y*cellDimensions, cellDimensions, cellDimensions);
                     } else {
                         rotatedPoint = renderer.rotate(x-(settings.getResolution().x/2), y-(settings.getResolution().y/2), z-(settings.getResolution().z/2));
@@ -462,7 +462,7 @@ public class LatticeBoltzmannCFDSolver {
             }
         }
         cellPosition = new Vector3();
-        if (settings.getSolver().equals(Solver.twoD)) {
+        if (settings.getSolver().equals(Solver.TWO_D)) {
             cellPosition.x = Math.round(((mouse.x-(cellDimensions/2))/1920)*settings.getResolution().x);
             cellPosition.y = Math.round(((mouse.y-(cellDimensions/2))/1080)*settings.getResolution().y);
             cellPosition.z = 0;
@@ -608,7 +608,7 @@ public class LatticeBoltzmannCFDSolver {
 
     public void addBarrier(int x, int y, int z, boolean fixed) {
         if (x > 0 && x < settings.getResolution().x-1 && y > 0 && y < settings.getResolution().y-1) { // in simulation area
-            if (settings.getSolver().equals(Solver.threeD) && (z <= 0 || z >= settings.getResolution().z-1)) { // 3D and outside
+            if (settings.getSolver().equals(Solver.THREE_D) && (z <= 0 || z >= settings.getResolution().z-1)) { // 3D and outside
                 return;
             }
             if (!isBarrier(x, y, z)) {

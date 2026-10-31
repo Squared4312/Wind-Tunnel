@@ -32,7 +32,7 @@ public class Keybinds {
     }
 
     public void checkForKeyPresses() {
-        if (settings.getSolver().equals(Solver.threeD)) {
+        if (settings.getSolver().equals(Solver.THREE_D)) {
             if (Gdx.input.isKeyPressed(binds[0])) {
                 settings.setRotationAnglesX((float) (settings.getRotationAnglesX()-(Math.PI/180)));
             }

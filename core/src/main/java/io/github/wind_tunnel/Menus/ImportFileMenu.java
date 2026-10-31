@@ -133,13 +133,13 @@ public class ImportFileMenu implements Menu {
         selectedFile = filePath;
         Solver modelType = fileImporter.getModelType(selectedFile);
 
-        if (modelType.equals(Solver.twoD)) {
+        if (modelType.equals(Solver.TWO_D)) {
             selectedFileData = new String[]{
                 "resolution: " + (int) fileImporter.getModelResolution(selectedFile).x + "x" + (int) fileImporter.getModelResolution(selectedFile).y,
                 "type: " + modelType,
                 "barriers: " + fileImporter.getModelBarriers(selectedFile)
             };
-        } else if (modelType.equals(Solver.threeD)) {
+        } else if (modelType.equals(Solver.THREE_D)) {
             ArrayList<Vector3> vertices = fileImporter.getVerticesFromOBJModel(filePath);
             ArrayList<int[]> faces = fileImporter.getFacesFromOBJModel(filePath);
 
