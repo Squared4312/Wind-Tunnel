@@ -13,6 +13,7 @@ public class Main extends ApplicationAdapter {
 
     private MenuNavigator navigator;
     private Keybinds keybinds;
+    private int shownFps = -1;
 
     @Override
     public void create() {
@@ -32,7 +33,11 @@ public class Main extends ApplicationAdapter {
     @Override
     public void render() {
         ScreenUtils.clear(0f, 0f, 0f, 1f);
-        Gdx.graphics.setTitle("Wind Tunnel FPS: " + Gdx.graphics.getFramesPerSecond() + "/" + Gdx.graphics.getDisplayMode().refreshRate);
+
+        if (Gdx.graphics.getFramesPerSecond() != shownFps) {
+            shownFps = Gdx.graphics.getFramesPerSecond();
+            Gdx.graphics.setTitle("Wind Tunnel FPS: " + shownFps + "/" + Gdx.graphics.getDisplayMode().refreshRate);
+        }
 
         keybinds.checkForKeyPresses();
 

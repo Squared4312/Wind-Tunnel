@@ -95,6 +95,5 @@ public class MainMenu implements Menu {
     private void resetLevel() {
         settings.setLoadedLevel(false);
         settings.resetLockedSettings();
-        cfdSolver.removeAllBarriers();
     }
 }

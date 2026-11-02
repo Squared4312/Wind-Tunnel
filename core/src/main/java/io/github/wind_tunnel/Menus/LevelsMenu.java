@@ -140,8 +140,8 @@ public class LevelsMenu implements Menu {
 
     @Override
     public void onEnter() {
-        cfdSolver.removeAllBarriers();
         cfdSolver.initialiseFluid();
+        cfdSolver.removeAllBarriers();
         settings.setSimulationRunning(false);
         levels.loadSelectedLevel();
         settings.setLoadedLevel(true);
@@ -150,6 +150,12 @@ public class LevelsMenu implements Menu {
     @Override
     public void onPause() {
         settings.setOldSolver(settings.getSolver());
+    }
+
+    @Override
+    public void onExit() {
+        settings.setLoadedLevel(false);
+        cfdSolver.removeAllBarriers();
     }
 
     public void changeLevelNumber(int change) {

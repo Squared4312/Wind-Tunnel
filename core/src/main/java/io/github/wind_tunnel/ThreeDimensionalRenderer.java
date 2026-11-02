@@ -14,6 +14,17 @@ public class ThreeDimensionalRenderer {
 
     private Vector2 screenDimensions;
 
+    private float sinX;
+    private float cosX;
+    private float sinY;
+    private float cosY;
+    private float sinZ;
+    private float cosZ;
+
+    private float[][] rotationX;
+    private float[][] rotationY;
+    private float[][] rotationZ;
+
     private Vector3 translated = new Vector3();
     private Vector3 rotatedX = new Vector3();
     private Vector3 rotatedXY = new Vector3();
@@ -36,36 +47,6 @@ public class ThreeDimensionalRenderer {
     }
 
     public Vector3 rotate(float x, float y, float z) {
-        rotationAngles.x = settings.getRotationAnglesX();
-        rotationAngles.y = settings.getRotationAnglesY();
-        rotationAngles.z = settings.getRotationAnglesZ();
-
-        float sinX = (float) Math.sin(rotationAngles.x);
-        float cosX = (float) Math.cos(rotationAngles.x);
-        float sinY = (float) Math.sin(rotationAngles.y);
-        float cosY = (float) Math.cos(rotationAngles.y);
-        float sinZ = (float) Math.sin(rotationAngles.z);
-        float cosZ = (float) Math.cos(rotationAngles.z);
-
-        // 3x3 rotation matrices in x y z
-        float[][] rotationX = {
-            {1, 0, 0},
-            {0, cosX, -sinX},
-            {0, sinX, cosX},
-        };
-
-        float[][] rotationY = {
-            {cosY, 0, sinY},
-            {0, 1, 0},
-            {-sinY, 0, cosY},
-        };
-
-        float[][] rotationZ = {
-            {cosZ, -sinZ, 0},
-            {sinZ, cosZ, 0},
-            {0, 0, 1},
-        };
-
         // this calculates the dot product of all the rotation vectors above with a point
         origin = settings.getOrigin();
         translated.x = x-origin.x;
@@ -91,6 +72,38 @@ public class ThreeDimensionalRenderer {
         rotatedXYZ.z += origin.z;
 
         return rotatedXYZ;
+    }
+
+    public void preCalculateRotationMatrices() {
+        rotationAngles.x = settings.getRotationAnglesX();
+        rotationAngles.y = settings.getRotationAnglesY();
+        rotationAngles.z = settings.getRotationAnglesZ();
+
+        sinX = (float) Math.sin(rotationAngles.x);
+        cosX = (float) Math.cos(rotationAngles.x);
+        sinY = (float) Math.sin(rotationAngles.y);
+        cosY = (float) Math.cos(rotationAngles.y);
+        sinZ = (float) Math.sin(rotationAngles.z);
+        cosZ = (float) Math.cos(rotationAngles.z);
+
+        // 3x3 rotation matrices in x y z
+        rotationX = new float[][]{
+            {1, 0, 0},
+            {0, cosX, -sinX},
+            {0, sinX, cosX},
+        };
+
+        rotationY = new float[][]{
+            {cosY, 0, sinY},
+            {0, 1, 0},
+            {-sinY, 0, cosY},
+        };
+
+        rotationZ = new float[][]{
+            {cosZ, -sinZ, 0},
+            {sinZ, cosZ, 0},
+            {0, 0, 1},
+        };
     }
 
     public Vector2 pointProjection(Vector3 point) {

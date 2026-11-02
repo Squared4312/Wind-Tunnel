@@ -103,7 +103,6 @@ public class LatticeBoltzmannCFDSolver {
         this.densities = new float[(int) settings.getResolution().x][(int) settings.getResolution().y][(int) settings.getResolution().z][neighbours];
         this.cellAverageVelocities = new float[(int) settings.getResolution().x][(int) settings.getResolution().y][(int) settings.getResolution().z][3];
         this.barriers = scaleBarriersUsingResolution();
-        settings.changeBrushSizeAndCameraDistance();
 
         v = settings.getFlowSpeed();
         one15vv = 1-1.5f*v*v;
@@ -426,26 +425,36 @@ public class LatticeBoltzmannCFDSolver {
 
         drawBarriers();
         contrast = 1/(3*settings.getFlowSpeed());
+        renderer.preCalculateRotationMatrices();
 
         for (int x=0; x<settings.getResolution().x; x++) {
             for (int y=0; y<settings.getResolution().y; y++) {
                 for (int z=0; z<settings.getResolution().z; z++) {
 
-                    if (settings.getRenderOnlySelectedZPlane()) {
-                        if (z != settings.getSelectedZPlane()) {continue;}
-                    } else if (isBarrier(x, y, z)) {
-                    } else if (!(x == 0 || y == 0 || z == 0 || x == settings.getResolution().x-1 || y == settings.getResolution().y-1 || z == settings.getResolution().z-1)) {continue;}
+                    if (settings.getRenderOnlySelectedZPlane() && z != settings.getSelectedZPlane()) {
+                        continue;
+                    } else if (!(isBarrier(x, y, z) || z == settings.getSelectedZPlane() || x == 0 || y == 0 || z == 0 || x == settings.getResolution().x-1 || y == settings.getResolution().y-1 || z == settings.getResolution().z-1)) {
+                        continue;
+                    }
 
-                    if (settings.getLoadedLevel() && settings.getFixedBarrierAt(x, y, z)) {sr.setColor(Color.BLACK);}
-                    else if (isBarrier(x, y, z)) {sr.setColor(Color.WHITE);}
-                    else {sr.setColor(colours[calculateColourIndex(x, y, z)]);} // calculates colour based on plotMode
+                    if (settings.getLoadedLevel() && settings.getFixedBarrierAt(x, y, z)) {
+                        if (settings.getSolver().equals(Solver.TWO_D)) {
+                            sr.setColor(Color.BLACK);
+                        } else {
+                            sr.setColor(Color.GRAY);
+                        }
+                    } else if (isBarrier(x, y, z)) {
+                        sr.setColor(Color.WHITE);
+                    } else {
+                        sr.setColor(colours[calculateColourIndex(x, y, z)]); // calculates colour based on plotMode
+                    }
                     if (settings.getSolver().equals(Solver.TWO_D)) {
                         sr.rect(x*cellDimensions, y*cellDimensions, cellDimensions, cellDimensions);
                     } else {
                         rotatedPoint = renderer.rotate(x-(settings.getResolution().x/2), y-(settings.getResolution().y/2), z-(settings.getResolution().z/2));
                         screenPos = renderer.pointProjection(rotatedPoint);
                         if (screenPos == null) {continue;}
-                        sr.circle(screenPos.x, screenPos.y, 1);
+                        sr.rect(screenPos.x-1, screenPos.y-1, 2, 2); // .rect uses fewer triangles than .circle, therefore is more efficient
                     }
                 }
             }
@@ -456,7 +465,7 @@ public class LatticeBoltzmannCFDSolver {
         keybinds = Keybinds.getInstance();
 
         mouse.x = Gdx.input.getX();
-        mouse.y = 1080-Gdx.input.getY();
+        mouse.y = Gdx.graphics.getHeight()-Gdx.input.getY();
         if (!settings.getPlaceBarriers()) {
             if (!Gdx.input.isButtonPressed(keybinds.getBindAt(9)) && !Gdx.input.isButtonPressed(keybinds.getBindAt(10))) {
                 settings.setPlaceBarriers(true);

@@ -145,7 +145,7 @@ public class Levels {
         } else if (levelNumber == 10) {
             fileImporter.loadBitmap(levelsFolder + "trollface.bmp", true);
         } else if (levelNumber == 11) {
-            fileImporter.loadOBJModel(levelsFolder + "cube.obj", false);
+            fileImporter.loadOBJModel(levelsFolder + "cube.obj", true);
         }
         settings.setLoadedLevel(true);
     }
