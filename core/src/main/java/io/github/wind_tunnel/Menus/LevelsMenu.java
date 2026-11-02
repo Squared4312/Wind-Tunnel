@@ -152,11 +152,6 @@ public class LevelsMenu implements Menu {
         settings.setOldSolver(settings.getSolver());
     }
 
-    @Override
-    public void onResume() {
-        levels.loadSelectedLevel();
-    }
-
     public void changeLevelNumber(int change) {
         if (change == 1) {
             if (settings.getLevelNumber().equals(settings.getLevelNames().length)) {

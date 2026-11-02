@@ -101,8 +101,8 @@ public class ImportFile {
         apply transform
 
         ensure:
-        forward axis = y
-        up axis = z
+        forward axis = x
+        up axis = y
         */
 
         ArrayList<Vector3> vertices = getVerticesFromOBJModel(filePath);
