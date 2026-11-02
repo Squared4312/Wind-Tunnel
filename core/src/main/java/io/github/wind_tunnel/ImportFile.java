@@ -23,24 +23,30 @@ public class ImportFile {
         shapeDrawer = new ShapeDrawer();
     }
 
-    public boolean importFile(String filePath) {
+    public boolean importFile(String filePath, boolean scaleToResolution) {
         if (getFileExtension(filePath).equals("bmp")) {
-            for (int[] resolution : settings.getResolutionValues()) {
-                if (getModelResolution(filePath).x <= resolution[0] && getModelResolution(filePath).y <= resolution[1]) {
-                    return placeModel(filePath, new Vector3(resolution[0], resolution[1], 1), Solver.TWO_D, false);
+            if (scaleToResolution) {
+                return placeModel(filePath, new Vector3(settings.getResolutionValues()[0][0], settings.getResolutionValues()[0][1], 1), Solver.TWO_D, true, false);
+            } else {
+                for (int[] resolution : settings.getResolutionValues()) {
+                    if (getModelResolution(filePath).x <= resolution[0] && getModelResolution(filePath).y <= resolution[1]) {
+                        return placeModel(filePath, new Vector3(resolution[0], resolution[1], 1), Solver.TWO_D, false, false);
+                    }
                 }
             }
         } else if (getFileExtension(filePath).equals("obj")) {
             if (getVerticesFromOBJModel(filePath) == null || getFacesFromOBJModel(filePath) == null) {return false;}
-            return placeModel(filePath, new Vector3(settings.getResolutionValues()[2][0], settings.getResolutionValues()[2][1], settings.getResolutionValues()[2][1]), Solver.THREE_D, false);
+            return placeModel(filePath, new Vector3(settings.getResolutionValues()[2][0], settings.getResolutionValues()[2][1], settings.getResolutionValues()[2][1]), Solver.THREE_D, false, false);
         }
         return false;
     }
 
-    public boolean placeModel(String filePath, Vector3 resolution, Solver solver, boolean fixedBarrier) {
+    public boolean placeModel(String filePath, Vector3 resolution, Solver solver, boolean scaleToResolution, boolean fixedBarrier) {
+        Vector3 oldResolution = settings.getResolution();
         cfdSolver.removeAllBarriers();
         settings.setSolver(solver);
         settings.setResolution(resolution);
+        settings.setOldSolver(solver);
         cfdSolver.initialiseFluid();
         if (solver.equals(Solver.TWO_D)) {
             loadBitmap(filePath, fixedBarrier);
@@ -48,6 +54,10 @@ public class ImportFile {
             loadOBJModel(filePath, fixedBarrier);
         } else {
             return false;
+        }
+        if (scaleToResolution && oldResolution != settings.getResolution()) {
+            settings.setResolution(oldResolution);
+            cfdSolver.scaleBarriersUsingResolution();
         }
         return true;
     }

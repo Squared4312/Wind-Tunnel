@@ -98,7 +98,7 @@ public class ImportFileMenu implements Menu {
     @Override
     public void checkIfButtonsClicked(MenuNavigator navigator) {
         if (selectedFile != null && util.isButtonClicked(importButton)) {
-            if (fileImporter.importFile(selectedFile)) { // skips the setting menu to go back to either freeplay or mainMenu
+            if (fileImporter.importFile(selectedFile, false)) { // skips the setting menu to go back to either freeplay or mainMenu
                 navigator.back();
                 navigator.back();
             }
@@ -132,11 +132,14 @@ public class ImportFileMenu implements Menu {
         // get all the data about the selectedFile when it's selected, not every frame
         selectedFile = filePath;
         Solver modelType = fileImporter.getModelType(selectedFile);
+        String solverName = "uh oh, no solver";
+        if (modelType.equals(Solver.TWO_D)) {solverName = "2D";}
+        else if (modelType.equals(Solver.THREE_D)) {solverName = "3D";}
 
         if (modelType.equals(Solver.TWO_D)) {
             selectedFileData = new String[]{
                 "resolution: " + (int) fileImporter.getModelResolution(selectedFile).x + "x" + (int) fileImporter.getModelResolution(selectedFile).y,
-                "type: " + modelType,
+                "type: " + solverName,
                 "barriers: " + fileImporter.getModelBarriers(selectedFile)
             };
         } else if (modelType.equals(Solver.THREE_D)) {
@@ -145,12 +148,12 @@ public class ImportFileMenu implements Menu {
 
             if (vertices == null || faces == null) {
                 selectedFileData = new String[]{
-                    "type: " + modelType,
+                    "type: " + solverName,
                     "file can't be read"
                 };
             } else {
                 selectedFileData = new String[]{
-                    "type: " + modelType,
+                    "type: " + solverName,
                     "vertices: " + vertices.size(),
                     "faces: " + faces.size()
                 };

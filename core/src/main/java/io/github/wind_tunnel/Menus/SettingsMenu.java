@@ -36,7 +36,7 @@ public class SettingsMenu implements Menu {
 
     private Rectangle barrierShapesButton;
     private boolean renderDropdown = false;
-    private String[] barrierShapeValues = {"short line", "long line", "diagonal", "shallow diagonal", "small circle", "large circle", "line with spoiler", "circle with spoiler", "right angle", "wedge", "airfoil"};
+    private String[] barrierShapeValues = {"short_line", "long_line", "diagonal", "shallow_diagonal", "small_circle", "large_circle", "line_with_spoiler", "circle_with_spoiler", "right_angle", "wedge", "airfoil"};
     private Rectangle[] barrierShapesDropdownButtons = new Rectangle[barrierShapeValues.length];
 
     private Rectangle[] buttons = new Rectangle[12];
@@ -241,7 +241,7 @@ public class SettingsMenu implements Menu {
             for (int count=0; count<barrierShapeValues.length; count++) {
                 if (util.isButtonClicked(barrierShapesDropdownButtons[count])) {
                     renderDropdown = false;
-                    if (fileImporter.importFile(fileImporter.getPresetBarrierFolder()+barrierShapeValues[count])) {
+                    if (fileImporter.importFile(fileImporter.getPresetBarrierFolder()+barrierShapeValues[count]+".bmp", true)) {
                         navigator.back();
                     }
                     break;
