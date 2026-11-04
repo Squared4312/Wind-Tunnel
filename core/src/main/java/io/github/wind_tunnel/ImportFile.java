@@ -142,7 +142,8 @@ public class ImportFile {
             for (int count=0; count<face.length; count++) {
                 Vector3 vertex1 = vertices.get(face[count]);
                 Vector3 vertex2 = vertices.get(face[(count+1)%face.length]);
-                shapeDrawer.line(vertex1, vertex2, fixedBarrier);
+                Vector3 vertex3 = vertices.get(face[(count+2)%face.length]);
+                shapeDrawer.triangle(vertex1, vertex2, vertex3, fixedBarrier);
             }
         }
     }

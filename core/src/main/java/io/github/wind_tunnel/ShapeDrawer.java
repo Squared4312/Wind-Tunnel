@@ -29,6 +29,28 @@ public class ShapeDrawer {
         }
     }
 
+    public void triangle(Vector3 a, Vector3 b, Vector3 c, boolean fixedBarrier) {
+        // fill the whole surface of a 3D triangle with barriers by stepping across it in small steps,
+        // using p = a + s*(b-a) + t*(c-a) where s >= 0, t >= 0 and s + t <= 1
+        // p is the position, s and t are the fractions of the distance along each side
+        // where s = 0 and t = 0, p = a
+        // where s = 1 and t = 0, p = b
+        // where s = 0 and t = 1, p = c
+        float longestSide = Math.max(a.dst(b), Math.max(b.dst(c), c.dst(a)));
+        int steps = Math.max(1, (int) Math.ceil(longestSide*4));
+        for (int count1=0; count1<=steps; count1++) {
+            for (int count2=0; count2<=steps-count1; count2++) {
+                float s = (float) count1/steps;
+                float t = (float) count2/steps;
+                float x = a.x + s*(b.x-a.x) + t*(c.x-a.x);
+                float y = a.y + s*(b.y-a.y) + t*(c.y-a.y);
+                float z = a.z + s*(b.z-a.z) + t*(c.z-a.z);
+                // +0.5 to round to nearest cell
+                cfdSolver.addBarrier((int) Math.floor(x+0.5f), (int) Math.floor(y+0.5f), (int) Math.floor(z+0.5f), fixedBarrier);
+            }
+        }
+    }
+
     public void line(Vector3 from, Vector3 to, boolean fixedBarrier) {
 
         // centre both from and to so that it raycasts from the centre of the cell
