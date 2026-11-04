@@ -40,6 +40,7 @@ public class Settings {
     private String[] levelNames = {"line", "circle", "airfoil", "pizza slice", "apple", "car" ,"stick man", ":)", "hello world", "troll face", "cube"};
 
     private Solver oldSolver;
+    private int max3DResolution = 256;
 
     private static Settings instance;
 
@@ -83,7 +84,11 @@ public class Settings {
         } else if (solver.equals(Solver.TWO_D)) {
             solver = Solver.THREE_D;
             resolution.z = resolution.y;
+            if (resolution.x > max3DResolution) {
+                resolution = new Vector3(resolutionValues[3][0], resolutionValues[3][1], resolutionValues[3][1]);
+            }
         }
+        selectedZPlane = Math.max(1, (int) (resolution.z/2));
     }
 
     public String cycleOptions(int change, String currentValue, String[] possibleValues) {
@@ -123,11 +128,17 @@ public class Settings {
             } else {
                 this.resolution = new Vector3(resolutionValues[index+1][0], resolutionValues[index+1][1], resolutionValues[index+1][1]);
             }
+            if (solver.equals(Solver.THREE_D) && this.resolution.x > max3DResolution) {
+                this.resolution = new Vector3(resolutionValues[0][0], resolutionValues[0][1], resolutionValues[0][1]);
+            }
         } else if (change == -1) {
             if (index == 0) {
                 this.resolution = new Vector3(resolutionValues[resolutionValues.length-1][0], resolutionValues[resolutionValues.length-1][1], resolutionValues[resolutionValues.length-1][1]);
             } else {
                 this.resolution = new Vector3(resolutionValues[index-1][0], resolutionValues[index-1][1], resolutionValues[index-1][1]);
+            }
+            if (solver.equals(Solver.THREE_D) && this.resolution.x > max3DResolution) {
+                this.resolution = new Vector3(resolutionValues[3][0], resolutionValues[3][1], resolutionValues[3][1]);
             }
         }
         changeBrushSizeAndCameraDistance();
