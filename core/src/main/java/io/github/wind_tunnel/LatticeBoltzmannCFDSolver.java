@@ -77,6 +77,7 @@ public class LatticeBoltzmannCFDSolver {
     float contrast;
 
     private float[][][][] cellAverageVelocities;
+    private float[][][] cellDensities;
 
     private static LatticeBoltzmannCFDSolver instance;
 
@@ -102,6 +103,7 @@ public class LatticeBoltzmannCFDSolver {
         }
         this.densities = new float[(int) settings.getResolution().x][(int) settings.getResolution().y][(int) settings.getResolution().z][neighbours];
         this.cellAverageVelocities = new float[(int) settings.getResolution().x][(int) settings.getResolution().y][(int) settings.getResolution().z][3];
+        this.cellDensities = new float[(int) settings.getResolution().x][(int) settings.getResolution().y][(int) settings.getResolution().z];
         this.barriers = scaleBarriersUsingResolution();
 
         v = settings.getFlowSpeed();
@@ -195,6 +197,7 @@ public class LatticeBoltzmannCFDSolver {
                     cellAverageVelocities[x][y][z][0] = cellVelocity.x;
                     cellAverageVelocities[x][y][z][1] = cellVelocity.y;
                     cellAverageVelocities[x][y][z][2] = cellVelocity.z;
+                    cellDensities[x][y][z] = cellDensity;
 
                     // pre-calculate re-used values
                     vx3 = 3*cellVelocity.x;
@@ -618,21 +621,32 @@ public class LatticeBoltzmannCFDSolver {
 
     public int calculateColourIndex(int x, int y, int z) {
         double index = 0;
-        /*if (settings.getPlot().equals("speed")) {
-            index = ;
-        } else */if (settings.getPlot().equals("x velocity")) {
+        if (settings.getPlot().equals("speed")) {
+            index = numOfColours*(1.5*Math.sqrt(cellAverageVelocities[x][y][z][0]*cellAverageVelocities[x][y][z][0] + cellAverageVelocities[x][y][z][1]*cellAverageVelocities[x][y][z][1] + cellAverageVelocities[x][y][z][2]*cellAverageVelocities[x][y][z][2])*contrast);
+        } else if (settings.getPlot().equals("x velocity")) {
             index = numOfColours*(0.5+(cellAverageVelocities[x][y][z][0]*contrast));
         } else if (settings.getPlot().equals("y velocity")) {
             index = numOfColours*(0.5+(cellAverageVelocities[x][y][z][1]*contrast));
-        } /*else if (settings.getPlot().equals("density")) {
-            index = ;
+        } else if (settings.getPlot().equals("density")) {
+            index = numOfColours*(0.5+(cellDensities[x][y][z]-1)*0.6*contrast*contrast);
         } else if (settings.getPlot().equals("curl")) {
-            index = ;
-        }*/
+            index = numOfColours*(0.5+calculateCurl(x, y, z)*1.5*contrast);;
+        }
         if (index < 0) {index = 0;}
         if (index >= numOfColours) {index = numOfColours-1;}
         return (int) index;
     }
+
+    public float calculateCurl(int x, int y, int z) {
+        if (x <= 0 || y <= 0 || x >= settings.getResolution().x-1 || y >= settings.getResolution().y-1) {return 0;}
+
+        float curl = 0;
+        if (!isBarrier(x, y, z)) {
+            curl = cellAverageVelocities[x+1][y][z][1]-cellAverageVelocities[x-1][y][z][1]-cellAverageVelocities[x][y+1][z][0]+cellAverageVelocities[x][y-1][z][0];
+        }
+        return curl;
+    }
+
 
     public void addBarrier(int x, int y, int z, boolean fixed) {
         if (x > 0 && x < settings.getResolution().x-1 && y > 0 && y < settings.getResolution().y-1) { // in simulation area

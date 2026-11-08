@@ -75,6 +75,8 @@ public class ThreeDimensionalRenderer {
     }
 
     public void preCalculateRotationMatrices() {
+        if (rotationAngles == settings.getRotationAngles()) {return;}
+
         rotationAngles.x = settings.getRotationAnglesX();
         rotationAngles.y = settings.getRotationAnglesY();
         rotationAngles.z = settings.getRotationAnglesZ();
