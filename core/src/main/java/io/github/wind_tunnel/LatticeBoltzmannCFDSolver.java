@@ -462,6 +462,9 @@ public class LatticeBoltzmannCFDSolver {
                 }
             }
         }
+        if (settings.getShowFlowLines()) {
+            drawFlowLines(sr);
+        }
     }
 
     public void drawBarriers() {
@@ -584,6 +587,74 @@ public class LatticeBoltzmannCFDSolver {
             }
         }
         return newBarriers;
+    }
+
+    public void drawFlowLines(ShapeRenderer sr) {
+        int z;
+        if (settings.getSolver().equals(Solver.TWO_D)) {
+            z = 0;
+            sr.setColor(Color.BLACK);
+        } else {
+            z = settings.getSelectedZPlane();
+            sr.setColor(Color.PINK);
+        }
+
+        float scale = 0.9f/settings.getFlowSpeed();
+
+        for (int x=0; x<settings.getResolution().x; x++) {
+            for (int y=0; y<settings.getResolution().y; y++) {
+                if (isBarrier(x, y, z)) {continue;}
+
+                // vector in cell units
+                Vector3 flowVector = new Vector3(cellAverageVelocities[x][y][z][0]*scale, cellAverageVelocities[x][y][z][1]*scale, cellAverageVelocities[x][y][z][2]*scale);
+                if (settings.getSolver().equals(Solver.TWO_D)) {flowVector.z = 0;}
+
+                if (flowVector.len() < 0.05) {continue;} // if flowspeed of cell is too slow
+
+                if (settings.getSolver().equals(Solver.TWO_D)) {
+                    // centre the arrow on the cell
+                    Vector2 tail = new Vector2((x+0.5f)*cellDimensions, (y+0.5f)*cellDimensions);
+                    Vector2 head = new Vector2(flowVector.x*cellDimensions/2, flowVector.y*cellDimensions/2);
+                    drawArrow(sr, new Vector2(tail.x-head.x, tail.y-head.y), new Vector2(tail.x+head.x, tail.y+head.y));
+                } else {
+                    Vector3 centre = new Vector3(x-settings.getResolution().x/2, y-settings.getResolution().y/2, z-settings.getResolution().z/2);
+
+                    rotatedPoint = renderer.rotate(centre.x-flowVector.x/2, centre.y-flowVector.y/2, centre.z-flowVector.z/2);
+                    Vector2 tail = renderer.pointProjection(rotatedPoint);
+                    if (tail == null) {continue;}
+
+                    rotatedPoint = renderer.rotate(centre.x+flowVector.x/2, centre.y+flowVector.y/2, centre.z+flowVector.z/2);
+                    Vector2 tip = renderer.pointProjection(rotatedPoint);
+                    if (tip == null) {continue;}
+
+                    drawArrow(sr, tail, tip);
+                }
+            }
+        }
+    }
+
+    private void drawArrow(ShapeRenderer sr, Vector2 tail, Vector2 head) {
+        float dx = head.x-tail.x;
+        float dy = head.y-tail.y;
+        float length = (float) Math.sqrt(dx*dx + dy*dy);
+        if (length < 1) {return;} // too small
+
+        sr.rectLine(tail.x, tail.y, head.x, head.y, 2);
+
+        // arrow heads
+        float headLength = Math.min(length/4, cellDimensions);
+
+        double arcAngle = Math.toDegrees(Math.atan2(tail.y-head.y, tail.x-head.x));
+
+        double xChange = Math.cos(Math.toRadians(arcAngle));
+        double yChange = Math.sin(Math.toRadians(arcAngle));
+
+        double[] angles = {arcAngle+45, arcAngle-45};
+        for (double angle : angles) {
+            double xOffset = headLength*Math.cos(Math.toRadians(angle));
+            double yOffset = headLength*Math.sin(Math.toRadians(angle));
+            sr.rectLine((float) (head.x+xChange), (float) (head.y+yChange), (float) (head.x+xOffset+xChange), (float) (head.y+yOffset+yChange), 2);
+        }
     }
 
     public Color[] calculateColours() {

@@ -15,6 +15,8 @@ public class Keybinds {
         Input.Keys.SPACE, Input.Keys.RIGHT, // pause/run the simulation, step the simulation (when paused)
         Input.Keys.R, // clear all barriers
         Input.Buttons.LEFT, Input.Buttons.RIGHT, // draw/erase barriers
+        Input.Keys.V, // show/hide the flow lines
+        Input.Keys.F, // initialise the fluid
     };
 
     private static Keybinds instance;
@@ -62,6 +64,12 @@ public class Keybinds {
         }
         if (Gdx.input.isKeyJustPressed(binds[8])) {
             cfdSolver.removeAllBarriers();
+        }
+        if (Gdx.input.isKeyJustPressed(binds[11])) {
+            settings.setShowFlowLines(!settings.getShowFlowLines());
+        }
+        if (Gdx.input.isKeyJustPressed(binds[12])) {
+            cfdSolver.initialiseFluid();
         }
     }
 
