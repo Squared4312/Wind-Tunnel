@@ -40,6 +40,7 @@ public class Settings {
     private String[] levelNames = {"line", "circle", "airfoil", "pizza slice", "apple", "car" ,"stick man", ":)", "hello world", "troll face", "cube"};
 
     private Solver oldSolver;
+    private Vector3 oldResolution;
     private int max3DResolution = 256;
 
     private static Settings instance;
@@ -75,6 +76,7 @@ public class Settings {
 
         this.fixedBarriers = new boolean[(int) this.resolution.x][(int) this.resolution.y][(int) this.resolution.z];
         this.oldSolver = this.solver;
+        this.oldResolution = this.resolution;
     }
 
     public void changeSolver() {
@@ -169,6 +171,9 @@ public class Settings {
             selectedZPlane = (int) (resolution.z-1);
         }
     }
+
+    public Vector3 getOldResolution() {return this.oldResolution;}
+    public void setOldResolution(Vector3 oldResolution) {this.oldResolution = oldResolution;}
 
     public Solver getOldSolver() {return this.oldSolver;}
     public void setOldSolver(Solver oldSolver) {this.oldSolver = oldSolver;}

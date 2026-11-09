@@ -260,4 +260,14 @@ public class SettingsMenu implements Menu {
             navigator.open(importFileMenu);
         }
     }
+
+    @Override
+    public void onEnter() {
+        settings.setOldResolution(settings.getResolution());
+    }
+
+    @Override
+    public void onExit() {
+        settings.setOldResolution(settings.getResolution());
+    }
 }

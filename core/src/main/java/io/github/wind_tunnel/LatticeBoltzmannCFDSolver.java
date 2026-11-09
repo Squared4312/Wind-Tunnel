@@ -681,9 +681,9 @@ public class LatticeBoltzmannCFDSolver {
     }
 
     public void removeAllBarriers() {
-        for (int x=0; x<settings.getResolution().x; x++) {
-            for (int y=0; y<settings.getResolution().y; y++) {
-                for (int z=0; z<settings.getResolution().z; z++) {
+        for (int x=0; x<settings.getOldResolution().x; x++) {
+            for (int y=0; y<settings.getOldResolution().y; y++) {
+                for (int z=0; z<settings.getOldResolution().z; z++) {
                     if (isBarrier(x, y, z)) {
                         removeBarrier(x, y, z);
                     }
