@@ -129,7 +129,7 @@ public class ImportFile {
         if (size == 0) {return;}
 
         // scale the model so that it takes up half the height
-        float scale = settings.getResolution().y/(2*size);
+        float scale = settings.getResolution().y/size;
 
         for (Vector3 vertex : vertices) {
             // shifts the entire model so its bounding box centre is at the origin, scales it to be half the simulation height, and move it to the centre of the simulation area
