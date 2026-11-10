@@ -17,6 +17,7 @@ public class Keybinds {
         Input.Buttons.LEFT, Input.Buttons.RIGHT, // draw/erase barriers
         Input.Keys.V, // show/hide the flow lines
         Input.Keys.F, // initialise the fluid
+        Input.Keys.EQUALS, Input.Keys.MINUS, // change brush size
     };
 
     private static Keybinds instance;
@@ -70,6 +71,12 @@ public class Keybinds {
         }
         if (Gdx.input.isKeyJustPressed(binds[12])) {
             cfdSolver.initialiseFluid();
+        }
+        if (Gdx.input.isKeyJustPressed(binds[13])) {
+            settings.changeBrushSize(1);
+        }
+        if (Gdx.input.isKeyJustPressed(binds[14])) {
+            settings.changeBrushSize(-1);
         }
     }
 

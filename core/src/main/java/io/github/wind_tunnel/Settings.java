@@ -215,6 +215,11 @@ public class Settings {
     public boolean getRenderOnlySelectedZPlane() {return this.renderOnlySelectedZPlane;}
     public void setRenderOnlySelectedZPlane(boolean renderOnlySelectedZPlane) {this.renderOnlySelectedZPlane = renderOnlySelectedZPlane;}
 
+    public void changeBrushSize(int direction) {
+        this.brushSize += direction;
+        if (this.brushSize > 50) {this.brushSize = 1;}
+        if (this.brushSize < 1) {this.brushSize = 50;}
+    }
     public int getBrushSize() {return this.brushSize;}
     public void setBrushSize(int brushSize) {this.brushSize = brushSize;}
 
