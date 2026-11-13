@@ -71,6 +71,8 @@ public class LatticeBoltzmannCFDSolver {
     private float one9thDensity;
     private float one36thDensity;
     private float one18thDensity;
+    private Vector3 flowVector = new Vector3();
+    private float disturbanceThreshold = 0.1f;
 
     private int numOfColours = 600;
     private Color[] colours = new Color[numOfColours];
@@ -423,7 +425,7 @@ public class LatticeBoltzmannCFDSolver {
 
     public void render(ShapeRenderer sr) {
         if (settings.getSolver().equals(Solver.TWO_D)) {
-            cellDimensions = 1920/settings.getResolution().x;
+            cellDimensions = Gdx.graphics.getWidth()/settings.getResolution().x;
         }
 
         drawBarriers();
@@ -436,8 +438,17 @@ public class LatticeBoltzmannCFDSolver {
 
                     if (settings.getRenderOnlySelectedZPlane() && z != settings.getSelectedZPlane()) {
                         continue;
+                    }/* else if (settings.getSolver().equals(Solver.THREE_D) && !settings.getSimulationRunning()) {
+                        if (!isBarrier(x, y, z)) {
+                            continue;
+                        }
                     } else if (!(isBarrier(x, y, z) || z == settings.getSelectedZPlane() || x == 0 || y == 0 || z == 0 || x == settings.getResolution().x-1 || y == settings.getResolution().y-1 || z == settings.getResolution().z-1)) {
                         continue;
+                    }*/ else if (settings.getSolver().equals(Solver.THREE_D)) {
+                        flowVector.set(cellAverageVelocities[x][y][z][0]-settings.getFlowSpeed(), cellAverageVelocities[x][y][z][1], cellAverageVelocities[x][y][z][2]);
+                        if (!isBarrier(x, y, z) && flowVector.len2() < disturbanceThreshold*disturbanceThreshold*settings.getFlowSpeed()*settings.getFlowSpeed()) {
+                            continue; // if fluid is close to undisturbed, don't draw it
+                        }
                     }
 
                     if (settings.getLoadedLevel() && settings.getFixedBarrierAt(x, y, z)) {
@@ -606,7 +617,7 @@ public class LatticeBoltzmannCFDSolver {
                 if (isBarrier(x, y, z)) {continue;}
 
                 // vector in cell units
-                Vector3 flowVector = new Vector3(cellAverageVelocities[x][y][z][0]*scale, cellAverageVelocities[x][y][z][1]*scale, cellAverageVelocities[x][y][z][2]*scale);
+                flowVector.set(cellAverageVelocities[x][y][z][0]*scale, cellAverageVelocities[x][y][z][1]*scale, cellAverageVelocities[x][y][z][2]*scale);
                 if (settings.getSolver().equals(Solver.TWO_D)) {flowVector.z = 0;}
 
                 if (flowVector.len() < 0.05) {continue;} // if flowspeed of cell is too slow

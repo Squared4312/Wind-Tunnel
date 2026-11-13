@@ -90,7 +90,6 @@ public class Settings {
                 resolution = new Vector3(resolutionValues[3][0], resolutionValues[3][1], resolutionValues[3][1]);
             }
         }
-        selectedZPlane = Math.max(1, (int) (resolution.z/2));
     }
 
     public String cycleOptions(int change, String currentValue, String[] possibleValues) {
@@ -143,10 +142,10 @@ public class Settings {
                 this.resolution = new Vector3(resolutionValues[3][0], resolutionValues[3][1], resolutionValues[3][1]);
             }
         }
-        changeBrushSizeAndCameraDistance();
+        changeBrushSizeAndCameraDistanceAndSelectedZPlane();
     }
 
-    public void changeBrushSizeAndCameraDistance() {
+    public void changeBrushSizeAndCameraDistanceAndSelectedZPlane() {
         int index = 0;
         for (int count=0; count<resolutionValues.length; count++) {
             if (resolutionValues[count][0] == this.resolution.x && resolutionValues[count][1] == this.resolution.y) {
@@ -156,6 +155,7 @@ public class Settings {
         }
         this.brushSize = (int) Math.pow(2, index); // 2^index -> 1, 2, 4, 8, 16, 32
         this.cameraDistance =  25*(int) Math.pow(2, index); // 25* 2^index -> 25, 50, 100, 200, 400, 800
+        this.selectedZPlane = Math.max(1, (int) (this.resolution.z/2));
     }
 
     public Vector3 getOrigin() {return this.origin;}
