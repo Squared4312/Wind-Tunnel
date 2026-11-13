@@ -45,7 +45,7 @@ public class ShapeDrawer {
                 float x = a.x + s*(b.x-a.x) + t*(c.x-a.x);
                 float y = a.y + s*(b.y-a.y) + t*(c.y-a.y);
                 float z = a.z + s*(b.z-a.z) + t*(c.z-a.z);
-                // +0.5 to round to nearest cell
+                // +0.5 to round to the nearest cell
                 cfdSolver.addBarrier((int) Math.floor(x+0.5f), (int) Math.floor(y+0.5f), (int) Math.floor(z+0.5f), fixedBarrier);
             }
         }
