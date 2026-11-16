@@ -129,18 +129,7 @@ public class ImportFile {
         if (size == 0) {return;}
 
         // find the biggest axis to scale the model to fit the simulation area correctly
-        float axis = settings.getResolution().x;
-        float biggestAxisRatio = (max.x-min.x)/axis;
-        if ((max.y-min.y)/settings.getResolution().y > biggestAxisRatio) {
-            axis = settings.getResolution().y;
-            biggestAxisRatio = (max.y-min.y)/axis;
-        }
-        if ((max.z-min.z)/settings.getResolution().z > biggestAxisRatio) {
-            axis = settings.getResolution().z;
-        }
-
-        // scale the model so that it takes up 3/4 of the biggest axis
-        float scale = (3/4f)*(axis/size);
+        float scale = getScale(max, min, size);
 
         for (Vector3 vertex : vertices) {
             // shifts the entire model so its bounding box centre is at the origin, scales it to be half the simulation height, and move it to the centre of the simulation area
@@ -157,6 +146,21 @@ public class ImportFile {
                 shapeDrawer.triangle(vertex1, vertex2, vertex3, fixedBarrier);
             }
         }
+    }
+
+    private float getScale(Vector3 max, Vector3 min, float size) {
+        float axis = settings.getResolution().x;
+        float biggestAxisRatio = (max.x-min.x)/axis;
+        if ((max.y-min.y)/settings.getResolution().y > biggestAxisRatio) {
+            axis = settings.getResolution().y;
+            biggestAxisRatio = (max.y-min.y)/axis;
+        }
+        if ((max.z-min.z)/settings.getResolution().z > biggestAxisRatio) {
+            axis = settings.getResolution().z;
+        }
+
+        // scale the model so that it takes up 3/4 of the biggest axis
+        return (3/4f)*(axis/size);
     }
 
     public ArrayList<Vector3> getVerticesFromOBJModel(String filePath) {
