@@ -59,6 +59,8 @@ public class Levels {
         settings.resetLockedSettings();
         settings.changeBrushSizeAndCameraDistanceAndSelectedZPlane();
 
+        settings.setOldResolution(settings.getResolution());
+
         settings.setLoadedLevel(false);
         cfdSolver.removeAllBarriers();
         settings.setLoadedLevel(true);

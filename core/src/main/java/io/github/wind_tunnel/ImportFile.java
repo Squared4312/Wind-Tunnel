@@ -128,8 +128,19 @@ public class ImportFile {
         float size = Math.max(max.x-min.x, Math.max(max.y-min.y, max.z-min.z)); // finds the longest side, as if it fits, everything does
         if (size == 0) {return;}
 
-        // scale the model so that it takes up half the height
-        float scale = settings.getResolution().y/size;
+        // find the biggest axis to scale the model to fit the simulation area correctly
+        float axis = settings.getResolution().x;
+        float biggestAxisRatio = (max.x-min.x)/axis;
+        if ((max.y-min.y)/settings.getResolution().y > biggestAxisRatio) {
+            axis = settings.getResolution().y;
+            biggestAxisRatio = (max.y-min.y)/axis;
+        }
+        if ((max.z-min.z)/settings.getResolution().z > biggestAxisRatio) {
+            axis = settings.getResolution().z;
+        }
+
+        // scale the model so that it takes up 3/4 of the biggest axis
+        float scale = (3/4f)*(axis/size);
 
         for (Vector3 vertex : vertices) {
             // shifts the entire model so its bounding box centre is at the origin, scales it to be half the simulation height, and move it to the centre of the simulation area
