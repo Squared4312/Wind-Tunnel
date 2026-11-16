@@ -2,6 +2,7 @@ package io.github.wind_tunnel;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -546,6 +547,40 @@ public class LatticeBoltzmannCFDSolver {
                 }
             }
         }
+    }
+
+    public void renderBrushSizePreview(ShapeRenderer sr) {
+
+        if (!(Gdx.input.isButtonPressed(keybinds.getBindAt(9)) || Gdx.input.isButtonPressed(keybinds.getBindAt(10)))) {
+            return; // only render preview if drawing or erasing
+        }
+
+        int radius = settings.getBrushSize()-1;
+        int x = (int) (Gdx.input.getX()/cellDimensions);
+        int y = (int) ((Gdx.graphics.getHeight()-Gdx.input.getY())/cellDimensions);
+
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        sr.begin(ShapeRenderer.ShapeType.Filled);
+        sr.setColor(1, 1, 1, 0.4f);
+
+        for (int dx=-radius; dx<=radius; dx++) {
+            for (int dy=-radius; dy<=radius; dy++) {
+                if (dx*dx + dy*dy > radius*radius) { // if point is outside circle
+                    continue;
+                }
+
+                int cellX = x+dx;
+                int cellY = y+dy;
+
+                // point outside simulation area
+                if (cellX <= 0 || cellX >= settings.getResolution().x-1 || cellY <= 0 || cellY >= settings.getResolution().y-1) {
+                    continue;
+                }
+                sr.rect(cellX*cellDimensions, cellY*cellDimensions, cellDimensions, cellDimensions);
+            }
+        }
+        sr.end();
+        Gdx.gl.glDisable(GL20.GL_BLEND);
     }
 
     public boolean[][][] scaleBarriersUsingResolution() {

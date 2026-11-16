@@ -77,6 +77,8 @@ public class LevelsMenu implements Menu {
             }
         sr.end();
 
+        cfdSolver.renderBrushSizePreview(sr);
+
         batch.begin();
             if (settings.getRenderUI()) {
                 util.renderText(batch, settings.getLevelNameAt(settings.getLevelNumber()-1), Color.WHITE, util.getScreenDimensions().x/2, 1022.5f, 36, TextAlignment.CENTRE);
