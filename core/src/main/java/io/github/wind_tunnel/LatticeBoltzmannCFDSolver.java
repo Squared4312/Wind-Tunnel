@@ -550,10 +550,6 @@ public class LatticeBoltzmannCFDSolver {
     }
 
     public void renderBrushSizePreview(ShapeRenderer sr) {
-
-        if (!(Gdx.input.isButtonPressed(keybinds.getBindAt(9)) || Gdx.input.isButtonPressed(keybinds.getBindAt(10)))) {
-            return; // only render preview if drawing or erasing
-        }
         if (settings.getSolver().equals(Solver.THREE_D)) {return;}
 
         int radius = settings.getBrushSize()-1;
