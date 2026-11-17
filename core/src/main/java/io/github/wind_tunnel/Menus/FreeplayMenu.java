@@ -64,6 +64,8 @@ public class FreeplayMenu implements Menu {
             }
         sr.end();
 
+        cfdSolver.renderBrushSizePreview(sr);
+
         batch.begin();
             if (settings.getRenderUI()) {
                 if (!settings.getSimulationRunning()) {

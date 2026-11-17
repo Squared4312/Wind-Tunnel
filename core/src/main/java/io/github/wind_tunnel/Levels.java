@@ -57,7 +57,9 @@ public class Levels {
 
         cfdSolver.initialiseFluid();
         settings.resetLockedSettings();
-        settings.changeBrushSizeAndCameraDistance();
+        settings.changeBrushSizeAndCameraDistanceAndSelectedZPlane();
+
+        settings.setOldResolution(settings.getResolution());
 
         settings.setLoadedLevel(false);
         cfdSolver.removeAllBarriers();

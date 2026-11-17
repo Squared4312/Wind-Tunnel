@@ -2,6 +2,7 @@ package io.github.wind_tunnel;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -71,6 +72,8 @@ public class LatticeBoltzmannCFDSolver {
     private float one9thDensity;
     private float one36thDensity;
     private float one18thDensity;
+    private Vector3 flowVector = new Vector3();
+    private float disturbanceThreshold = 0.1f;
 
     private int numOfColours = 600;
     private Color[] colours = new Color[numOfColours];
@@ -423,7 +426,7 @@ public class LatticeBoltzmannCFDSolver {
 
     public void render(ShapeRenderer sr) {
         if (settings.getSolver().equals(Solver.TWO_D)) {
-            cellDimensions = 1920/settings.getResolution().x;
+            cellDimensions = Gdx.graphics.getWidth()/settings.getResolution().x;
         }
 
         drawBarriers();
@@ -436,8 +439,17 @@ public class LatticeBoltzmannCFDSolver {
 
                     if (settings.getRenderOnlySelectedZPlane() && z != settings.getSelectedZPlane()) {
                         continue;
+                    }/* else if (settings.getSolver().equals(Solver.THREE_D) && !settings.getSimulationRunning()) {
+                        if (!isBarrier(x, y, z)) {
+                            continue;
+                        }
                     } else if (!(isBarrier(x, y, z) || z == settings.getSelectedZPlane() || x == 0 || y == 0 || z == 0 || x == settings.getResolution().x-1 || y == settings.getResolution().y-1 || z == settings.getResolution().z-1)) {
                         continue;
+                    }*/ else if (settings.getSolver().equals(Solver.THREE_D)) {
+                        flowVector.set(cellAverageVelocities[x][y][z][0]-settings.getFlowSpeed(), cellAverageVelocities[x][y][z][1], cellAverageVelocities[x][y][z][2]);
+                        if (!isBarrier(x, y, z) && flowVector.len2() < disturbanceThreshold*disturbanceThreshold*settings.getFlowSpeed()*settings.getFlowSpeed()) {
+                            continue; // if fluid is close to undisturbed, don't draw it
+                        }
                     }
 
                     if (settings.getLoadedLevel() && settings.getFixedBarrierAt(x, y, z)) {
@@ -537,6 +549,41 @@ public class LatticeBoltzmannCFDSolver {
         }
     }
 
+    public void renderBrushSizePreview(ShapeRenderer sr) {
+
+        if (!(Gdx.input.isButtonPressed(keybinds.getBindAt(9)) || Gdx.input.isButtonPressed(keybinds.getBindAt(10)))) {
+            return; // only render preview if drawing or erasing
+        }
+        if (settings.getSolver().equals(Solver.THREE_D)) {return;}
+
+        int radius = settings.getBrushSize()-1;
+        int x = (int) (Gdx.input.getX()/cellDimensions);
+        int y = (int) ((Gdx.graphics.getHeight()-Gdx.input.getY())/cellDimensions);
+
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        sr.begin(ShapeRenderer.ShapeType.Filled);
+        sr.setColor(1, 1, 1, 0.4f);
+
+        for (int dx=-radius; dx<=radius; dx++) {
+            for (int dy=-radius; dy<=radius; dy++) {
+                if (dx*dx + dy*dy > radius*radius) { // if point is outside circle
+                    continue;
+                }
+
+                int cellX = x+dx;
+                int cellY = y+dy;
+
+                // point outside simulation area
+                if (cellX <= 0 || cellX >= settings.getResolution().x-1 || cellY <= 0 || cellY >= settings.getResolution().y-1) {
+                    continue;
+                }
+                sr.rect(cellX*cellDimensions, cellY*cellDimensions, cellDimensions, cellDimensions);
+            }
+        }
+        sr.end();
+        Gdx.gl.glDisable(GL20.GL_BLEND);
+    }
+
     public boolean[][][] scaleBarriersUsingResolution() {
         boolean[][][] newBarriers = new boolean[(int) settings.getResolution().x][(int) settings.getResolution().y][(int) settings.getResolution().z];
 
@@ -606,7 +653,7 @@ public class LatticeBoltzmannCFDSolver {
                 if (isBarrier(x, y, z)) {continue;}
 
                 // vector in cell units
-                Vector3 flowVector = new Vector3(cellAverageVelocities[x][y][z][0]*scale, cellAverageVelocities[x][y][z][1]*scale, cellAverageVelocities[x][y][z][2]*scale);
+                flowVector.set(cellAverageVelocities[x][y][z][0]*scale, cellAverageVelocities[x][y][z][1]*scale, cellAverageVelocities[x][y][z][2]*scale);
                 if (settings.getSolver().equals(Solver.TWO_D)) {flowVector.z = 0;}
 
                 if (flowVector.len() < 0.05) {continue;} // if flowspeed of cell is too slow
