@@ -16,8 +16,9 @@ public class Keybinds {
         Input.Keys.R, // clear all barriers
         Input.Buttons.LEFT, Input.Buttons.RIGHT, // draw/erase barriers
         Input.Keys.V, // show/hide the flow lines
-        Input.Keys.F, // initialise the fluid
+        Input.Keys.E, // initialise the fluid
         Input.Keys.EQUALS, Input.Keys.MINUS, // change brush size
+        Input.Keys.F, // fill enclosed shapes
     };
 
     private static Keybinds instance;
@@ -77,6 +78,9 @@ public class Keybinds {
         }
         if (Gdx.input.isKeyJustPressed(binds[14])) {
             settings.changeBrushSize(-1);
+        }
+        if (Gdx.input.isKeyJustPressed(binds[15])) {
+            cfdSolver.fillEnclosedShapes(false);
         }
     }
 

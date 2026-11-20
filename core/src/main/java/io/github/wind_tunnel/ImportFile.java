@@ -17,7 +17,25 @@ public class ImportFile {
     private String levelsFolder = "assets/levels/";
     private String presetBarrierFolder = "assets/presets/";
 
+    private Vector3 min = new Vector3();
+    private Vector3 max = new Vector3();
+    private Vector3 centre = new Vector3();
+
+    private ArrayList<Vector3> vertices = new ArrayList<>();
+    private ArrayList<int[]> faces = new ArrayList<>();
+    private String[] contents;
+    private String[] lineList;
+
+    private Vector3 oldResolution;
     private float z;
+
+    private Pixmap image;
+    private FileHandle file;
+
+    private Vector3 vertex1;
+    private Vector3 vertex2;
+    private Vector3 vertex3;
+
 
     public ImportFile() {
         settings = Settings.getInstance();
@@ -28,33 +46,33 @@ public class ImportFile {
     public boolean importFile(String filePath, boolean scaleToResolution) {
         if (getFileExtension(filePath).equals("bmp")) {
             if (scaleToResolution) {
-                return placeModel(filePath, new Vector3(settings.getResolutionValues()[0][0], settings.getResolutionValues()[0][1], 1), Solver.TWO_D, true, false);
+                return placeModel(filePath, new Vector3(settings.getResolutionValues()[0][0], settings.getResolutionValues()[0][1], 1), Solver.TWO_D, true, false, false);
             } else {
                 for (int[] resolution : settings.getResolutionValues()) {
                     if (getModelResolution(filePath).x <= resolution[0] && getModelResolution(filePath).y <= resolution[1]) {
-                        return placeModel(filePath, new Vector3(resolution[0], resolution[1], 1), Solver.TWO_D, false, false);
+                        return placeModel(filePath, new Vector3(resolution[0], resolution[1], 1), Solver.TWO_D, false, false, false);
                     }
                 }
             }
         } else if (getFileExtension(filePath).equals("obj")) {
             if (getVerticesFromOBJModel(filePath) == null || getFacesFromOBJModel(filePath) == null) {return false;}
-            return placeModel(filePath, new Vector3(settings.getResolutionValues()[2][0], settings.getResolutionValues()[2][1], settings.getResolutionValues()[2][1]), Solver.THREE_D, false, false);
+            return placeModel(filePath, new Vector3(settings.getResolutionValues()[2][0], settings.getResolutionValues()[2][1], settings.getResolutionValues()[2][1]), Solver.THREE_D, false, false, true);
         }
         return false;
     }
 
-    public boolean placeModel(String filePath, Vector3 resolution, Solver solver, boolean scaleToResolution, boolean fixedBarrier) {
-        Vector3 oldResolution = settings.getResolution();
+    public boolean placeModel(String filePath, Vector3 resolution, Solver solver, boolean scaleToResolution, boolean fixedBarrier, boolean fill) {
+        oldResolution = settings.getResolution();
         cfdSolver.removeAllBarriers();
         settings.setSolver(solver);
         settings.setResolution(resolution);
         settings.setOldSolver(solver);
         cfdSolver.initialiseFluid();
         if (solver.equals(Solver.TWO_D)) {
-            loadBitmap(filePath, fixedBarrier);
+            loadBitmap(filePath, fixedBarrier, fill);
             z = 1;
         } else if (solver.equals(Solver.THREE_D)) {
-            loadOBJModel(filePath, fixedBarrier);
+            loadOBJModel(filePath, fixedBarrier, fill);
             z = oldResolution.z;
         } else {
             return false;
@@ -66,11 +84,11 @@ public class ImportFile {
         return true;
     }
 
-    public void loadBitmap(String filePath, boolean fixedBarrier) {
-        FileHandle file = Gdx.files.internal(filePath);
+    public void loadBitmap(String filePath, boolean fixedBarrier, boolean fill) {
+        file = Gdx.files.internal(filePath);
         if (!file.exists()) {return;}
 
-        Pixmap image = new Pixmap(file);
+        image = new Pixmap(file);
         if (image.getWidth() > settings.getResolution().x || image.getHeight() > settings.getResolution().y || settings.getResolution().z != 1) { // too big
             image.dispose();
             return;
@@ -85,9 +103,13 @@ public class ImportFile {
             }
         }
         image.dispose();
+
+        if (fill) {
+            cfdSolver.fillEnclosedShapes(fixedBarrier);
+        }
     }
 
-    public void loadOBJModel(String filePath, boolean fixedBarrier) {
+    public void loadOBJModel(String filePath, boolean fixedBarrier, boolean fill) {
         /*
         blender export as .obj rules
 
@@ -109,16 +131,16 @@ public class ImportFile {
         up axis = y
         */
 
-        ArrayList<Vector3> vertices = getVerticesFromOBJModel(filePath);
-        ArrayList<int[]> faces = getFacesFromOBJModel(filePath);
+        vertices = getVerticesFromOBJModel(filePath);
+        faces = getFacesFromOBJModel(filePath);
 
         if (vertices == null || faces == null) {return;}
 
         // draw lines (using shapeDrawer.line()) from each vertex to its neighbour according to the faces from the loaded .obj
 
         // bounding box of the model, where min is the front-bottom-left corner and max is the back-top-right corner
-        Vector3 min = new Vector3(vertices.get(0));
-        Vector3 max = new Vector3(vertices.get(0));
+        min.set(vertices.get(0));
+        max.set(vertices.get(0));
         for (Vector3 vertex : vertices) {
             min.x = Math.min(min.x, vertex.x);
             min.y = Math.min(min.y, vertex.y);
@@ -128,7 +150,7 @@ public class ImportFile {
             max.z = Math.max(max.z, vertex.z);
         }
 
-        Vector3 centre = new Vector3((min.x+max.x)/2, (min.y+max.y)/2, (min.z+max.z)/2); // centre of the bounding box
+        centre.set((min.x+max.x)/2, (min.y+max.y)/2, (min.z+max.z)/2); // centre of the bounding box
         float size = Math.max(max.x-min.x, Math.max(max.y-min.y, max.z-min.z)); // finds the longest side, as if it fits, everything does
         if (size == 0) {return;}
 
@@ -144,11 +166,15 @@ public class ImportFile {
 
         for (int[] face : faces) {
             for (int count=0; count<face.length; count++) {
-                Vector3 vertex1 = vertices.get(face[count]);
-                Vector3 vertex2 = vertices.get(face[(count+1)%face.length]);
-                Vector3 vertex3 = vertices.get(face[(count+2)%face.length]);
+                vertex1 = vertices.get(face[count]);
+                vertex2 = vertices.get(face[(count+1)%face.length]);
+                vertex3 = vertices.get(face[(count+2)%face.length]);
                 shapeDrawer.triangle(vertex1, vertex2, vertex3, fixedBarrier);
             }
+        }
+
+        if (fill) {
+            cfdSolver.fillEnclosedShapes(fixedBarrier);
         }
     }
 
@@ -168,13 +194,12 @@ public class ImportFile {
     }
 
     public ArrayList<Vector3> getVerticesFromOBJModel(String filePath) {
-        FileHandle file = Gdx.files.internal(filePath);
+        file = Gdx.files.internal(filePath);
         if (!file.exists()) {return null;}
 
-        String[] contents = file.readString().split("\\r?\\n"); // split at every new line
-        ArrayList<Vector3> vertices = new ArrayList<>();
+        contents = file.readString().split("\\r?\\n"); // split at every new line
+        vertices.clear();
 
-        String[] lineList;
         for (String line : contents) {
             if (line.isEmpty()) {continue;}
 
@@ -190,14 +215,13 @@ public class ImportFile {
     }
 
     public ArrayList<int[]> getFacesFromOBJModel(String filePath) {
-        FileHandle file = Gdx.files.internal(filePath);
+        file = Gdx.files.internal(filePath);
         if (!file.exists()) {return null;}
 
-        String[] contents = file.readString().split("\\r?\\n"); // split at every new line
-        ArrayList<int[]> faces = new ArrayList<>();
+        contents = file.readString().split("\\r?\\n"); // split at every new line
+        faces.clear();
         int vertexCount = 0;
 
-        String[] lineList;
         for (String line : contents) {
             if (line.isEmpty()) {continue;}
 
@@ -271,12 +295,12 @@ public class ImportFile {
     }
 
     public Integer getModelBarriers(String filePath) {
-        FileHandle file = Gdx.files.internal(filePath);
+        file = Gdx.files.internal(filePath);
         if (!file.exists()) {return null;}
 
         int barriers = 0;
         if (file.extension().equals("bmp")) { // 2D file
-            Pixmap image = new Pixmap(file);
+            image = new Pixmap(file);
             for (int x=0; x<image.getWidth(); x++) {
                 for (int y=0; y<image.getHeight(); y++) {
                     int colour = image.getPixel(x, image.getHeight()-y-1);
@@ -293,14 +317,12 @@ public class ImportFile {
     }
 
     public Vector3 getModelResolution(String filePath) {
-        FileHandle file = Gdx.files.internal(filePath);
+        file = Gdx.files.internal(filePath);
         if (!file.exists()) {return new Vector3(0, 0, 0);}
 
         if (file.extension().equals("bmp")) { // 2D file
-            Pixmap image = new Pixmap(file);
+            image = new Pixmap(file);
             return new Vector3(image.getWidth(), image.getHeight(), 0);
-        } else if (file.extension().equals("obj")) { // 3D file
-            System.out.println("3D file");
         }
         return new Vector3(0, 0, 0);
     }

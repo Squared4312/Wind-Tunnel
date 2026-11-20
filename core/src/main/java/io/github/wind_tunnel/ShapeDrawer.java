@@ -7,12 +7,14 @@ public class ShapeDrawer {
     private Settings settings;
     private LatticeBoltzmannCFDSolver cfdSolver;
 
-    private Vector3 rayDirection;
+    private Vector3 rayDirection = new Vector3();
     private double rayDirectionLength;
     private Vector3 rayUnitStep = new Vector3();
-    private Vector3 check;
+    private Vector3 check = new Vector3();
     private Vector3 rayLength = new Vector3();
     private Vector3 step = new Vector3();
+
+    private Vector3 point = new Vector3();
 
     public ShapeDrawer() {
         settings = Settings.getInstance();
@@ -54,11 +56,11 @@ public class ShapeDrawer {
     public void line(Vector3 from, Vector3 to, boolean fixedBarrier) {
 
         // centre both from and to so that it raycasts from the centre of the cell
-        from = new Vector3(from).add(0.5f, 0.5f, 0.5f);
-        to = new Vector3(to).add(0.5f, 0.5f, 0.5f);
+        from.add(0.5f, 0.5f, 0.5f);
+        to.add(0.5f, 0.5f, 0.5f);
 
         // draw a line using the DDA algorithm
-        rayDirection = new Vector3(to.x-from.x, to.y-from.y, to.z-from.z);
+        rayDirection.set(to.x-from.x, to.y-from.y, to.z-from.z);
         rayDirectionLength = Math.sqrt(rayDirection.x*rayDirection.x + rayDirection.y*rayDirection.y + rayDirection.z*rayDirection.z);
 
         if (rayDirectionLength == 0) {
@@ -88,7 +90,7 @@ public class ShapeDrawer {
             rayUnitStep.z = (float) Double.POSITIVE_INFINITY;
         }
 
-        check = new Vector3((int) Math.floor(from.x), (int) Math.floor(from.y), (int) Math.floor(from.z));
+        check.set((int) Math.floor(from.x), (int) Math.floor(from.y), (int) Math.floor(from.z));
 
         if (rayDirection.x < 0) {
             step.x = -1;
@@ -163,7 +165,6 @@ public class ShapeDrawer {
         where t varies from start angle to end angle in radians
          */
 
-        Vector3 point = new Vector3();
         startAngle = Math.toRadians(startAngle);
         endAngle = Math.toRadians(endAngle);
 

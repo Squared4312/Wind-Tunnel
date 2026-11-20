@@ -129,24 +129,25 @@ public class Levels {
         } else if (levelNumber == 2) {
             shapeDrawer.circle(48, 36, 0, 8, false, true);
         } else if (levelNumber == 3) {
-            fileImporter.loadBitmap(levelsFolder + "airfoil.bmp", true);
+            fileImporter.loadBitmap(levelsFolder + "airfoil.bmp", true, false);
         } else if (levelNumber == 4) {
-            fileImporter.loadBitmap(levelsFolder + "pizza_slice.bmp", true);
+            fileImporter.loadBitmap(levelsFolder + "pizza_slice.bmp", true, false);
         } else if (levelNumber == 5) {
-            fileImporter.loadBitmap(levelsFolder + "apple.bmp", true);
+            fileImporter.loadBitmap(levelsFolder + "apple.bmp", true, false);
         } else if (levelNumber == 6) {
-            fileImporter.loadBitmap(levelsFolder + "f1_car.bmp", true);
+            fileImporter.loadBitmap(levelsFolder + "f1_car.bmp", true, false);
         } else if (levelNumber == 7) {
-            fileImporter.loadBitmap(levelsFolder + "stickman.bmp", true);
+            fileImporter.loadBitmap(levelsFolder + "stickman.bmp", true, false);
         } else if (levelNumber == 8) {
-            fileImporter.loadBitmap(levelsFolder + "nerd_face.bmp", true);
+            fileImporter.loadBitmap(levelsFolder + "nerd_face.bmp", true, false);
         } else if (levelNumber == 9) {
-            fileImporter.loadBitmap(levelsFolder + "hello_world.bmp", true);
+            fileImporter.loadBitmap(levelsFolder + "hello_world.bmp", true, false);
         } else if (levelNumber == 10) {
-            fileImporter.loadBitmap(levelsFolder + "trollface.bmp", true);
+            fileImporter.loadBitmap(levelsFolder + "trollface.bmp", true, false);
         } else if (levelNumber == 11) {
-            fileImporter.loadOBJModel(levelsFolder + "cube.obj", true);
+            fileImporter.loadOBJModel(levelsFolder + "cube.obj", true, true);
         }
         settings.setLoadedLevel(true);
+        settings.setBrushSize(1);
     }
 }

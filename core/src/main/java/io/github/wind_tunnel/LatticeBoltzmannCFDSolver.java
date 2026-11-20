@@ -39,7 +39,7 @@ public class LatticeBoltzmannCFDSolver {
     private Vector3 rotatedPoint = new Vector3();
     private Vector2 screenPos;
     private Vector2 mouse = new Vector2();
-    private Vector3 cellPosition;
+    private Vector3 cellPosition = new Vector3();
 
     private float four9ths = 4/9f;
     private float one9th = 1/9f;
@@ -78,6 +78,11 @@ public class LatticeBoltzmannCFDSolver {
     private float[] cellAverageVelocities;
     private float[] cellDensities;
 
+    private Vector2 tail = new Vector2();
+    private Vector2 head = new Vector2();
+    private Vector2 tip = new Vector2();
+    private Vector3 centre = new Vector3();
+
     private static LatticeBoltzmannCFDSolver instance;
 
     public static LatticeBoltzmannCFDSolver getInstance() {
@@ -92,18 +97,6 @@ public class LatticeBoltzmannCFDSolver {
         this.renderer = new ThreeDimensionalRenderer();
         initialiseFluid();
         this.colours = calculateColours();
-    }
-
-    private int cellIndexAt(int x, int y, int z) {
-        return x+simulationX*(y+simulationY*z);
-    }
-
-    private int densitiesCellIndexAt(int x, int y, int z) {
-        return cellIndexAt(x, y, z)*neighbours;
-    }
-
-    private int averageVelocitiesCellIndexAt(int x, int y, int z) {
-        return cellIndexAt(x, y, z)*3;
     }
 
     public void initialiseFluid() {
@@ -511,7 +504,6 @@ public class LatticeBoltzmannCFDSolver {
                 settings.setPlaceBarriers(true);
             }
         }
-        cellPosition = new Vector3();
         if (neighbours == 9) {
             cellPosition.x = Math.round(((mouse.x-(cellDimensions/2f))/1920)*simulationX);
             cellPosition.y = Math.round(((mouse.y-(cellDimensions/2f))/1080)*simulationY);
@@ -676,18 +668,18 @@ public class LatticeBoltzmannCFDSolver {
 
                 if (neighbours == 9) {
                     // centre the arrow on the cell
-                    Vector2 tail = new Vector2((x+0.5f)*cellDimensions, (y+0.5f)*cellDimensions);
-                    Vector2 head = new Vector2(flowVector.x*cellDimensions/2, flowVector.y*cellDimensions/2);
+                    tail.set((x+0.5f)*cellDimensions, (y+0.5f)*cellDimensions);
+                    head.set(flowVector.x*cellDimensions/2, flowVector.y*cellDimensions/2);
                     drawArrow(sr, new Vector2(tail.x-head.x, tail.y-head.y), new Vector2(tail.x+head.x, tail.y+head.y));
                 } else {
-                    Vector3 centre = new Vector3(x-simulationX/2f, y-simulationY/2f, z-simulationZ/2f);
+                    centre.set(x-simulationX/2f, y-simulationY/2f, z-simulationZ/2f);
 
                     rotatedPoint = renderer.rotate(centre.x-flowVector.x/2, centre.y-flowVector.y/2, centre.z-flowVector.z/2);
-                    Vector2 tail = renderer.pointProjection(rotatedPoint);
+                    tail.set(renderer.pointProjection(rotatedPoint));
                     if (tail == null) {continue;}
 
                     rotatedPoint = renderer.rotate(centre.x+flowVector.x/2, centre.y+flowVector.y/2, centre.z+flowVector.z/2);
-                    Vector2 tip = renderer.pointProjection(rotatedPoint);
+                    tip.set(renderer.pointProjection(rotatedPoint));
                     if (tip == null) {continue;}
 
                     drawArrow(sr, tail, tip);
@@ -717,6 +709,67 @@ public class LatticeBoltzmannCFDSolver {
             double xOffset = headLength*Math.cos(Math.toRadians(angle));
             double yOffset = headLength*Math.sin(Math.toRadians(angle));
             sr.rectLine((float) (head.x+xChange), (float) (head.y+yChange), (float) (head.x+xOffset+xChange), (float) (head.y+yOffset+yChange), 2);
+        }
+    }
+
+    public void fillEnclosedShapes(boolean fixedBarrier) {
+        // fill enclosed spaces using Breadth-First Search (BFS)
+
+        int numOfCells = simulationX*simulationY*simulationZ;
+        boolean[] visited = new boolean[numOfCells];
+        int[] queue = new int[numOfCells];
+        int head = 0;
+        int tail = 0;
+
+        // start from every fluid cell on the edge of the grid
+        for (int index=0; index<numOfCells; index++) {
+            int x = getXFromIndex(index);
+            int y = getYFromIndex(index);
+            int z = getZFromIndex(index);
+            if (x <= 0 || y <= 0 || x >= simulationX-1 || y >= simulationY-1 || (simulationZ > 1 && (z <= 0 || z >= simulationZ-1)) && !barriers[index]) {
+                visited[index] = true;
+                queue[tail] = index;
+                tail += 1;
+            }
+        }
+
+        int[] adjacent = new int[6];
+        while (head < tail) {
+            int index = queue[head];
+            head += 1;
+            int x = getXFromIndex(index);
+            int y = getYFromIndex(index);
+            int z = getZFromIndex(index);
+
+            if (x > 0) {adjacent[0] = index-1;}
+            else {adjacent[0] = -1;}
+            if (x < simulationX-1) {adjacent[1] = index+1;}
+            else {adjacent[1] = -1;}
+
+            if (y > 0) {adjacent[2] = index-simulationX;}
+            else {adjacent[2] = -1;}
+            if (y < simulationY-1) {adjacent[3] = index+simulationX;}
+            else {adjacent[3] = -1;}
+
+            if (z > 0) {adjacent[4] = index-(simulationX*simulationY);}
+            else {adjacent[4] = -1;}
+            if (z < simulationZ-1) {adjacent[5] = index+(simulationX*simulationY);}
+            else {adjacent[5] = -1;}
+
+            for (int neighbourIndex : adjacent) {
+                if (neighbourIndex >= 0 && !barriers[neighbourIndex] && !visited[neighbourIndex]) {
+                    visited[neighbourIndex] = true;
+                    queue[tail] = neighbourIndex;
+                    tail += 1;
+                }
+            }
+        }
+
+        // anything the BFS couldn't reach is sealed off by barriers, therefore, fill it
+        for (int index=0; index<numOfCells; index++) {
+            if (!barriers[index] && !visited[index]) {
+                addBarrier(getXFromIndex(index), getYFromIndex(index), getZFromIndex(index), fixedBarrier);
+            }
         }
     }
 
@@ -782,7 +835,7 @@ public class LatticeBoltzmannCFDSolver {
     }
 
 
-    public void addBarrier(int x, int y, int z, boolean fixed) {
+    public void addBarrier(int x, int y, int z, boolean fixedBarrier) {
         if (x > 0 && x < simulationX-1 && y > 0 && y < simulationY-1) { // in simulation area
             if (neighbours == 19 && (z <= 0 || z >= simulationZ-1)) { // 3D and outside
                 return;
@@ -796,7 +849,7 @@ public class LatticeBoltzmannCFDSolver {
                 } else {
                     barriers[cellIndexAt(x, y, z)] = true;
                 }
-                if (fixed) {settings.addFixedBarrier(x, y, z);}
+                if (fixedBarrier) {settings.addFixedBarrier(x, y, z);}
             }
         }
     }
@@ -842,6 +895,30 @@ public class LatticeBoltzmannCFDSolver {
 
     public boolean isBarrier(int x, int y, int z) {
         return barriers[cellIndexAt(x, y, z)];
+    }
+
+    private int cellIndexAt(int x, int y, int z) {
+        return x+simulationX*(y+simulationY*z);
+    }
+
+    private int densitiesCellIndexAt(int x, int y, int z) {
+        return cellIndexAt(x, y, z)*neighbours;
+    }
+
+    private int averageVelocitiesCellIndexAt(int x, int y, int z) {
+        return cellIndexAt(x, y, z)*3;
+    }
+
+    private int getXFromIndex(int index) {
+        return index%simulationX;
+    }
+
+    private int getYFromIndex(int index) {
+        return (index/simulationX)%simulationY;
+    }
+
+    private int getZFromIndex(int index) {
+        return index/(simulationX*simulationY);
     }
 
     public int getNeighbours() {return this.neighbours;}
