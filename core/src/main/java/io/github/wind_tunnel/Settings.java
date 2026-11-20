@@ -40,7 +40,6 @@ public class Settings {
     private String[] levelNames = {"line", "circle", "airfoil", "pizza slice", "apple", "car" ,"stick man", ":)", "hello world", "troll face", "cube"};
 
     private Solver oldSolver;
-    private Vector3 oldResolution;
     private int max3DResolution = 256;
 
     private static Settings instance;
@@ -76,7 +75,6 @@ public class Settings {
 
         this.fixedBarriers = new boolean[(int) this.resolution.x][(int) this.resolution.y][(int) this.resolution.z];
         this.oldSolver = this.solver;
-        this.oldResolution = this.resolution;
     }
 
     public void changeSolver() {
@@ -87,7 +85,7 @@ public class Settings {
             solver = Solver.THREE_D;
             resolution.z = resolution.y;
             if (resolution.x > max3DResolution) {
-                resolution = new Vector3(resolutionValues[3][0], resolutionValues[3][1], resolutionValues[3][1]);
+                resolution.set(resolutionValues[3][0], resolutionValues[3][1], resolutionValues[3][1]);
             }
         }
     }
@@ -125,21 +123,21 @@ public class Settings {
         }
         if (change == 1) {
             if (index == resolutionValues.length-1) {
-                this.resolution = new Vector3(resolutionValues[0][0], resolutionValues[0][1], resolutionValues[0][1]);
+                this.resolution.set(resolutionValues[0][0], resolutionValues[0][1], resolutionValues[0][1]);
             } else {
-                this.resolution = new Vector3(resolutionValues[index+1][0], resolutionValues[index+1][1], resolutionValues[index+1][1]);
+                this.resolution.set(resolutionValues[index+1][0], resolutionValues[index+1][1], resolutionValues[index+1][1]);
             }
             if (solver.equals(Solver.THREE_D) && this.resolution.x > max3DResolution) {
-                this.resolution = new Vector3(resolutionValues[0][0], resolutionValues[0][1], resolutionValues[0][1]);
+                this.resolution.set(resolutionValues[0][0], resolutionValues[0][1], resolutionValues[0][1]);
             }
         } else if (change == -1) {
             if (index == 0) {
-                this.resolution = new Vector3(resolutionValues[resolutionValues.length-1][0], resolutionValues[resolutionValues.length-1][1], resolutionValues[resolutionValues.length-1][1]);
+                this.resolution.set(resolutionValues[resolutionValues.length-1][0], resolutionValues[resolutionValues.length-1][1], resolutionValues[resolutionValues.length-1][1]);
             } else {
-                this.resolution = new Vector3(resolutionValues[index-1][0], resolutionValues[index-1][1], resolutionValues[index-1][1]);
+                this.resolution.set(resolutionValues[index-1][0], resolutionValues[index-1][1], resolutionValues[index-1][1]);
             }
             if (solver.equals(Solver.THREE_D) && this.resolution.x > max3DResolution) {
-                this.resolution = new Vector3(resolutionValues[3][0], resolutionValues[3][1], resolutionValues[3][1]);
+                this.resolution.set(resolutionValues[3][0], resolutionValues[3][1], resolutionValues[3][1]);
             }
         }
         changeBrushSizeAndCameraDistanceAndSelectedZPlane();
@@ -171,9 +169,6 @@ public class Settings {
             selectedZPlane = (int) (resolution.z-1);
         }
     }
-
-    public Vector3 getOldResolution() {return this.oldResolution;}
-    public void setOldResolution(Vector3 oldResolution) {this.oldResolution = oldResolution;}
 
     public Solver getOldSolver() {return this.oldSolver;}
     public void setOldSolver(Solver oldSolver) {this.oldSolver = oldSolver;}

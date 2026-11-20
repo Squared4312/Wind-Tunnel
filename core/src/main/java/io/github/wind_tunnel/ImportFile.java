@@ -17,6 +17,8 @@ public class ImportFile {
     private String levelsFolder = "assets/levels/";
     private String presetBarrierFolder = "assets/presets/";
 
+    private float z;
+
     public ImportFile() {
         settings = Settings.getInstance();
         cfdSolver = LatticeBoltzmannCFDSolver.getInstance();
@@ -50,14 +52,16 @@ public class ImportFile {
         cfdSolver.initialiseFluid();
         if (solver.equals(Solver.TWO_D)) {
             loadBitmap(filePath, fixedBarrier);
+            z = 1;
         } else if (solver.equals(Solver.THREE_D)) {
             loadOBJModel(filePath, fixedBarrier);
+            z = oldResolution.z;
         } else {
             return false;
         }
         if (scaleToResolution && oldResolution != settings.getResolution()) {
-            settings.setResolution(oldResolution);
-            cfdSolver.scaleBarriersUsingResolution();
+            settings.setResolution(new Vector3(oldResolution.x, oldResolution.y, z));
+            cfdSolver.initialiseFluid();
         }
         return true;
     }
