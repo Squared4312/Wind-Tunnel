@@ -2,12 +2,18 @@ package io.github.wind_tunnel;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import io.github.wind_tunnel.ENums.Solver;
 
 public class Keybinds {
 
     private Settings settings;
     private LatticeBoltzmannCFDSolver cfdSolver;
+    private ThreeDimensionalRenderer renderer;
+
+    private Vector3 cellPosition = new Vector3();
+    private Vector2 mouse = new Vector2();
 
     private int[] binds = {
         Input.Keys.W, Input.Keys.S, Input.Keys.A, Input.Keys.D, // rotation of the simulation area in 3D, forwards, backwards, left, right
@@ -33,6 +39,7 @@ public class Keybinds {
     private Keybinds() {
         settings = Settings.getInstance();
         cfdSolver = LatticeBoltzmannCFDSolver.getInstance();
+        renderer = new ThreeDimensionalRenderer();
     }
 
     public void checkForKeyPresses() {
@@ -80,7 +87,16 @@ public class Keybinds {
             settings.changeBrushSize(-1);
         }
         if (Gdx.input.isKeyJustPressed(binds[15])) {
-            cfdSolver.fillEnclosedShapes(false);
+            mouse.set(Gdx.input.getX(), Gdx.graphics.getHeight()-Gdx.input.getY());
+            if (settings.getSolver().equals(Solver.THREE_D)) {
+                cellPosition = renderer.getIntersectionBetweenPlaneAnd(mouse);
+                if (cellPosition == null) {return;}
+            } else {
+                cellPosition.x = Math.round(((mouse.x-(cfdSolver.getCellDimensions()/2f))/1920)*settings.getResolution().x);
+                cellPosition.y = Math.round(((mouse.y-(cfdSolver.getCellDimensions()/2f))/1080)*settings.getResolution().y);
+                cellPosition.z = 0;
+            }
+            cfdSolver.fillEnclosedShapes(cfdSolver.cellIndexAt((int) cellPosition.x, (int) cellPosition.y, (int) cellPosition.z), true, false);
         }
     }
 

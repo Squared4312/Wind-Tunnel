@@ -107,7 +107,7 @@ public class Levels {
             settings.setMaxBarriers(250);
         }
 
-        settings.setFixedBarriers(new boolean[(int) settings.getResolution().x][(int) settings.getResolution().y][(int) settings.getResolution().z]);
+        settings.resetFixedBarriers();
         /*
         level ideas:
         1: vertical line

@@ -25,7 +25,7 @@ public class ShapeDrawer {
         for (float x=Math.min(from.x, to.x); x<=Math.max(from.x, to.x); x++) {
             for (float y=Math.min(from.y, to.y); y<=Math.max(from.y, to.y); y++) {
                 for (float z=Math.min(from.z, to.z); z<=Math.max(from.z, to.z); z++) {
-                    cfdSolver.addBarrier((int) x, (int) y, (int) z, fixedBarrier);
+                    cfdSolver.addBarrier(cfdSolver.cellIndexAt((int) x, (int) y, (int) z), fixedBarrier);
                 }
             }
         }
@@ -48,7 +48,7 @@ public class ShapeDrawer {
                 float y = a.y + s*(b.y-a.y) + t*(c.y-a.y);
                 float z = a.z + s*(b.z-a.z) + t*(c.z-a.z);
                 // +0.5 to round to the nearest cell
-                cfdSolver.addBarrier((int) Math.floor(x+0.5f), (int) Math.floor(y+0.5f), (int) Math.floor(z+0.5f), fixedBarrier);
+                cfdSolver.addBarrier(cfdSolver.cellIndexAt((int) Math.floor(x+0.5f), (int) Math.floor(y+0.5f), (int) Math.floor(z+0.5f)), fixedBarrier);
             }
         }
     }
@@ -64,7 +64,7 @@ public class ShapeDrawer {
         rayDirectionLength = Math.sqrt(rayDirection.x*rayDirection.x + rayDirection.y*rayDirection.y + rayDirection.z*rayDirection.z);
 
         if (rayDirectionLength == 0) {
-            cfdSolver.addBarrier((int) from.x, (int) from.y, (int) from.z, fixedBarrier);
+            cfdSolver.addBarrier(cfdSolver.cellIndexAt((int) from.x, (int) from.y, (int) from.z), fixedBarrier);
             return; // from equals to, no direction to cast, so just place 1 barrier
         }
         rayDirection.x = (float) (rayDirection.x/rayDirectionLength);
@@ -119,7 +119,7 @@ public class ShapeDrawer {
         // prevents indefinite iteration by finding the number of barriers apart from and to are in each axis
         int maxSteps = Math.abs((int) (Math.floor(to.x)-check.x)) + Math.abs((int) (Math.floor(to.y)-check.y)) + Math.abs((int) (Math.floor(to.z)-check.z));
         for (int steps=0; steps<=maxSteps; steps++) {
-            cfdSolver.addBarrier((int) check.x, (int) check.y, (int) check.z, fixedBarrier);
+            cfdSolver.addBarrier(cfdSolver.cellIndexAt((int) check.x, (int) check.y, (int) check.z), fixedBarrier);
 
             // move along the axis that has the shortest ray length
             if (rayLength.x < rayLength.y && rayLength.x < rayLength.z) {
@@ -153,7 +153,7 @@ public class ShapeDrawer {
                 if (cellX <= 0 || cellX >= settings.getResolution().x-1 || cellY <= 0 || cellY >= settings.getResolution().y-1) {
                     continue;
                 }
-                cfdSolver.addBarrier(cellX, cellY, z, fixedBarrier);
+                cfdSolver.addBarrier(cfdSolver.cellIndexAt(cellX, cellY, z), fixedBarrier);
             }
         }
     }
@@ -178,7 +178,7 @@ public class ShapeDrawer {
                 continue;
             }
 
-            cfdSolver.addBarrier((int) point.x, (int) point.y, z, fixedBarrier);
+            cfdSolver.addBarrier(cfdSolver.cellIndexAt((int) point.x, (int) point.y, z), fixedBarrier);
         }
     }
 }

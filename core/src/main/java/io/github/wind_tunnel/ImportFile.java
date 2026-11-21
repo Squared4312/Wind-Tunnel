@@ -98,14 +98,14 @@ public class ImportFile {
             for (int y=0; y<image.getHeight(); y++) {
                 int colour = image.getPixel(x, image.getHeight()-y-1);
                 if (colour == 0x000000FF) { // black
-                    cfdSolver.addBarrier(x, y, 0, fixedBarrier);
+                    cfdSolver.addBarrier(cfdSolver.cellIndexAt(x, y, 0), fixedBarrier);
                 }
             }
         }
         image.dispose();
 
         if (fill) {
-            cfdSolver.fillEnclosedShapes(fixedBarrier);
+            cfdSolver.fillEnclosedShapes(0, false, fixedBarrier);
         }
     }
 
@@ -174,7 +174,7 @@ public class ImportFile {
         }
 
         if (fill) {
-            cfdSolver.fillEnclosedShapes(fixedBarrier);
+            cfdSolver.fillEnclosedShapes(0, false, fixedBarrier);
         }
     }
 

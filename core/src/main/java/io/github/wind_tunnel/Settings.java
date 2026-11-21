@@ -10,7 +10,7 @@ public class Settings {
     private Solver solver;
     private float flowSpeed;
     private float viscosity;
-    private String plot;
+    private int plot;
     private boolean showFlowLines;
     private boolean renderUI;
     private boolean renderOnlySelectedZPlane;
@@ -33,7 +33,7 @@ public class Settings {
     private boolean loadedLevel = false;
     private Integer levelNumber = 1;
     private boolean[] lockedSettings = new boolean[12]; // resolution, flowspeed, viscosity, plot, brushSize, solver, barrierShapes, clearBarriers, showFlowLines, renderUI, renderSelectedZPlane, importFileMenu
-    private boolean[][][] fixedBarriers;
+    private boolean[] fixedBarriers;
     private int availableBarriers = 0; // number of barriers left to use
     private int maxBarriers = 0; // total number of barriers allowed
     private float levelScore = 0;
@@ -41,6 +41,8 @@ public class Settings {
 
     private Solver oldSolver;
     private int max3DResolution = 256;
+
+    private int numOfCells;
 
     private static Settings instance;
 
@@ -60,7 +62,7 @@ public class Settings {
         this.solver = Solver.TWO_D;
         this.flowSpeed = 0.100f;
         this.viscosity = 0.020f;
-        this.plot = this.plotValues[1];
+        this.plot = 1;
         this.showFlowLines = false;
         this.renderUI = true;
         this.renderOnlySelectedZPlane = false;
@@ -73,7 +75,8 @@ public class Settings {
         this.selectedZPlane = 0;
         this.intersectionPoint = new Vector3(0, 0, 0);
 
-        this.fixedBarriers = new boolean[(int) this.resolution.x][(int) this.resolution.y][(int) this.resolution.z];
+        updateNumOfCells();
+        this.fixedBarriers = new boolean[numOfCells];
         this.oldSolver = this.solver;
     }
 
@@ -141,6 +144,7 @@ public class Settings {
             }
         }
         changeBrushSizeAndCameraDistanceAndSelectedZPlane();
+        updateNumOfCells();
     }
 
     public void changeBrushSizeAndCameraDistanceAndSelectedZPlane() {
@@ -155,6 +159,10 @@ public class Settings {
         this.cameraDistance =  25*(int) Math.pow(2, index); // 25* 2^index -> 25, 50, 100, 200, 400, 800
         this.selectedZPlane = Math.max(1, (int) (this.resolution.z/2));
     }
+
+    public int getNumOfCells() {return this.numOfCells;}
+    public void setNumOfCells(int numOfCells) {this.numOfCells = numOfCells;}
+    public void updateNumOfCells() {this.numOfCells = (int) (this.resolution.x*this.resolution.y*this.resolution.z);}
 
     public Vector3 getOrigin() {return this.origin;}
     public void setOrigin(Vector3 origin) {this.origin = origin;}
@@ -193,10 +201,11 @@ public class Settings {
     public boolean getLockedSettingAt(int index) {return this.lockedSettings[index];}
     public void setLockedSettingAt(int index, boolean locked) {this.lockedSettings[index] = locked;}
 
-    public void addFixedBarrier(int x, int y, int z) {this.fixedBarriers[x][y][z] = true;}
-    public void removeFixedBarrier(int x, int y, int z) {this.fixedBarriers[x][y][z] = false;}
-    public boolean getFixedBarrierAt(int x, int y, int z) {return this.fixedBarriers[x][y][z];}
-    public void setFixedBarriers(boolean[][][] fixedBarriers) {this.fixedBarriers = fixedBarriers;}
+    public void addFixedBarrier(int index) {this.fixedBarriers[index] = true;}
+    public void removeFixedBarrier(int index) {this.fixedBarriers[index] = false;}
+    public boolean getFixedBarrierAt(int index) {return this.fixedBarriers[index];}
+    public void setFixedBarriers(boolean[] fixedBarriers) {this.fixedBarriers = fixedBarriers;}
+    public void resetFixedBarriers() {this.fixedBarriers = new boolean[numOfCells];}
 
     public Integer getLevelNumber() {return this.levelNumber;}
     public void setLevelNumber(Integer levelNumber) {this.levelNumber = levelNumber;}
@@ -251,8 +260,9 @@ public class Settings {
     public float getViscosity() {return this.viscosity;}
     public void setViscosity(float viscosity) {this.viscosity = viscosity;}
 
-    public String getPlot() {return this.plot;}
-    public void setPlot(String plot) {this.plot = plot;}
+    public int getPlot() {return this.plot;}
+    public void setPlot(int plot) {this.plot = plot;}
+    public String getPlotName() {return this.plotValues[plot];}
 
     public boolean getShowFlowLines() {return this.showFlowLines;}
     public void setShowFlowLines(boolean showFlowLines) {this.showFlowLines = showFlowLines;}
