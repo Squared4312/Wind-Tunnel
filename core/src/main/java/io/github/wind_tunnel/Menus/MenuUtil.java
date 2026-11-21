@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import io.github.wind_tunnel.ENums.TextAlignment;
+import io.github.wind_tunnel.ENums.Colours;
 import io.github.wind_tunnel.Settings;
 
 public class MenuUtil {
@@ -108,7 +109,7 @@ public class MenuUtil {
 
     public void renderLockedSettings(ShapeRenderer sr, Rectangle[] buttons) {
         // lockedSettings: resolution, flowspeed, viscosity, plot, brushSize, solver, barrierShapes, clearBarriers, showFlowLines, renderUI, renderSelectedZPlane
-        sr.setColor(Color.RED);
+        sr.setColor(Colours.LOCKED_SETTINGS.get());
         for (int index=0; index<buttons.length-1; index++) {
             if (settings.getLockedSettingAt(index)) {
                 sr.rectLine(buttons[index].x, buttons[index].y, buttons[index].x+buttons[index].width, buttons[index].y+buttons[index].height, 4); // bl -> tr
@@ -124,11 +125,4 @@ public class MenuUtil {
     }
 
     public Vector2 getScreenDimensions() {return screenDimensions;}
-
-    public Color getQuitButtonColor() {return new Color(199/255f, 0f, 0f, 1f);}
-    public Color getRunButtonColor() {return new Color(0f, 128/255f, 0f, 1f);}
-    public Color getPauseButtonColor() {return new Color(199/255f, 0f, 0f, 1f);}
-    public Color getStepButtonColor() {return new Color(56/255f, 149/255f, 211/255f, 1f);}
-
-    public Color getButtonColor() {return new Color(128/255f, 128/255f, 128/255f, 1f);}
 }

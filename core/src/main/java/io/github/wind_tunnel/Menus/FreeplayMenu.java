@@ -1,12 +1,12 @@
 package io.github.wind_tunnel.Menus;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import io.github.wind_tunnel.*;
 import io.github.wind_tunnel.ENums.TextAlignment;
+import io.github.wind_tunnel.ENums.Colours;
 
 public class FreeplayMenu implements Menu {
     private MenuUtil util;
@@ -55,12 +55,12 @@ public class FreeplayMenu implements Menu {
 
             if (settings.getRenderUI()) {
                 if (!settings.getSimulationRunning()) {
-                    runButton = util.renderRoundedRectangle(sr, util.getRunButtonColor(), 835, 62.5f, 200, 75, 16);
-                    util.renderRoundedTriangle(sr, Color.WHITE, 790, 62.5f, 12, 90);
+                    runButton = util.renderRoundedRectangle(sr, Colours.RUN_BUTTON.get(), 835, 62.5f, 200, 75, 16);
+                    util.renderRoundedTriangle(sr, Colours.TRIANGLE.get(), 790, 62.5f, 12, 90);
                 } else {
-                    pauseButton = util.renderRoundedRectangle(sr, util.getPauseButtonColor(), 835, 62.5f, 200, 75, 16);
+                    pauseButton = util.renderRoundedRectangle(sr, Colours.PAUSE_BUTTON.get(), 835, 62.5f, 200, 75, 16);
                 }
-                stepButton = util.renderRoundedRectangle(sr, util.getStepButtonColor(), 1085, 62.5f, 200, 75, 16);
+                stepButton = util.renderRoundedRectangle(sr, Colours.STEP_BUTTON.get(), 1085, 62.5f, 200, 75, 16);
             }
         sr.end();
 
@@ -69,14 +69,14 @@ public class FreeplayMenu implements Menu {
         batch.begin();
             if (settings.getRenderUI()) {
                 if (!settings.getSimulationRunning()) {
-                    util.renderText(batch, "run", Color.WHITE, 857.5f, 62.5f, 36, TextAlignment.CENTRE);
+                    util.renderText(batch, "run", Colours.TEXT.get(), 857.5f, 62.5f, 36, TextAlignment.CENTRE);
                 } else {
-                    util.renderText(batch, "pause", Color.WHITE, 852.5f, 62.5f, 36, TextAlignment.CENTRE);
+                    util.renderText(batch, "pause", Colours.TEXT.get(), 852.5f, 62.5f, 36, TextAlignment.CENTRE);
                     util.renderIcon(batch, pauseIcon, 770, 62.5f);
                 }
-                util.renderText(batch, "step", Color.WHITE, 1110, 62.5f, 36, TextAlignment.CENTRE);
+                util.renderText(batch, "step", Colours.TEXT.get(), 1110, 62.5f, 36, TextAlignment.CENTRE);
                 util.renderIcon(batch, stepIcon, 1035, 62.5f);
-                util.renderText(batch, "(" + (int) settings.getIntersectionPoint().x + ", " + (int) settings.getIntersectionPoint().y + ", " + (int) settings.getIntersectionPoint().z + ")", Color.WHITE, 57.5f, 57.5f, 36, TextAlignment.LEFT);
+                util.renderText(batch, "(" + (int) settings.getIntersectionPoint().x + ", " + (int) settings.getIntersectionPoint().y + ", " + (int) settings.getIntersectionPoint().z + ")", Colours.TEXT.get(), 57.5f, 57.5f, 36, TextAlignment.LEFT);
             }
 
             util.renderIcon(batch, backIcon, 57.5f, 1022.5f);

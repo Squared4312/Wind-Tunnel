@@ -1,6 +1,5 @@
 package io.github.wind_tunnel.Menus;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -10,6 +9,7 @@ import io.github.wind_tunnel.*;
 import java.util.ArrayList;
 import io.github.wind_tunnel.ENums.TextAlignment;
 import io.github.wind_tunnel.ENums.Solver;
+import io.github.wind_tunnel.ENums.Colours;
 
 public class ImportFileMenu implements Menu {
     private MenuUtil util;
@@ -47,48 +47,48 @@ public class ImportFileMenu implements Menu {
             importButton = util.getHitbox(1163.75f, 242.5f, 287.5f, 75);
             cancelButton = util.getHitbox(1476.25f, 242.5f, 287.5f, 75);
 
-            util.renderRoundedRectangle(sr, util.getButtonColor(), 600, 542.5f, 600, 475, 16); // file list
+            util.renderRoundedRectangle(sr, Colours.BUTTON_BG.get(), 600, 542.5f, 600, 475, 16); // file list
 
-            util.renderRoundedRectangle(sr, util.getButtonColor(), 600, 242.5f, 600, 75, 16); // pages
-            pageArrows[0] = util.renderRoundedTriangle(sr, Color.WHITE, 335, 242.5f, 12, 270); // left arrow
-            pageArrows[1] = util.renderRoundedTriangle(sr, Color.WHITE, 865, 242.5f, 12, 90); // right arrow
+            util.renderRoundedRectangle(sr, Colours.BUTTON_BG.get(), 600, 242.5f, 600, 75, 16); // pages
+            pageArrows[0] = util.renderRoundedTriangle(sr, Colours.TRIANGLE.get(), 335, 242.5f, 12, 270); // left arrow
+            pageArrows[1] = util.renderRoundedTriangle(sr, Colours.TRIANGLE.get(), 865, 242.5f, 12, 90); // right arrow
 
-            util.renderRoundedRectangle(sr, util.getButtonColor(), 1320, 542.5f, 600, 475, 16); // selected file
+            util.renderRoundedRectangle(sr, Colours.BUTTON_BG.get(), 1320, 542.5f, 600, 475, 16); // selected file
 
-            util.renderRoundedRectangle(sr, util.getButtonColor(), 1163.75f, 242.5f, 287.5f, 75, 16); // import
-            util.renderRoundedRectangle(sr, util.getButtonColor(), 1476.25f, 242.5f, 287.5f, 75, 16); // cancel
+            util.renderRoundedRectangle(sr, Colours.BUTTON_BG.get(), 1163.75f, 242.5f, 287.5f, 75, 16); // import
+            util.renderRoundedRectangle(sr, Colours.BUTTON_BG.get(), 1476.25f, 242.5f, 287.5f, 75, 16); // cancel
         sr.end();
 
         batch.begin();
-            util.renderText(batch, "import a file", Color.WHITE, util.getScreenDimensions().x/2, 953, 96, TextAlignment.CENTRE);
+            util.renderText(batch, "import a file", Colours.TEXT.get(), util.getScreenDimensions().x/2, 953, 96, TextAlignment.CENTRE);
 
             fileButtons = new Rectangle[filePaths.length];
 
             if (filePaths.length == 0) {
-                util.renderText(batch, "no files found in", Color.WHITE, 600, 517.5f, 36, TextAlignment.CENTRE);
-                util.renderText(batch, fileImporter.getModelsFolder(), Color.WHITE, 600, 467.5f, 36, TextAlignment.CENTRE);
+                util.renderText(batch, "no files found in", Colours.TEXT.get(), 600, 517.5f, 36, TextAlignment.CENTRE);
+                util.renderText(batch, fileImporter.getModelsFolder(), Colours.TEXT.get(), 600, 467.5f, 36, TextAlignment.CENTRE);
             } else {
                 for (int count=0; count<filePaths.length; count++) {
                     if (Math.floorDiv(count, modelsPerPage) == pageNumber-1) {
-                        util.renderText(batch, fileImporter.getFileNameAndExtension(filePaths[count]), Color.WHITE, 320, 742.5f-(50*(count-(Math.floorDiv(count, modelsPerPage)*modelsPerPage))), 36, TextAlignment.LEFT);
+                        util.renderText(batch, fileImporter.getFileNameAndExtension(filePaths[count]), Colours.TEXT.get(), 320, 742.5f-(50*(count-(Math.floorDiv(count, modelsPerPage)*modelsPerPage))), 36, TextAlignment.LEFT);
                     }
                     fileButtons[count] = new Rectangle(300, 742.5f-(50*(count-(Math.floorDiv(count, modelsPerPage)*modelsPerPage)))-25, 600, 50);
                 }
             }
 
             if (selectedFile == null) {
-                util.renderText(batch, "no file selected", Color.WHITE, 1320, 542.5f, 36, TextAlignment.CENTRE);
+                util.renderText(batch, "no file selected", Colours.TEXT.get(), 1320, 542.5f, 36, TextAlignment.CENTRE);
             } else {
-                util.renderText(batch, fileImporter.getFileNameAndExtension(selectedFile), Color.WHITE, 1320, 742.5f, 36, TextAlignment.CENTRE);
+                util.renderText(batch, fileImporter.getFileNameAndExtension(selectedFile), Colours.TEXT.get(), 1320, 742.5f, 36, TextAlignment.CENTRE);
                 for (int count=0; count<selectedFileData.length; count++) {
-                    util.renderText(batch, selectedFileData[count], Color.WHITE, 1320, 667.5f-(50*count), 36, TextAlignment.CENTRE);
+                    util.renderText(batch, selectedFileData[count], Colours.TEXT.get(), 1320, 667.5f-(50*count), 36, TextAlignment.CENTRE);
                 }
             }
 
-            util.renderText(batch, "import", Color.WHITE, 1163.75f, 242.5f, 36, TextAlignment.CENTRE); // import
-            util.renderText(batch, "cancel", Color.WHITE, 1476.25f, 242.5f, 36, TextAlignment.CENTRE); // cancel
+            util.renderText(batch, "import", Colours.TEXT.get(), 1163.75f, 242.5f, 36, TextAlignment.CENTRE); // import
+            util.renderText(batch, "cancel", Colours.TEXT.get(), 1476.25f, 242.5f, 36, TextAlignment.CENTRE); // cancel
 
-            util.renderText(batch, "page " + pageNumber + "/" + totalPages, Color.WHITE, 600, 242.5f, 36, TextAlignment.CENTRE); // pages
+            util.renderText(batch, "page " + pageNumber + "/" + totalPages, Colours.TEXT.get(), 600, 242.5f, 36, TextAlignment.CENTRE); // pages
 
             util.renderIcon(batch, backIcon, 57.5f, 1022.5f);
             util.renderIcon(batch, importFileIcon, 57.5f, 57.5f);

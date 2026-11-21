@@ -1,17 +1,16 @@
 package io.github.wind_tunnel.Menus;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import io.github.wind_tunnel.*;
 import io.github.wind_tunnel.ENums.TextAlignment;
+import io.github.wind_tunnel.ENums.Colours;
 
 public class MainMenu implements Menu {
     private Settings settings;
     private MenuUtil util;
-    private LatticeBoltzmannCFDSolver cfdSolver;
 
     private Menu settingsMenu;
     private Menu levelsMenu;
@@ -31,7 +30,6 @@ public class MainMenu implements Menu {
     public MainMenu(Menu settingsMenu, Menu levelsMenu, Menu freeplayMenu, Menu aboutMenu) {
         this.settings = Settings.getInstance();
         this.util = new MenuUtil();
-        this.cfdSolver = LatticeBoltzmannCFDSolver.getInstance();
 
         this.settingsMenu = settingsMenu;
         this.levelsMenu = levelsMenu;
@@ -46,17 +44,17 @@ public class MainMenu implements Menu {
     @Override
     public void render(ShapeRenderer sr, SpriteBatch batch) {
         sr.begin(ShapeRenderer.ShapeType.Filled);
-            quitButton = util.renderButton(sr, util.getQuitButtonColor(), null, 1862.5f, 1022.5f, 75, 75, 16);
+            quitButton = util.renderButton(sr, Colours.QUIT_BUTTON.get(), null, 1862.5f, 1022.5f, 75, 75, 16);
             settingsButton = util.getHitbox(1862.5f, 57.5f, 75, 75);
-            levelsButton = util.renderButton(sr, Color.WHITE, Color.BLACK, util.getScreenDimensions().x/2, 580, 700, 150, 16);
-            freeplayButton = util.renderButton(sr, Color.WHITE, Color.BLACK, util.getScreenDimensions().x/2, 380, 700, 150, 16);
+            levelsButton = util.renderButton(sr, Colours.BUTTON_OUTLINE.get(), Colours.BUTTON_FILL.get(), util.getScreenDimensions().x/2, 580, 700, 150, 16);
+            freeplayButton = util.renderButton(sr, Colours.BUTTON_OUTLINE.get(), Colours.BUTTON_FILL.get(), util.getScreenDimensions().x/2, 380, 700, 150, 16);
             aboutButton = util.getHitbox(57.5f, 57.5f, 75, 75);
         sr.end();
 
         batch.begin();
-            util.renderText(batch, "wind tunnel", Color.WHITE, util.getScreenDimensions().x/2, 880, 128, TextAlignment.CENTRE);
-            util.renderText(batch, "levels", Color.WHITE, util.getScreenDimensions().x/2, 580, 64, TextAlignment.CENTRE);
-            util.renderText(batch, "freeplay", Color.WHITE, util.getScreenDimensions().x/2, 380, 64, TextAlignment.CENTRE);
+            util.renderText(batch, "wind tunnel", Colours.TEXT.get(), util.getScreenDimensions().x/2, 880, 128, TextAlignment.CENTRE);
+            util.renderText(batch, "levels", Colours.TEXT.get(), util.getScreenDimensions().x/2, 580, 64, TextAlignment.CENTRE);
+            util.renderText(batch, "freeplay", Colours.TEXT.get(), util.getScreenDimensions().x/2, 380, 64, TextAlignment.CENTRE);
             util.renderIcon(batch, quitIcon, 1862.5f, 1022.5f);
             util.renderIcon(batch, settingsIcon, 1862.5f, 57.5f);
             util.renderIcon(batch, aboutIcon, 57.5f, 57.5f);

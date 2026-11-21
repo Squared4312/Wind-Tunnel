@@ -1,6 +1,5 @@
 package io.github.wind_tunnel.Menus;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -9,6 +8,7 @@ import com.badlogic.gdx.math.Vector3;
 import io.github.wind_tunnel.*;
 import java.text.DecimalFormat;
 import io.github.wind_tunnel.ENums.TextAlignment;
+import io.github.wind_tunnel.ENums.Colours;
 import io.github.wind_tunnel.ENums.Solver;
 
 public class SettingsMenu implements Menu {
@@ -82,21 +82,21 @@ public class SettingsMenu implements Menu {
             keybindsButton = util.getHitbox(57.5f, 57.5f, 75, 75);
             importFileButton = util.getHitbox(57.5f, 152.5f, 75, 75);
 
-            buttons[0] = util.renderRoundedRectangle(sr, util.getButtonColor(), 600, 742.5f, 600, 75, 16); // l1
-            buttons[1] = util.renderRoundedRectangle(sr, util.getButtonColor(), 600, 642.5f, 600, 75, 16); // l2
-            buttons[2] = util.renderRoundedRectangle(sr, util.getButtonColor(), 600, 542.5f, 600, 75, 16); // l3
-            buttons[3] = util.renderRoundedRectangle(sr, util.getButtonColor(), 600, 442.5f, 600, 75, 16); // l4
-            buttons[4] = util.renderRoundedRectangle(sr, util.getButtonColor(), 600, 342.5f, 600, 75, 16); // l5
+            buttons[0] = util.renderRoundedRectangle(sr, Colours.BUTTON_BG.get(), 600, 742.5f, 600, 75, 16); // l1
+            buttons[1] = util.renderRoundedRectangle(sr, Colours.BUTTON_BG.get(), 600, 642.5f, 600, 75, 16); // l2
+            buttons[2] = util.renderRoundedRectangle(sr, Colours.BUTTON_BG.get(), 600, 542.5f, 600, 75, 16); // l3
+            buttons[3] = util.renderRoundedRectangle(sr, Colours.BUTTON_BG.get(), 600, 442.5f, 600, 75, 16); // l4
+            buttons[4] = util.renderRoundedRectangle(sr, Colours.BUTTON_BG.get(), 600, 342.5f, 600, 75, 16); // l5
 
-            buttons[5] = util.renderRoundedRectangle(sr, util.getButtonColor(), 1320, 742.5f, 600, 75, 16); // r1
-            barrierShapesButton = util.renderRoundedRectangle(sr, util.getButtonColor(), 1320, 642.5f, 600, 75, 16); // r2
-            clearBarrierButton = util.renderRoundedRectangle(sr, util.getButtonColor(), 1320, 542.5f, 600, 75, 16); // r3
-            showFlowlinesButton = util.renderRoundedRectangle(sr, util.getButtonColor(), 1320, 442.5f, 600, 75, 16); // r4
-            renderUIButton = util.renderRoundedRectangle(sr, util.getButtonColor(), 1320, 342.5f, 600, 75, 16); // r5
+            buttons[5] = util.renderRoundedRectangle(sr, Colours.BUTTON_BG.get(), 1320, 742.5f, 600, 75, 16); // r1
+            barrierShapesButton = util.renderRoundedRectangle(sr, Colours.BUTTON_BG.get(), 1320, 642.5f, 600, 75, 16); // r2
+            clearBarrierButton = util.renderRoundedRectangle(sr, Colours.BUTTON_BG.get(), 1320, 542.5f, 600, 75, 16); // r3
+            showFlowlinesButton = util.renderRoundedRectangle(sr, Colours.BUTTON_BG.get(), 1320, 442.5f, 600, 75, 16); // r4
+            renderUIButton = util.renderRoundedRectangle(sr, Colours.BUTTON_BG.get(), 1320, 342.5f, 600, 75, 16); // r5
             if (settings.getSolver().equals(Solver.THREE_D)) {
-                renderOnlySelectedZPlaneButton = util.renderRoundedRectangle(sr, util.getButtonColor(), 1320, 242.5f, 600, 75, 16); // r6
+                renderOnlySelectedZPlaneButton = util.renderRoundedRectangle(sr, Colours.BUTTON_BG.get(), 1320, 242.5f, 600, 75, 16); // r6
             } else {
-                renderOnlySelectedZPlaneButton = util.renderRoundedRectangle(sr, Color.BLACK, 1320, 242.5f, 600, 75, 16); // r6
+                renderOnlySelectedZPlaneButton = util.renderRoundedRectangle(sr, Colours.BG.get(), 1320, 242.5f, 600, 75, 16); // r6
             }
             buttons[6] = barrierShapesButton;
             buttons[7] = clearBarrierButton;
@@ -105,49 +105,49 @@ public class SettingsMenu implements Menu {
             buttons[10] =  renderOnlySelectedZPlaneButton;
             buttons[11] = importFileButton;
 
-            resolutionButtons[0] = util.renderRoundedTriangle(sr, Color.WHITE, 865, 742.5f, 12, 90);
-            resolutionButtons[1] = util.renderRoundedTriangle(sr, Color.WHITE, resolutionTextX-40, 742.5f, 12, 270);
+            resolutionButtons[0] = util.renderRoundedTriangle(sr, Colours.TRIANGLE.get(), 865, 742.5f, 12, 90);
+            resolutionButtons[1] = util.renderRoundedTriangle(sr, Colours.TRIANGLE.get(), resolutionTextX-40, 742.5f, 12, 270);
 
-            solverButtons[0] = util.renderRoundedTriangle(sr, Color.WHITE, 1585, 742.5f, 12, 90);
-            solverButtons[1] = util.renderRoundedTriangle(sr, Color.WHITE, solverTextX-40, 742.5f, 12, 270);
+            solverButtons[0] = util.renderRoundedTriangle(sr, Colours.TRIANGLE.get(), 1585, 742.5f, 12, 90);
+            solverButtons[1] = util.renderRoundedTriangle(sr, Colours.TRIANGLE.get(), solverTextX-40, 742.5f, 12, 270);
 
-            flowSpeedButtons[0] = util.renderRoundedTriangle(sr, Color.WHITE, 865, 642.5f, 12, 90);
-            flowSpeedButtons[1] = util.renderRoundedTriangle(sr, Color.WHITE, 665, 642.5f, 12, 270);
+            flowSpeedButtons[0] = util.renderRoundedTriangle(sr, Colours.TRIANGLE.get(), 865, 642.5f, 12, 90);
+            flowSpeedButtons[1] = util.renderRoundedTriangle(sr, Colours.TRIANGLE.get(), 665, 642.5f, 12, 270);
 
-            viscosityButtons[0] = util.renderRoundedTriangle(sr, Color.WHITE, 865, 542.5f, 12, 90);
-            viscosityButtons[1] = util.renderRoundedTriangle(sr, Color.WHITE, 665, 542.5f, 12, 270);
+            viscosityButtons[0] = util.renderRoundedTriangle(sr, Colours.TRIANGLE.get(), 865, 542.5f, 12, 90);
+            viscosityButtons[1] = util.renderRoundedTriangle(sr, Colours.TRIANGLE.get(), 665, 542.5f, 12, 270);
 
-            plotButtons[0] = util.renderRoundedTriangle(sr, Color.WHITE, 865, 442.5f, 12, 90);
-            plotButtons[1] = util.renderRoundedTriangle(sr, Color.WHITE, plotTextX-40, 442.5f, 12, 270);
+            plotButtons[0] = util.renderRoundedTriangle(sr, Colours.TRIANGLE.get(), 865, 442.5f, 12, 90);
+            plotButtons[1] = util.renderRoundedTriangle(sr, Colours.TRIANGLE.get(), plotTextX-40, 442.5f, 12, 270);
 
-            brushSizeButtons[0] = util.renderRoundedTriangle(sr, Color.WHITE, 865, 342.5f, 12, 90);
-            brushSizeButtons[1] = util.renderRoundedTriangle(sr, Color.WHITE, brushSizeTextX-40, 342.5f, 12, 270);
+            brushSizeButtons[0] = util.renderRoundedTriangle(sr, Colours.TRIANGLE.get(), 865, 342.5f, 12, 90);
+            brushSizeButtons[1] = util.renderRoundedTriangle(sr, Colours.TRIANGLE.get(), brushSizeTextX-40, 342.5f, 12, 270);
 
             if (renderDropdown) {
-                util.renderRoundedTriangle(sr, Color.WHITE, 1585, 642.5f, 12, 0);
-                util.renderRoundedRectangle(sr, util.getButtonColor(), 1320, 605-(0.5f*50*barrierShapeValues.length), 600, 50*barrierShapeValues.length, 16);
+                util.renderRoundedTriangle(sr, Colours.TRIANGLE.get(), 1585, 642.5f, 12, 0);
+                util.renderRoundedRectangle(sr, Colours.BUTTON_BG.get(), 1320, 605-(0.5f*50*barrierShapeValues.length), 600, 50*barrierShapeValues.length, 16);
             } else {
-                util.renderRoundedTriangle(sr, Color.WHITE, 1585, 642.5f, 12, 180);
+                util.renderRoundedTriangle(sr, Colours.TRIANGLE.get(), 1585, 642.5f, 12, 180);
             }
         sr.end();
 
         batch.begin();
-            util.renderText(batch, "settings", Color.WHITE, util.getScreenDimensions().x/2, 953, 96, TextAlignment.CENTRE);
+            util.renderText(batch, "settings", Colours.TEXT.get(), util.getScreenDimensions().x/2, 953, 96, TextAlignment.CENTRE);
 
-            util.renderText(batch, "resolution", Color.WHITE, 320, 742.5f, 36, TextAlignment.LEFT); // l1
-            util.renderText(batch, "flow speed", Color.WHITE, 320, 642.5f, 36, TextAlignment.LEFT); // l2
-            util.renderText(batch, "viscosity", Color.WHITE, 320, 542.5f, 36, TextAlignment.LEFT); // l3
-            util.renderText(batch, "plot", Color.WHITE, 320, 442.5f, 36, TextAlignment.LEFT); // l4
-            util.renderText(batch, "brush size", Color.WHITE, 320, 342.5f, 36, TextAlignment.LEFT); // l5
+            util.renderText(batch, "resolution", Colours.TEXT.get(), 320, 742.5f, 36, TextAlignment.LEFT); // l1
+            util.renderText(batch, "flow speed", Colours.TEXT.get(), 320, 642.5f, 36, TextAlignment.LEFT); // l2
+            util.renderText(batch, "viscosity", Colours.TEXT.get(), 320, 542.5f, 36, TextAlignment.LEFT); // l3
+            util.renderText(batch, "plot", Colours.TEXT.get(), 320, 442.5f, 36, TextAlignment.LEFT); // l4
+            util.renderText(batch, "brush size", Colours.TEXT.get(), 320, 342.5f, 36, TextAlignment.LEFT); // l5
 
-            util.renderText(batch, "solver", Color.WHITE, 1040, 742.5f, 36, TextAlignment.LEFT); // r1
-            util.renderText(batch, "barrier shapes", Color.WHITE, 1040, 642.5f, 36, TextAlignment.LEFT); // r2
+            util.renderText(batch, "solver", Colours.TEXT.get(), 1040, 742.5f, 36, TextAlignment.LEFT); // r1
+            util.renderText(batch, "barrier shapes", Colours.TEXT.get(), 1040, 642.5f, 36, TextAlignment.LEFT); // r2
             if (!renderDropdown) {
-                util.renderText(batch, "clear barriers", Color.WHITE, 1040, 542.5f, 36, TextAlignment.LEFT); // r3
-                util.renderText(batch, "show flowlines", Color.WHITE, 1040, 442.5f, 36, TextAlignment.LEFT); // r4
-                util.renderText(batch, "render ui", Color.WHITE, 1040, 342.5f, 36, TextAlignment.LEFT); // r5
+                util.renderText(batch, "clear barriers", Colours.TEXT.get(), 1040, 542.5f, 36, TextAlignment.LEFT); // r3
+                util.renderText(batch, "show flowlines", Colours.TEXT.get(), 1040, 442.5f, 36, TextAlignment.LEFT); // r4
+                util.renderText(batch, "render ui", Colours.TEXT.get(), 1040, 342.5f, 36, TextAlignment.LEFT); // r5
                 if (settings.getSolver().equals(Solver.THREE_D)) {
-                    util.renderText(batch, "only render selected plane", Color.WHITE, 1040, 242.5f, 36, TextAlignment.LEFT); // r6
+                    util.renderText(batch, "only render selected plane", Colours.TEXT.get(), 1040, 242.5f, 36, TextAlignment.LEFT); // r6
                 }
             }
 
@@ -158,20 +158,20 @@ public class SettingsMenu implements Menu {
                 resolutionZValue = "x" + (int) settings.getResolution().z;
             }
 
-            resolutionTextX = util.renderText(batch, (int) settings.getResolution().x + "x" + (int) settings.getResolution().y + resolutionZValue, Color.WHITE, 825, 742.5f, 36, TextAlignment.RIGHT); // l1 value
-            util.renderText(batch, decimalFormat.format(settings.getFlowSpeed()), Color.WHITE, 765, 642.5f, 36, TextAlignment.CENTRE); // l2 value
-            util.renderText(batch, decimalFormat.format(settings.getViscosity()), Color.WHITE, 765, 542.5f, 36, TextAlignment.CENTRE); // l3 value
-            plotTextX = util.renderText(batch, settings.getPlot(), Color.WHITE, 825, 442.5f, 36, TextAlignment.RIGHT); // l4 value
-            brushSizeTextX = util.renderText(batch, "" + settings.getBrushSize(), Color.WHITE, 825, 342.5f, 36, TextAlignment.RIGHT); // l5 value
+            resolutionTextX = util.renderText(batch, (int) settings.getResolution().x + "x" + (int) settings.getResolution().y + resolutionZValue, Colours.TEXT.get(), 825, 742.5f, 36, TextAlignment.RIGHT); // l1 value
+            util.renderText(batch, decimalFormat.format(settings.getFlowSpeed()), Colours.TEXT.get(), 765, 642.5f, 36, TextAlignment.CENTRE); // l2 value
+            util.renderText(batch, decimalFormat.format(settings.getViscosity()), Colours.TEXT.get(), 765, 542.5f, 36, TextAlignment.CENTRE); // l3 value
+            plotTextX = util.renderText(batch, settings.getPlotName(), Colours.TEXT.get(), 825, 442.5f, 36, TextAlignment.RIGHT); // l4 value
+            brushSizeTextX = util.renderText(batch, "" + settings.getBrushSize(), Colours.TEXT.get(), 825, 342.5f, 36, TextAlignment.RIGHT); // l5 value
 
             String solverName = "uh oh, no solver";
             if (settings.getSolver().equals(Solver.TWO_D)) {solverName = "2D LBM";}
             else if (settings.getSolver().equals(Solver.THREE_D)) {solverName = "3D LBM";}
-            solverTextX = util.renderText(batch, solverName, Color.WHITE, 1545, 742.5f, 36, TextAlignment.RIGHT); // r1 value
+            solverTextX = util.renderText(batch, solverName, Colours.TEXT.get(), 1545, 742.5f, 36, TextAlignment.RIGHT); // r1 value
 
             if (renderDropdown) {
                 for (int count=0; count<barrierShapeValues.length; count++) {
-                    util.renderText(batch, barrierShapeValues[count], Color.WHITE, 1040, 580-(50*count), 36, TextAlignment.LEFT);
+                    util.renderText(batch, barrierShapeValues[count], Colours.TEXT.get(), 1040, 580-(50*count), 36, TextAlignment.LEFT);
                     barrierShapesDropdownButtons[count] = new Rectangle(1020, 580-(50*count)-25, 600, 50);
                 }
             }
@@ -222,8 +222,8 @@ public class SettingsMenu implements Menu {
         if (!settings.getLockedSettingAt(2) && util.isButtonClicked(viscosityButtons[0]) && settings.getViscosity() < 0.200) {settings.setViscosity(settings.getViscosity()+0.005f); settings.setViscosity(Math.round(settings.getViscosity()*1000)/1000f);}
         if (!settings.getLockedSettingAt(2) && util.isButtonClicked(viscosityButtons[1]) && settings.getViscosity() > 0.005) {settings.setViscosity(settings.getViscosity()-0.005f); settings.setViscosity(Math.round(settings.getViscosity()*1000)/1000f);}
 
-        if (!settings.getLockedSettingAt(3) && util.isButtonClicked(plotButtons[0])) {settings.setPlot(settings.cycleOptions(1, settings.getPlot(), settings.getPlotValues()));}
-        if (!settings.getLockedSettingAt(3) && util.isButtonClicked(plotButtons[1])) {settings.setPlot(settings.cycleOptions(-1, settings.getPlot(), settings.getPlotValues()));}
+        if (!settings.getLockedSettingAt(3) && util.isButtonClicked(plotButtons[0])) {settings.setPlot((settings.getPlot()+1)%settings.getPlotValues().length);}
+        if (!settings.getLockedSettingAt(3) && util.isButtonClicked(plotButtons[1])) {settings.setPlot((settings.getPlot()-1)%settings.getPlotValues().length);}
 
         if (!settings.getLockedSettingAt(4) && util.isButtonClicked(brushSizeButtons[0])) {settings.changeBrushSize(1);}
         if (!settings.getLockedSettingAt(4) && util.isButtonClicked(brushSizeButtons[1])) {settings.changeBrushSize(-1);}
