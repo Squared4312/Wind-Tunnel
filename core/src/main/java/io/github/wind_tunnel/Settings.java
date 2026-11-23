@@ -91,29 +91,7 @@ public class Settings {
                 resolution.set(resolutionValues[3][0], resolutionValues[3][1], resolutionValues[3][1]);
             }
         }
-    }
-
-    public String cycleOptions(int change, String currentValue, String[] possibleValues) {
-        int index = 0;
-        for (int count=0; count<possibleValues.length; count++) {
-            if (possibleValues[count].equals(currentValue)) {
-                index = count;
-                break;
-            }
-        }
-        if (change == 1) {
-            if (index == possibleValues.length-1) {
-                return possibleValues[0];
-            }
-            return possibleValues[index+1];
-        } else if (change == -1) {
-            if (index == 0) {
-                return possibleValues[possibleValues.length-1];
-            }
-            return possibleValues[index-1];
-        }
-
-        return currentValue;
+        changeBrushSizeAndCameraDistanceAndSelectedZPlane();
     }
 
     public void cycleResolutionOptions(int change) {

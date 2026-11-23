@@ -491,9 +491,7 @@ public class LatticeBoltzmannCFDSolver {
             }
         }
         if (neighbours == 9) {
-            cellPosition.x = Math.round(((mouse.x-(cellDimensions/2f))/1920)*simulationX);
-            cellPosition.y = Math.round(((mouse.y-(cellDimensions/2f))/1080)*simulationY);
-            cellPosition.z = 0;
+            cellPosition.set(Math.round(((mouse.x-(cellDimensions/2f))/1920)*simulationX), Math.round(((mouse.y-(cellDimensions/2f))/1080)*simulationY), 0);
             settings.setIntersectionPoint(cellPosition);
 
             if (settings.getPlaceBarriers() && !(cellPosition.x <= 0 || cellPosition.x >= simulationX-1 || cellPosition.y <= 0 || cellPosition.y >= simulationY-1)) {
